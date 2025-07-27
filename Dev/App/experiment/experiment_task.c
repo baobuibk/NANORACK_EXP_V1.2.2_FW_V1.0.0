@@ -100,6 +100,7 @@ void experiment_task_singleton_ctor(void)
 	};
 	experiment_task_ctor(&experiment_task_inst,&init);
 }
+
 void experiment_task_start(uint8_t priority)
 {
 	SST_Task_start(&experiment_task_inst.super,priority);

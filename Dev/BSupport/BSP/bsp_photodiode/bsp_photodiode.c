@@ -245,8 +245,10 @@ void bsp_photo_start_timer_sampling(void)
 
 void bsp_photodiode_start_dma(photo_diode_t *config, uint32_t *buffer, uint32_t size)
 {
-	// Dis stream
+	// Disable stream DMA before configure
 	LL_DMA_DisableStream(config->dma, config->dma_stream_rx);
+	while (LL_DMA_IsEnabledStream(config->dma, config->dma_stream_rx));
+
 	//Config stream rx
 	LL_DMA_SetMode(config->dma, config->dma_stream_rx, LL_DMA_MODE_CIRCULAR);
 	LL_DMA_ConfigAddresses(	config->dma,
@@ -257,11 +259,18 @@ void bsp_photodiode_start_dma(photo_diode_t *config, uint32_t *buffer, uint32_t 
 	LL_DMA_SetDataLength(config->dma, config->dma_stream_rx, size);
 	LL_DMA_SetMemoryIncMode(config->dma, config->dma_stream_rx, LL_DMA_MEMORY_INCREMENT);
 
-	// Kích hoạt DMA
-	LL_DMA_EnableIT_TC(config->dma, config->dma_stream_rx);		// Kích hoạt ngắt DMA hoàn tất (cho RX)
-	LL_DMA_EnableIT_HT(config->dma, config->dma_stream_rx);		// Kích hoạt ngắt DMA hoàn tất (cho RX)
+	// Kích hoạt ngắt half-transfer và transfer-complete
+	LL_DMA_EnableIT_HT(config->dma, config->dma_stream_rx);
+	LL_DMA_EnableIT_TC(config->dma, config->dma_stream_rx);
+
+	// Enable DMA Request từ SPI
 	LL_SPI_EnableDMAReq_RX(config->spi);
-	LL_DMA_EnableStream(config->dma, config->dma_stream_rx); 	// RX trước
+
+	// Enable SPI (nếu chưa)
+	LL_SPI_Enable(PHOTO_SPI);
+
+	// Enable DMA stream
+	LL_DMA_EnableStream(config->dma, config->dma_stream_rx);
 }
 
 void bsp_photodiode_sample_start()
@@ -286,20 +295,23 @@ void bsp_photodiode_sample_start()
 void bsp_photodiode_dma_sampling_irq(void)
 {
 	TIM1->CR1 &= ~TIM_CR1_CEN;		// Stop timer trigger
+
 //	GPIOD->BSRR = GPIO_BSRR_BS_9; 	// CS_HIGH
 	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin;
 
-	if (PHOTO_DMA->LISR & DMA_LISR_HTIF0)	// Check HT flag
+	// Half-transfer
+	if (PHOTO_DMA->LISR & DMA_LISR_HTIF0)
 	{
-		PHOTO_DMA->LIFCR = DMA_LIFCR_CHTIF0;	// Clear HT flag
+		PHOTO_DMA->LIFCR = DMA_LIFCR_CHTIF0;	// Clear Half-transfer flag
 		bsp_spi_ram_write_dma(photo_diode_adc.ram_current_address, BUFFER_HALF_SIZE_BYTE, (uint8_t *)photo_data_buffer);
 		photo_diode_adc.ram_current_address += BUFFER_HALF_SIZE_BYTE;
 		TIM1->CR1 |= TIM_CR1_CEN;		// Continue start timer trigger
 	}
 
-	else if (PHOTO_DMA->LISR & DMA_LISR_TCIF0)	// Check TC flag
+	// Transfer-complete
+	else if (PHOTO_DMA->LISR & DMA_LISR_TCIF0)
 	{
-		PHOTO_DMA->LIFCR = DMA_LIFCR_CTCIF0;	// Clear TC flag
+		PHOTO_DMA->LIFCR = DMA_LIFCR_CTCIF0;	// Clear Transfer-complete flag
 		bsp_spi_ram_write_dma(photo_diode_adc.ram_current_address, BUFFER_HALF_SIZE_BYTE, (uint8_t *)upper_data_buffer);
 		photo_diode_adc.ram_current_address += BUFFER_HALF_SIZE_BYTE;
 		photo_diode_adc.block_count --;
@@ -321,6 +333,13 @@ void bsp_photodiode_dma_sampling_irq(void)
 		}
 	}
 
+	// Clear all unexpected interrupt flag (stream 0)
+	else
+	{
+		PHOTO_DMA->LIFCR = DMA_LIFCR_CTEIF0;		// Clear Transfer-error flag
+		PHOTO_DMA->LIFCR = DMA_LIFCR_CDMEIF0;		// Clear Direct-mode-error flag
+		PHOTO_DMA->LIFCR = DMA_LIFCR_CFEIF0;		// Clear FIFO-error flag
+	}
 }
 
 // Hàm xử lý ngắt Timer ADC trigger
@@ -340,7 +359,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
 //	GPIOD->BSRR = GPIO_BSRR_BR_9; 	// CS LOW
 	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin << 16;
 
-//	SPI2->DR = 0xAAAA;
+//	SPI2->DR = 0xAAAA;				// Send DUMY to SPI
 	PHOTO_SPI->DR = 0xAAAA;
 }
 
@@ -356,6 +375,7 @@ void TIM2_IRQHandler(void)
 			PHOTO_TIMER->ARR = timer_timing.sampling_time_ARR - 1;
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_pre_phase_evt);
 
+			// Enable timer2 counter
 			TIM2->CR1 |= TIM_CR1_CEN;
 		break;
 
@@ -365,6 +385,8 @@ void TIM2_IRQHandler(void)
 //			bsp_photodiode_set_sampling_time();
 			PHOTO_TIMER->ARR = timer_timing.post_time_ARR - 1;
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_sampling_phase_evt);
+
+			// Disable timer2 counter
 			PHOTO_TIMER->CR1 &= ~TIM_CR1_CEN;		// stop timer
 		break;
 		default: break;

@@ -85,34 +85,7 @@ Std_ReturnType SPI_SlaveDevice_CollectData(uint16_t * p_tx_buffer)
 
 	SPI_SlaveDevice_Init(p_tx_buffer);
 
-//    bsp_spi_debug_print("%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n",
-//			 *(p_tx_buffer + 0) 		& 0xFF,
-//    		(*(p_tx_buffer + 0) >> 8)	& 0xFF,
-//			 *(p_tx_buffer + 1) 		& 0xFF,
-//    		(*(p_tx_buffer + 1) >> 8)	& 0xFF,
-//			 *(p_tx_buffer + 2) 		& 0xFF,
-//			(*(p_tx_buffer + 2) >> 8)	& 0xFF,
-//			 *(p_tx_buffer + 3) 		& 0xFF,
-//			(*(p_tx_buffer + 3) >> 8)	& 0xFF,
-//
-//			 *(p_tx_buffer + 8188) 		& 0xFF,
-//			(*(p_tx_buffer + 8188) >> 8)& 0xFF,
-//			 *(p_tx_buffer + 8189) 		& 0xFF,
-//			(*(p_tx_buffer + 8189) >> 8)& 0xFF,
-//			 *(p_tx_buffer + 8190) 		& 0xFF,
-//			(*(p_tx_buffer + 8190) >> 8)& 0xFF,
-//			 *(p_tx_buffer + 8191) 		& 0xFF,
-//			(*(p_tx_buffer + 8191) >> 8)& 0xFF
-//			);
-
-//	uint16_t crc = 0x0000;
-//	for (uint16_t i = 0; i < EXPERIMENT_BUFFER_SAMPLE_SIZE; i++)
-//	{
-//		uint16_t sample_data = *(spi_device_instance.data_context.p_tx_buffer + i);
-//		crc = UpdateCRC16_XMODEM(crc, (sample_data & 0xFF));
-//		crc = UpdateCRC16_XMODEM(crc, (sample_data >> 8) & 0xFF);
-//	}
-    uint32_t crc = 0;
+    uint32_t crc = 0x0000;
     crc = CRC_HW_Calculation((uint8_t *)spi_device_instance.data_context.p_tx_buffer, EXPERIMENT_BUFFER_BYTE_SIZE);
 
 	spi_device_instance.data_context.crc = crc;
@@ -137,13 +110,9 @@ Std_ReturnType SPI_SlaveDevice_GetDataInfo(DataProcessContext_t *context)
 
 Std_ReturnType SPI_SlaveDevice_ReinitDMA()
 {
-//    if (!spi_device_instance.is_initialized) {
-//        return E_ERROR;
-//    }
+    LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_3);
+    while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_3));
 
-//    LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_3);
-//    while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_3));
-//
 //    LL_SPI_DisableDMAReq_TX(SPI1);
 //    LL_SPI_Disable(SPI1);
 //
@@ -154,8 +123,13 @@ Std_ReturnType SPI_SlaveDevice_ReinitDMA()
     		LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
     LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, EXPERIMENT_BUFFER_BYTE_SIZE);
 
+    // Enable DMA Request từ SPI
     LL_SPI_EnableDMAReq_TX(SPI1);
+
+    // Enable SPI (nếu chưa)
     LL_SPI_Enable(SPI1);
+
+    // Enable DMA stream
     LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_3);
 
     spi_device_instance.transfer_state = SPI_TRANSFER_WAIT;
@@ -164,10 +138,6 @@ Std_ReturnType SPI_SlaveDevice_ReinitDMA()
 
 Std_ReturnType SPI_SlaveDevice_Disable(void)
 {
-//    if (!spi_device_instance.is_initialized) {
-//        return E_ERROR;
-//    }
-
     LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_3);
     LL_SPI_DisableDMAReq_TX(SPI1);
 
@@ -195,14 +165,34 @@ uint32_t SPI_SlaveDevide_GetDataCRC(void) {
 
 void DMA2_Stream3_IRQHandler(void)
 {
-	if (LL_DMA_IsActiveFlag_TC3(DMA2)) {
-		LL_DMA_ClearFlag_TC3(DMA2);
+//	if (LL_DMA_IsActiveFlag_TC3(DMA2)) {
+//		LL_DMA_ClearFlag_TC3(DMA2);
+//		SPI_SlaveDevice_SetTransferState(SPI_TRANSFER_COMPLETE);
+//		SPI_SlaveDevice_Disable();
+//	}
+//	if (LL_DMA_IsActiveFlag_TE3(DMA2)) {
+//		LL_DMA_ClearFlag_TE3(DMA2);
+//		SPI_SlaveDevice_SetTransferState(SPI_TRANSFER_ERROR);
+//		SPI_SlaveDevice_Disable();
+//	}
+
+	if (DMA2->LISR & DMA_LISR_TCIF3)
+	{
+		DMA2->LIFCR = DMA_LIFCR_CTCIF3;
 		SPI_SlaveDevice_SetTransferState(SPI_TRANSFER_COMPLETE);
-		SPI_SlaveDevice_Disable();
+		LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_3);
+		LL_SPI_DisableDMAReq_TX(SPI1);
 	}
-	if (LL_DMA_IsActiveFlag_TE3(DMA2)) {
-		LL_DMA_ClearFlag_TE3(DMA2);
+	// Clear all unexpected interrupt flag (stream 2)
+	else
+	{
+		DMA2->LIFCR = DMA_LIFCR_CHTIF3;		// Clear Half-transfer flag
+		DMA2->LIFCR = DMA_LIFCR_CTEIF3;		// Clear Transfer-error flag
+		DMA2->LIFCR = DMA_LIFCR_CDMEIF3;	// Clear Direct-mode-error flag
+		DMA2->LIFCR = DMA_LIFCR_CFEIF3;		// Clear FIFO-error flag
+
 		SPI_SlaveDevice_SetTransferState(SPI_TRANSFER_ERROR);
-		SPI_SlaveDevice_Disable();
+		LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_3);
+		LL_SPI_DisableDMAReq_TX(SPI1);
 	}
 }

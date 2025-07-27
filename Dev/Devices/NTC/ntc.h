@@ -47,13 +47,18 @@
 #ifndef DEVICES_NTC_NTC_H_
 #define DEVICES_NTC_NTC_H_
 
+#include "main.h"
 #include <stdint.h>
 
 #define VCC							(float)3.3f
 #define R1							(unsigned int)10000
 
+typedef struct ntc_config {
+	DMA_TypeDef * dma;				// Instance DMA
+	uint32_t dma_stream;         	// Stream
+} ntc_confi_t;
 
-void ntc_adc_dma_init(uint16_t * adc_addr, uint8_t num_channel);
+void ntc_adc_dma_init(ntc_confi_t * ntc_config, uint16_t * adc_addr, uint8_t num_channel);
 void ntc_adc_trigger(void);
 int16_t ntc_convert(uint16_t ADC_val);
 #endif /* DEVICES_NTC_NTC_H_ */

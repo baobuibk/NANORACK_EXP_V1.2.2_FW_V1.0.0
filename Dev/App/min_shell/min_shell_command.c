@@ -18,6 +18,7 @@
 #include "system_log.h"
 #include "date_time.h"
 #include "lwl.h"
+#include "wdg.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -38,8 +39,8 @@ static temperature_control_task_t *p_temperature_control_task = &temperature_con
 extern experiment_task_t experiment_task_inst;
 static experiment_task_t *p_experiment_task = &experiment_task_inst;
 
-extern system_reset_task_t system_reset_task_inst;
-static system_reset_task_t *p_system_reset_task = &system_reset_task_inst;
+//extern system_reset_task_t system_reset_task_inst;
+//static system_reset_task_t *p_system_reset_task = &system_reset_task_inst;
 
 extern system_log_task_t system_log_task_inst;
 static system_log_task_t *p_system_log_task = &system_log_task_inst;
@@ -70,8 +71,11 @@ static void MIN_Handler_PLEASE_RESET_CMD(MIN_Context_t *ctx, const uint8_t *payl
 {
     MIN_Send(ctx, PLEASE_RESET_ACK, NULL, 0);
     min_shell_debug_print("RESET REQUEST:\r\n", len);
+//    LL_mDelay(200);
+//    System_On_Bootloader_Reset();
+//    system_reset(p_system_reset_task);
 
-    system_reset(p_system_reset_task);
+    min_shell_triger_reset(p_min_shell_task);
 }
 
 static void MIN_Handler_TEST_CONNECTION_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
@@ -478,13 +482,15 @@ static void MIN_Handler_GET_LASER_CURRENT_DATA_CMD(MIN_Context_t *ctx, const uin
 
 static void MIN_Handler_GET_LASER_CURRENT_CRC_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
-    uint8_t buffer[2];
-    uint16_t crc = SPI_SlaveDevide_GetDataCRC();
-    buffer[0] = (crc >> 8) & 0xFF;
-    buffer[1] = crc & 0xFF;
-    MIN_Send(ctx, GET_LASER_CURRENT_CRC_ACK, buffer, 2);
+    uint8_t buffer[4];
+    uint32_t crc = SPI_SlaveDevide_GetDataCRC();
+    buffer[0] = (crc >> 24) & 0xFF;
+    buffer[1] = (crc >> 16) & 0xFF;
+    buffer[2] = (crc >> 8) & 0xFF;
+    buffer[3] = crc & 0xFF;
+    MIN_Send(ctx, GET_LASER_CURRENT_CRC_ACK, buffer, 4);
 
-    min_shell_debug_print("Current chunk CRC: 0x%04X\r\n", payload[0], crc);
+    min_shell_debug_print("Current chunk CRC: 0x%08X\r\n", payload[0], crc);
 }
 
 static void MIN_Handler_SET_EXT_LASER_INTENSITY_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)

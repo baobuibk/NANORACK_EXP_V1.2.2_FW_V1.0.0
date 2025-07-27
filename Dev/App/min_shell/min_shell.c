@@ -144,11 +144,13 @@ static void min_shell_task_ctor(min_shell_task_t * const me, min_shell_task_init
                   (SST_Evt *) init->current_evt, init->min_shell_event_buffer);
     SST_TimeEvt_ctor(&me->min_poll_timer, EVT_MIN_POLL, &(me->super)); // Initialize the polling timer
     SST_TimeEvt_ctor(&me->min_busy_timeout_timer, EVT_MIN_BUSY_TIMEOUT, &(me->super)); // Initialize the min_busy_timeout_timer
+    SST_TimeEvt_ctor(&me->min_reset_timer, EVT_MIN_RESET_TO_OTA, &(me->super)); // Initialize the min_busy_timeout_timer
     me->state = init->init_state; // Set the initial state
     me->min_context = init->min_context; // Set the MIN context
     me->min_shell_uart = init->min_shell_uart; // Set the UART for MIN communication
     SST_TimeEvt_disarm(&me->min_poll_timer); // Disarm the polling timer
     SST_TimeEvt_disarm(&me->min_busy_timeout_timer); // Disarm the min_busy_timeout_timer
+    SST_TimeEvt_disarm(&me->min_reset_timer); // Disarm the min_busy_timeout_timer
 }
 
 void min_shell_task_ctor_singleton(void)
@@ -188,14 +190,15 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
 			{
             	MIN_App_Poll(me->min_context, min_shell_received_data, min_shell_received_length);
 			}
-//        	else
-//        		MIN_App_Poll(me->min_context, NULL, 0);
+        	else
+        		MIN_App_Poll(me->min_context, NULL, 0);
+
             return HANDLED_STATUS;
 
         case EVT_MIN_BUSY:
         	SST_TimeEvt_disarm(&me->min_poll_timer);
         	bsp_handshake_min_busy();
-        	min_shell_debug_print("Src: Min process ->> Event: min busy");
+        	min_shell_debug_print("Src: Min process ->> Event: min busy\r\n");
         	SST_TimeEvt_arm(&me->min_busy_timeout_timer, MIN_SHELL_BUSY_TIMEOUT, 0);
         	return HANDLED_STATUS;
 
@@ -203,8 +206,12 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
         case EVT_MIN_BUSY_TIMEOUT:
         	SST_TimeEvt_disarm(&me->min_busy_timeout_timer);
         	bsp_handshake_min_ready();
-        	min_shell_debug_print("Src: Min process ->> Event: min busy timeout. Return Polling event");
+        	min_shell_debug_print("Src: Min process ->> Event: min ready\r\n");
         	SST_TimeEvt_arm(&me->min_poll_timer, MIN_SHELL_POLL_INTERVAL_MS, MIN_SHELL_POLL_INTERVAL_MS);
+        	return HANDLED_STATUS;
+
+        case EVT_MIN_RESET_TO_OTA:
+        	System_On_Bootloader_Reset();
         	return HANDLED_STATUS;
         default:
             return IGNORED_STATUS;
@@ -225,6 +232,13 @@ uint32_t min_shell_busy_clear(min_shell_task_t * const me)
 	SST_Task_post(&me->super, (SST_Evt *)&min_busy_clear_evt);
 	return ERROR_OK;
 }
+
+uint32_t min_shell_triger_reset(min_shell_task_t * const me)
+{
+	SST_TimeEvt_arm(&me->min_reset_timer, 1000, 0);
+	return ERROR_OK;
+}
+
 
 
 ////////////////////////////////// CALLBACKS ///////////////////////////////////

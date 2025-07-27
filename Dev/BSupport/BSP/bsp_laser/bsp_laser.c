@@ -211,16 +211,30 @@ void LASER_INT_DMA_STREAM1_IRQHandler(void)
 
 void bsp_laser_dma_adc_current_irq(void)
 {
-	if (LL_DMA_IsActiveFlag_TC2(LASER_DMA))
-	{
-		LL_DMA_ClearFlag_TC2(LASER_DMA);
-	}
-
+//	// Transfer-complete (stream 2)
+//	if (LL_DMA_IsActiveFlag_TC2(LASER_DMA))
+//	{
+//		LL_DMA_ClearFlag_TC2(LASER_DMA);
+//	}
 //	else
 //	{
 //		sample_count = 0;
 //		SST_Task_post(&monitor_task_inst.super, (SST_Evt *)&ld_adc_evt); //post to temperature monitor task
 //	}
+
+	// Transfer-complete (stream 2)
+	if (LASER_DMA->LISR & DMA_LISR_TCIF2)
+	{
+		LASER_DMA->LIFCR = DMA_LIFCR_CTCIF2;
+	}
+	// Clear all unexpected interrupt flag (stream 2)
+	else
+	{
+		LASER_DMA->LIFCR = DMA_LIFCR_CHTIF2;		// Clear alf-transfer flag
+		LASER_DMA->LIFCR = DMA_LIFCR_CTEIF2;		// Clear Transfer-error flag
+		LASER_DMA->LIFCR = DMA_LIFCR_CDMEIF2;		// Clear Direct-mode-error flag
+		LASER_DMA->LIFCR = DMA_LIFCR_CFEIF2;		// Clear FIFO-error flag
+	}
 }
 
 

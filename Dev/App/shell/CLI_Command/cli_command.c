@@ -19,12 +19,16 @@
 #include "system_reset.h"
 #include "bsp_spi_ram.h"
 #include "bsp_laser.h"
+#include "min_shell.h"
 
 extern temperature_control_task_t temperature_control_task_inst;
 static temperature_control_task_t *p_temperature_control_task = &temperature_control_task_inst;
 
 extern experiment_task_t experiment_task_inst;
 static experiment_task_t *p_experiment_task = &experiment_task_inst;
+
+extern min_shell_task_t min_shell_task_inst;
+static min_shell_task_t *p_min_shell_task = &min_shell_task_inst;
 
 //extern system_reset_task_t system_reset_task_inst;
 //static system_reset_task_t *p_system_reset_task = &system_reset_task_inst;
@@ -128,30 +132,30 @@ static void cmd_exp_data_transfer(EmbeddedCli *cli, char *args, void *context);
 
 
 
-//static void cmd_clear_fram(EmbeddedCli *cli, char *args, void *context)
-//{
-//	uint8_t buffer[100] = {0};
-//	bsp_spi_ram_write_polling(0, 100, buffer);
-//
-//	cli_printf(cli, "FRAM is empty\r\n");
-//	cli_printf(cli, "");
-//}
-//
-//static void cmd_read_fram(EmbeddedCli *cli, char *args, void *context)
-//{
-//    uint8_t buffer[100];
-//    bsp_spi_ram_read_polling(0, 100, buffer);
-//
-//    cli_printf(cli, "Buffer data in hex:\r\n");
-//    for (int i = 0; i < 100; i++) {
-//        cli_printf(cli, "%02X ", buffer[i]);
-//        if ((i + 1) % 16 == 0) {
-//            cli_printf(cli, "\r\n");
-//        }
-//    }
-//
-//    cli_printf(cli, "\r\n");
-//}
+static void cmd_clear_fram(EmbeddedCli *cli, char *args, void *context)
+{
+	uint8_t buffer[1024] = {0};
+	bsp_spi_ram_write_polling(0, 1024, buffer);
+
+	cli_printf(cli, "FRAM is empty\r\n");
+	cli_printf(cli, "");
+}
+
+static void cmd_read_fram(EmbeddedCli *cli, char *args, void *context)
+{
+    uint8_t buffer[1024];
+    bsp_spi_ram_read_polling(0, 1024, buffer);
+
+    cli_printf(cli, "Buffer data in hex:\r\n");
+    for (int i = 0; i < 1024; i++) {
+        cli_printf(cli, "%02X ", buffer[i]);
+        if ((i + 1) % 16 == 0) {
+            cli_printf(cli, "\r\n");
+        }
+    }
+
+    cli_printf(cli, "\r\n");
+}
 
 
 
@@ -233,8 +237,8 @@ static const CliCommandBinding cliStaticBindings_internal[] = {
 	{ "Experiment", "exp_data_transfer",    "format: exp_data_transfer",  true, NULL, cmd_exp_data_transfer },
 
 
-//	{ "TEST", "clear_fram",    "",  true, NULL, cmd_clear_fram },
-//	{ "TEST", "read_fram",    "",  true, NULL, cmd_read_fram },
+	{ "TEST", "clear_fram",    "",  true, NULL, cmd_clear_fram },
+	{ "TEST", "read_fram",    "",  true, NULL, cmd_read_fram },
 //	{ "TEST", "test",    "",  true, NULL, CMD_test },
 
 //		{ NULL, "get_current",  "format: get_current [int/ext]",                                   true, NULL, CMD_Get_Current },
@@ -846,9 +850,9 @@ static void CMD_Set_Laser_Int_Current(EmbeddedCli *cli, char *args, void *contex
 		return;
 	}
 
-//	experiment_task_laser_set_current(p_experiment_task, 0, percent);
-	bsp_laser_set_spi_mode(SPI_MODE_0);
-	bsp_laser_int_set_current(percent);
+	experiment_task_laser_set_current(p_experiment_task, 0, percent);
+//	bsp_laser_set_spi_mode(SPI_MODE_0);
+//	bsp_laser_int_set_current(percent);
 	cli_printf(cli, "OK\r\n");
 }
 
@@ -922,9 +926,9 @@ static void CMD_Int_Laser_Switch_On(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "argument 1 out of range,(1-36)\r\n");
 		return;
 	}
-//	experiment_task_int_laser_switchon(p_experiment_task,  laser_idx);
-	bsp_laser_set_spi_mode(SPI_MODE_1);
-	bsp_laser_int_switch_on(laser_idx);
+	experiment_task_int_laser_switchon(p_experiment_task,  laser_idx);
+//	bsp_laser_set_spi_mode(SPI_MODE_1);
+//	bsp_laser_int_switch_on(laser_idx);
 	cli_printf(cli, "OK\r\n");
 }
 
@@ -1057,14 +1061,17 @@ static void cmd_exp_get_profile(EmbeddedCli *cli, char *args, void *context)
 					profile.experiment_time,
 					profile.post_time,
 					profile.num_sample);
-
 }
+
 static void cmd_exp_start_measuring(EmbeddedCli *cli, char *args, void *context)
 {
 	if (experiment_start_measuring(p_experiment_task))
+	{
 		cli_printf(cli, "Wrong profile, please check \r\n");
+	}
 	else
 	{
+		min_shell_busy_set(p_min_shell_task);
 		is_measured = true;
 	}
 }

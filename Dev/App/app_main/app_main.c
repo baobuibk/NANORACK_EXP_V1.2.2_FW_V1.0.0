@@ -33,7 +33,7 @@ void app_init(void)
 	system_log_task_ctor_singleton();
 
 	spi_transmit_task_singleton_ctor();
-	wdg_task_ctor_singleton();
+//	wdg_task_ctor_singleton();
 }
 
 void app_start(void)
@@ -47,7 +47,7 @@ void app_start(void)
 	min_shell_task_start(7);
 
 	spi_transmit_task_start(8);
-	wdg_task_start(10);
+//	wdg_task_start(10);
 }
 
 void app_run(void)

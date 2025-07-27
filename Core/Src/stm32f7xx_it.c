@@ -199,6 +199,8 @@ void SysTick_Handler(void)
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
   date_time_update();
+
+//  LL_GPIO_TogglePin(WD_DONE_GPIO_Port, WD_DONE_Pin);
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -220,6 +222,19 @@ void DMA2_Stream0_IRQHandler(void)
   /* USER CODE BEGIN DMA2_Stream0_IRQn 1 */
 
   /* USER CODE END DMA2_Stream0_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA2 stream1 global interrupt.
+  */
+void DMA2_Stream1_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Stream1_IRQn 0 */
+	LASER_INT_DMA_STREAM1_IRQHandler();
+  /* USER CODE END DMA2_Stream1_IRQn 0 */
+  /* USER CODE BEGIN DMA2_Stream1_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream1_IRQn 1 */
 }
 
 /**

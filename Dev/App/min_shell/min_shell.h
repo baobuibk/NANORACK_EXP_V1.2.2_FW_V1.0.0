@@ -113,6 +113,7 @@ struct min_shell_task_t {
     min_shell_evt_t const *current_evt; // Pointer to the current event being processed
     SST_TimeEvt         min_poll_timer; // Timer for periodic polling
     SST_TimeEvt			min_busy_timeout_timer;	// Timer for case min_busy exceed
+    SST_TimeEvt			min_reset_timer;	// Timer for reset min command
 };
 struct min_shell_evt_t {
 	SST_Evt super; // Base event structure
@@ -143,6 +144,7 @@ void min_shell_task_start(uint8_t priority);
 
 uint32_t min_shell_busy_set(min_shell_task_t * const me);
 uint32_t min_shell_busy_clear(min_shell_task_t * const me);
+uint32_t min_shell_triger_reset(min_shell_task_t * const me);
 
 #endif /* APP_MIN_SHELL_MIN_SHELL_H_ */
 

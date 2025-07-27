@@ -501,19 +501,31 @@ int NTC_table[4096] = {
 };
 
 
-void ntc_adc_dma_init(uint16_t * adc_addr, uint8_t num_channel)
+void ntc_adc_dma_init(ntc_confi_t * ntc_config, uint16_t * adc_addr, uint8_t num_channel)
 {
-    LL_DMA_SetPeriphIncMode(DMA2, LL_DMA_STREAM_0, LL_DMA_PERIPH_NOINCREMENT);
-    LL_DMA_SetMemoryIncMode(DMA2, LL_DMA_STREAM_0, LL_DMA_MEMORY_INCREMENT);
-    LL_DMA_SetPeriphSize(DMA2, LL_DMA_STREAM_0, LL_DMA_PDATAALIGN_HALFWORD);
-    LL_DMA_SetMemorySize(DMA2, LL_DMA_STREAM_0, LL_DMA_MDATAALIGN_HALFWORD);
-    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_0, num_channel); // 8 kênh
-    LL_DMA_SetPeriphAddress(DMA2, LL_DMA_STREAM_0, (uint32_t)&ADC1->DR);
-    LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_0, (uint32_t)adc_addr);
-    LL_DMA_SetMode(DMA2, LL_DMA_STREAM_0, LL_DMA_MODE_CIRCULAR);
+	// Disable stream DMA before configure
+	LL_DMA_DisableStream(ntc_config->dma, ntc_config->dma_stream);
+	while (LL_DMA_IsEnabledStream(ntc_config->dma, ntc_config->dma_stream));
+
+	// Configure DMA
+    LL_DMA_SetPeriphIncMode(ntc_config->dma, ntc_config->dma_stream, LL_DMA_PERIPH_NOINCREMENT);
+    LL_DMA_SetMemoryIncMode(ntc_config->dma, ntc_config->dma_stream, LL_DMA_MEMORY_INCREMENT);
+    LL_DMA_SetPeriphSize(ntc_config->dma, ntc_config->dma_stream, LL_DMA_PDATAALIGN_HALFWORD);
+    LL_DMA_SetMemorySize(ntc_config->dma, ntc_config->dma_stream, LL_DMA_MDATAALIGN_HALFWORD);
+    LL_DMA_SetDataLength(ntc_config->dma, ntc_config->dma_stream, num_channel); // 8 kênh
+    LL_DMA_SetPeriphAddress(ntc_config->dma, ntc_config->dma_stream, (uint32_t)&ADC1->DR);
+    LL_DMA_SetMemoryAddress(ntc_config->dma, ntc_config->dma_stream, (uint32_t)adc_addr);
+    LL_DMA_SetMode(ntc_config->dma, ntc_config->dma_stream, LL_DMA_MODE_CIRCULAR);
+
+    // Enable half-transfer và transfer-complete interrupt
+    LL_DMA_EnableIT_TC(ntc_config->dma, ntc_config->dma_stream);
+
+    // Enable ADC
     LL_ADC_Enable(ADC1);
-    LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_0);
-    LL_DMA_EnableIT_TC(DMA2, LL_DMA_STREAM_0);
+
+    // Enable DMA stream
+    LL_DMA_EnableStream(ntc_config->dma, ntc_config->dma_stream);
+
 }
 
 void ntc_adc_trigger(void)
