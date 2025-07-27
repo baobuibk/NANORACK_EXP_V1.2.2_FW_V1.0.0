@@ -170,7 +170,7 @@ void min_shell_task_ctor_singleton(void)
 
 void min_shell_task_start(uint8_t priority)
 {
-    SST_Task_start(&min_shell_task_inst.super,priority);
+    SST_Task_start(&min_shell_task_inst.super, priority);
 }
 
 static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_shell_evt_t const * const e)

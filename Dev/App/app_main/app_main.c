@@ -30,10 +30,10 @@ void app_init(void)
 	adc_monitor_task_ctor_singleton();
 	tec_ovr_control_task_singleton_ctor();
 	min_shell_task_ctor_singleton();
-	system_log_task_ctor_singleton();
+//	system_log_task_ctor_singleton();
 
 	spi_transmit_task_singleton_ctor();
-//	wdg_task_ctor_singleton();
+	wdg_task_ctor_singleton();
 }
 
 void app_start(void)
@@ -43,11 +43,11 @@ void app_start(void)
 	temperature_control_task_start(2);
 	adc_monitor_task_start(3);
 	tec_ovr_control_task_start(5);
-	system_log_task_start(6);
+//	system_log_task_start(6);
 	min_shell_task_start(7);
 
 	spi_transmit_task_start(8);
-//	wdg_task_start(10);
+	wdg_task_start(10);
 }
 
 void app_run(void)

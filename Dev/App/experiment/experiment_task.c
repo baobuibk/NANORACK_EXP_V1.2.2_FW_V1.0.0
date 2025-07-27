@@ -19,6 +19,7 @@
 #include "bsp_spi_slave.h"
 #include "bsp_handshake.h"
 #include "../spi_transmit/spi_transmit.h"
+#include "adc_monitor.h"
 
 DBC_MODULE_NAME("experiment_task")
 
@@ -115,6 +116,23 @@ static state_t experiment_task_state_manual_handler(experiment_task_t * const me
 		{
 			//exp_debug_print("entry experiment_task_state_manual_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer); //disable the timeout
+
+
+
+
+//			for (int i = 0; i < 1024; i++) {
+//			    exp_debug_print("%3d ", laser_int_current_buffer[i]);  // In 3 chữ số, cách nhau bởi dấu cách
+//			    if ((i + 1) % 16 == 0) {
+//			        exp_debug_print("\r\n");  // Xuống dòng sau mỗi 16 phần tử
+//			    }
+//			}
+//			// Nếu tổng phần tử không chia hết cho 16, in thêm dòng xuống cuối
+//			if (1024 % 16 != 0) {
+//			    exp_debug_print("\r\n");
+//			}
+
+
+
 			return HANDLED_STATUS;
 		}
 
@@ -177,6 +195,21 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			exp_debug_print("exit experiment_task_state_data_aqui_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer);
 			SST_TimeEvt_disarm(&me->laser_current_trigger);
+
+//			for (int i = 0; i < 1024; i++)
+//			{
+//			    exp_debug_print("%02X  ", laser_int_current_buffer[i]);  // In 3 chữ số, cách nhau bởi dấu cách
+//			    if ((i + 1) % 16 == 0) {
+//			        exp_debug_print("\r\n");  // Xuống dòng sau mỗi 16 phần tử
+//			    }
+//			}
+//			// Nếu tổng phần tử không chia hết cho 16, in thêm dòng xuống cuối
+//			if (1024 % 16 != 0)
+//			{
+//			    exp_debug_print("\r\n");
+//			}
+
+
 			return HANDLED_STATUS;
 		}
 		case EVT_EXPERIMENT_FINISH_PRE_SAMPLING:
@@ -226,11 +259,18 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		{
 			if(laser_int_current_idx < EXPERIMENT_LASER_CURRENT_SIZE)
 			{
-				laser_int_current_buffer[laser_int_current_idx++] = bsp_laser_get_int_current();
-				bsp_laser_int_trigger_adc();
+//				laser_int_current_buffer[laser_int_current_idx++] = bsp_laser_get_int_current();
+//				bsp_laser_int_trigger_adc();
+
+//				laser_int_current_buffer[laser_int_current_idx++] = laser_monitor_get_laser_current(0);
+				laser_int_current_buffer[laser_int_current_idx++] = bsp_laser_get_sample_int_current();
+//				exp_debug_print("%d\r\n", laser_int_current_buffer[laser_int_current_idx]);
 			}
 			else
+			{
+				laser_int_current_idx = 0;
 				SST_TimeEvt_disarm(&me->laser_current_trigger);
+			}
 			return HANDLED_STATUS;
 		}
 		default:

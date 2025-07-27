@@ -20,7 +20,7 @@
 
 DBC_MODULE_NAME("adc_monitor")
 
-#define MONITOR_TASK_INTERVAL			10
+#define MONITOR_TASK_INTERVAL			10		//mS
 #define MONITOR_TASK_NUM_EVENTS			4
 
 monitor_task_t monitor_task_inst;
@@ -35,7 +35,7 @@ static void monitor_task_init(monitor_task_t * const me, monitor_evt_t const * c
 {
 	bsp_ntc_adc_init();
 	bsp_laser_adc_init();
-	SST_TimeEvt_arm(&me->monitor_task_timer, MONITOR_TASK_INTERVAL, MONITOR_TASK_INTERVAL); //trigger every 10 tick
+	SST_TimeEvt_arm(&me->monitor_task_timer, MONITOR_TASK_INTERVAL, MONITOR_TASK_INTERVAL);
 }
 
 
@@ -47,17 +47,18 @@ void monitor_task_ctor(monitor_task_t * const me, monitor_init_t const * const i
 
     me->state = init->init_state;
     me->adc_data.laser_current[0] = 0;		//set current laser int = 0
+    SST_TimeEvt_disarm(&me->monitor_task_timer);
 }
 
 void adc_monitor_task_ctor_singleton()
 {
- circular_buffer_init(&monitor_e_queue,(uint8_t *)&monitor_e_buffer,sizeof(monitor_e_buffer),MONITOR_TASK_NUM_EVENTS,sizeof(monitor_evt_t));
- monitor_init_t init = {
+	circular_buffer_init(&monitor_e_queue,(uint8_t *)&monitor_e_buffer,sizeof(monitor_e_buffer),MONITOR_TASK_NUM_EVENTS,sizeof(monitor_evt_t));
+	monitor_init_t init = {
 		 .init_state = monitor_state_process_handler,
 		 .event_buffer = &monitor_e_queue,
 		 .current_evt = &current_monitor_e
- };
- monitor_task_ctor(&monitor_task_inst, &init);
+	};
+	monitor_task_ctor(&monitor_task_inst, &init);
 }
 
 void adc_monitor_task_start(uint8_t priority)
@@ -73,7 +74,9 @@ static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_
 		case EVT_MONITOR_NTC_TRIGGER_TIME:
 		{
 			bsp_ntc_trigger_adc();
-			bsp_laser_ext_trigger_adc();
+//			bsp_laser_ext_trigger_adc();
+//			bsp_laser_int_trigger_adc();
+			bsp_laser_trigger_adc();
 			return HANDLED_STATUS;
 		}
 
@@ -88,6 +91,7 @@ static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_
 
 		case EVT_MONITOR_LD_ADC_COMPLETED:
 		{
+			me->adc_data.laser_current[0] = bsp_laser_get_int_current();
 			me->adc_data.laser_current[1] = bsp_laser_get_ext_current();
 		}
 		default:

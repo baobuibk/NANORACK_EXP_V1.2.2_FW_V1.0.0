@@ -28,7 +28,7 @@ static spi_transmit_task_t *p_spi_transmit_task = &spi_transmit_task_inst;
  	 #define 	LWL_BUF_THRESHOLD 	(CONFIG_LWL_BUF_THRESHOLD)
 #else
     #define LWL_BUF_SIZE 			EXPERIMENT_BUFFER_BYTE_SIZE
-	#define LWL_BUF_THRESHOLD 		(LWL_BUF_SIZE - 60)
+	#define LWL_BUF_THRESHOLD 		(LWL_BUF_SIZE - 1024)
 #endif
 
 
@@ -141,7 +141,6 @@ void lwl_start() {
     // Xóa toàn bộ cấu trúc về 0 bằng memset
 	lwl_init(&lwl);
 	lwl_clear_notification();
-
 }
 
 
@@ -210,11 +209,13 @@ void LWL(uint8_t id, ...) {
 		{
     		lwl.lwl_working_buf_index = 1;
     		lwl.lwl_full_buf_index = 0;
+    		lwl.lwl_data_buf[0].put_idx = 0;
 		}
     	else
     	{
     		lwl.lwl_working_buf_index = 0;
     		lwl.lwl_full_buf_index = 1;
+    		lwl.lwl_data_buf[1].put_idx = 0;
     	}
 
     	lwl_buffer_full_notify();
@@ -224,12 +225,12 @@ void LWL(uint8_t id, ...) {
     va_end(ap);
 }
 
-int32_t cmd_lwl_test() {
-    LWL(TIMESTAMP, LWL_4(0x123456)); // 4 bytes: 0x56, 0x34, 0x12, 0x00
-    LWL(TEMPERATURE_NTC, LWL_2(0), LWL_2(1), LWL_2(2), LWL_2(3), LWL_2(4), LWL_2(5), LWL_2(6), LWL_2(7), LWL_2(8)); // 16 bytes
-    LWL(TEMPERATURE_AUTOMMODE_ON); // 0 bytes
-    return 0;
-}
+//int32_t cmd_lwl_test() {
+//    LWL(TIMESTAMP, LWL_4(0x123456)); // 4 bytes: 0x56, 0x34, 0x12, 0x00
+//    LWL(TEMPERATURE_NTC, LWL_2(0), LWL_2(1), LWL_2(2), LWL_2(3), LWL_2(4), LWL_2(5), LWL_2(6), LWL_2(7), LWL_2(8)); // 16 bytes
+//    LWL(TEMPERATURE_AUTOMMODE_ON); // 0 bytes
+//    return 0;
+//}
 
 __weak void lwl_buffer_full_notify()
 {

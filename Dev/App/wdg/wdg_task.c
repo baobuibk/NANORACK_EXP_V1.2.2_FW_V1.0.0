@@ -48,7 +48,7 @@ void wdg_task_ctor_singleton()
 static void wdg_task_init(wdg_task_t * const me, wdg_task_evt_t * const e)
 {
 	wdg_init();
-	wdg_register(WDG_SYSTEM_LOG_ID, WDG_SYSTEM_LOG_TIMEOUT);
+//	wdg_register(WDG_SYSTEM_LOG_ID, WDG_SYSTEM_LOG_TIMEOUT);
 	wdg_register(WDG_MINSHELL_ID, WDG_MINSHELL_TIMEOUT);
 	wdg_register(WDG_TEMP_CTRL_ID, WDG_TEMP_CTRL_TIMEOUT);
 	wdg_register(WDG_ADC_MONITOR_ID, WDG_ADC_MONITOR_TIMEOUT);

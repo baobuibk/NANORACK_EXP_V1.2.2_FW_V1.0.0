@@ -851,8 +851,6 @@ static void CMD_Set_Laser_Int_Current(EmbeddedCli *cli, char *args, void *contex
 	}
 
 	experiment_task_laser_set_current(p_experiment_task, 0, percent);
-//	bsp_laser_set_spi_mode(SPI_MODE_0);
-//	bsp_laser_int_set_current(percent);
 	cli_printf(cli, "OK\r\n");
 }
 
@@ -927,8 +925,6 @@ static void CMD_Int_Laser_Switch_On(EmbeddedCli *cli, char *args, void *context)
 		return;
 	}
 	experiment_task_int_laser_switchon(p_experiment_task,  laser_idx);
-//	bsp_laser_set_spi_mode(SPI_MODE_1);
-//	bsp_laser_int_switch_on(laser_idx);
 	cli_printf(cli, "OK\r\n");
 }
 
