@@ -1,0 +1,4 @@
+../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:39:6:bsp_ntc_adc_init	1
+../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:45:6:bsp_ntc_trigger_adc	1
+../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:50:9:bsp_ntc_get_temperature	1
+../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:56:6:bsp_ntc_dma_adc_irq	7

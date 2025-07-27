@@ -1,0 +1,15 @@
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:1512:26:LL_I2C_IsActiveFlag_TXE	2
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:1538:26:LL_I2C_IsActiveFlag_RXNE	2
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:1551:26:LL_I2C_IsActiveFlag_ADDR	2
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:1701:26:LL_I2C_IsActiveFlag_BUSY	2
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:1712:22:LL_I2C_ClearFlag_ADDR	1
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:1937:22:LL_I2C_AcknowledgeNextData	1
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:1950:22:LL_I2C_GenerateStartCondition	1
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:1961:22:LL_I2C_GenerateStopCondition	1
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:2185:25:LL_I2C_ReceiveData8	1
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:2197:22:LL_I2C_TransmitData8	1
+../Dev/Sensor_I2C/K33/k33.c:17:9:CheckSum	2
+../Dev/Sensor_I2C/K33/k33.c:27:14:K33_I2C_Read_RAM	23
+../Dev/Sensor_I2C/K33/k33.c:98:14:K33_BGrCalib	27
+../Dev/Sensor_I2C/K33/k33.c:161:14:K33_ZeroCalib	27
+../Dev/Sensor_I2C/K33/k33.c:224:14:K33_Read_Data	4

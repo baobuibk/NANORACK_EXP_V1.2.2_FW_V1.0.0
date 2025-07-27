@@ -93,6 +93,8 @@ static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_
 		{
 			me->adc_data.laser_current[0] = bsp_laser_get_int_current();
 			me->adc_data.laser_current[1] = bsp_laser_get_ext_current();
+
+			DBG(DBG_LEVEL_INFO, "%d		%d\r\n", me->adc_data.laser_current[0], me->adc_data.laser_current[1]);
 		}
 		default:
 			return IGNORED_STATUS;

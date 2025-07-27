@@ -1,0 +1,10 @@
+../Dev/MiddleWare/sst0_c/src/sst0.c:38:6:SST_init	4	static
+../Dev/MiddleWare/sst0_c/src/sst0.c:42:5:SST_Task_run	16	static,ignoring_inline_asm
+../Dev/MiddleWare/sst0_c/src/sst0.c:100:6:SST_Task_ctor	24	static
+../Dev/MiddleWare/sst0_c/src/sst0.c:113:6:SST_Task_start	16	static
+../Dev/MiddleWare/sst0_c/src/sst0.c:144:6:SST_Task_post	24	static,ignoring_inline_asm
+../Dev/MiddleWare/sst0_c/src/sst0.c:168:6:SST_TimeEvt_ctor	24	static
+../Dev/MiddleWare/sst0_c/src/sst0.c:183:6:SST_TimeEvt_arm	24	static,ignoring_inline_asm
+../Dev/MiddleWare/sst0_c/src/sst0.c:195:6:SST_TimeEvt_disarm	32	static,ignoring_inline_asm
+../Dev/MiddleWare/sst0_c/src/sst0.c:205:6:SST_TimeEvt_tick	32	static,ignoring_inline_asm
+../Dev/MiddleWare/sst0_c/src/sst0.c:229:10:SST_getTick	4	static

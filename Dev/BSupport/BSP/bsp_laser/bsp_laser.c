@@ -113,6 +113,7 @@ void bsp_laser_ext_switch_on(uint32_t channel_idx)
 void bsp_laser_ext_switch_off_all(void){
 	ADG1414_Chain_SwitchAllOff(&laser_ext);
 }
+
 /*
  * current source has 250 ohm shunt
  * with maximum voltage of 3V, we calculate the voltage for ADC and send to ADC
@@ -182,10 +183,6 @@ void bsp_laser_adc_init(void)
 //    LL_ADC_Enable(ADC2);
 //	LL_DMA_EnableStream(LASER_DMA, LASER_INT_DMA_STREAM);
 //	LL_DMA_EnableIT_TC(LASER_DMA, LASER_INT_DMA_STREAM);
-
-
-
-
 
 
 	// Disable stream DMA before configure
