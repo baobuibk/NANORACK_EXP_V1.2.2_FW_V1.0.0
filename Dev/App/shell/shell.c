@@ -153,6 +153,10 @@ void shell_task_init(shell_task_t * const me, shell_evt_t const * const e) {
     // Initialize the shell task
     // Set the initial state to process handler
     // Optionally, you can initialize other components or bindings here
+
+    cli_printf(shell_uart_cli, "\r\n========================================\r\n");
+    cli_printf(shell_uart_cli, "          EXPERIMENT BOARD \r\n");
+    cli_printf(shell_uart_cli, "========================================\r\n");
 }
 
 static void shell_task_dispatch(shell_task_t * const me, shell_evt_t const * const e)

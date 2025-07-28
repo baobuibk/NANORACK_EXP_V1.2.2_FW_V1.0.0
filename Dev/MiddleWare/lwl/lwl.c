@@ -258,7 +258,8 @@ __weak void lwl_clear_notification()
 
 void lwl_reinit_buffer(struct lwl_data_buffer * lwl_buffer)
 {
-	memset(lwl_buffer, 0, sizeof(struct lwl_data_buffer));
+//    memset(lwl->lwl_data_buf[0].p_buf, 0, LWL_BUF_SIZE);
+//    memset(lwl->lwl_data_buf[1].p_buf, 0, LWL_BUF_SIZE);
 }
 
 uint16_t * lwl_get_full_buffer_addr(void)

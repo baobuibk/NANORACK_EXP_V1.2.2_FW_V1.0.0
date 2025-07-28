@@ -13,6 +13,8 @@
 #include "app_signals.h"
 #include "error_codes.h"
 
+#include "stdlib.h"
+
 //#include "adc_monitor.h"
 //extern monitor_task_t monitor_task_inst;
 

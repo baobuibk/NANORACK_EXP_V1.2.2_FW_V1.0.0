@@ -12,6 +12,8 @@
 #include "sst.h"
 #include "configs.h"
 #include "error_codes.h"
+#include "bsp_bkram.h"
+
 struct soft_wdg
 {
     uint32_t period_ms;
@@ -28,8 +30,9 @@ struct wdg_no_init_vars {
     uint32_t reset_wdg_id;
 };
 
-static void EnableBackupRAM(void);
-static void DisableBackupRAM(void);
+//static void EnableBackupRAM(void);
+//static void DisableBackupRAM(void);
+
 void validate_no_init_vars(void);
 
 struct wdg_no_init_vars no_init_vars __attribute__((section (".bkpram")));
@@ -98,17 +101,14 @@ int32_t wdg_start_hdw_wdg(uint32_t timeout_ms)
 {
     int32_t ctr;
 
-    #define SANITY_CTR_LIMIT 1000000
-    #define LSI_FREQ_HZ 32000
-    #define WDG_PRESCALE 64
-    #define WDG_PRESCALE_SETTING LL_IWDG_PRESCALER_64
-    #define WDG_CLK_FREQ_HZ (LSI_FREQ_HZ/WDG_PRESCALE)
-    #define WDG_MAX_RL 0xfff
-    #define MS_PER_SEC 1000
-    #define WDG_MS_TO_RL(ms) \
-        (((ms) * WDG_CLK_FREQ_HZ + MS_PER_SEC/2)/MS_PER_SEC - 1)
-
-
+    #define SANITY_CTR_LIMIT 		1000000
+    #define LSI_FREQ_HZ 			32000
+    #define WDG_PRESCALE 			64
+    #define WDG_PRESCALE_SETTING 	LL_IWDG_PRESCALER_64
+    #define WDG_CLK_FREQ_HZ 		(LSI_FREQ_HZ/WDG_PRESCALE)
+    #define WDG_MAX_RL 				0xfff
+    #define MS_PER_SEC 				1000
+    #define WDG_MS_TO_RL(ms)		(((ms) * WDG_CLK_FREQ_HZ + MS_PER_SEC/2)/MS_PER_SEC - 1)
 
     ctr = WDG_MS_TO_RL(timeout_ms);
     if (ctr < 0)
@@ -139,7 +139,6 @@ int32_t wdg_start_hdw_wdg(uint32_t timeout_ms)
 void wdg_feed_hdw(void)
 {
     LL_IWDG_ReloadCounter(IWDG);
-
 }
 
 
@@ -181,20 +180,20 @@ void wdg_update()
 }
 
 
-static void EnableBackupRAM(void)
-{
-    HAL_PWR_EnableBkUpAccess();
-    __HAL_RCC_BKPSRAM_CLK_ENABLE();
-    HAL_PWREx_EnableBkUpReg();
-    while (!__HAL_PWR_GET_FLAG(PWR_FLAG_BRR));
-}
-
-static void DisableBackupRAM(void)
-{
-    HAL_PWREx_DisableBkUpReg();
-    __HAL_RCC_BKPSRAM_CLK_DISABLE();
-    HAL_PWR_DisableBkUpAccess();
-}
+//static void EnableBackupRAM(void)
+//{
+//    HAL_PWR_EnableBkUpAccess();
+//    __HAL_RCC_BKPSRAM_CLK_ENABLE();
+//    HAL_PWREx_EnableBkUpReg();
+//    while (!__HAL_PWR_GET_FLAG(PWR_FLAG_BRR));
+//}
+//
+//static void DisableBackupRAM(void)
+//{
+//    HAL_PWREx_DisableBkUpReg();
+//    __HAL_RCC_BKPSRAM_CLK_DISABLE();
+//    HAL_PWR_DisableBkUpAccess();
+//}
 
 void update_no_init_vars(uint32_t reset_cause, uint32_t WDG_ID)
 {
@@ -216,16 +215,6 @@ void validate_no_init_vars(void)
         no_init_vars.reset_cause = WDG_CAUSE_RESET_NORMAL;
         no_init_vars.reset_wdg_id = 0xFF;
     }
-
-//    if (no_init_vars.reset_cause == RESET_CAUSE_BOOTLOADER)
-//    {
-//
-//    }
-//
-//    else if (no_init_vars.reset_cause == RESET_CAUSE_NORMAL)
-//	{
-//
-//	}
 
     DisableBackupRAM();
     return;

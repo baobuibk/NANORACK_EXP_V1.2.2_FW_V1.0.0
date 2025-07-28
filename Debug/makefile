@@ -46,6 +46,8 @@ RM := rm -rf
 -include Dev/BSupport/BSP/bsp_ntc/subdir.mk
 -include Dev/BSupport/BSP/bsp_laser/subdir.mk
 -include Dev/BSupport/BSP/bsp_heater/subdir.mk
+-include Dev/BSupport/BSP/bsp_crc/subdir.mk
+-include Dev/BSupport/BSP/bsp_bkram/subdir.mk
 -include Dev/BSupport/BSP/Board/subdir.mk
 -include Dev/App/wdg/subdir.mk
 -include Dev/App/temperature_control/subdir.mk

@@ -20,6 +20,8 @@
 "./Dev/BSupport/BSP/Board/board.o"
 "./Dev/BSupport/BSP/Board/bsp_board_EXP_1_2_0.o"
 "./Dev/BSupport/BSP/Board/bsp_debug.o"
+"./Dev/BSupport/BSP/bsp_bkram/bsp_bkram.o"
+"./Dev/BSupport/BSP/bsp_crc/bsp_crc.o"
 "./Dev/BSupport/BSP/bsp_heater/bsp_heater.o"
 "./Dev/BSupport/BSP/bsp_laser/bsp_laser.o"
 "./Dev/BSupport/BSP/bsp_ntc/bsp_ntc.o"

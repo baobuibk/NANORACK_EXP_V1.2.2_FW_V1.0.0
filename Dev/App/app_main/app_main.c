@@ -19,6 +19,8 @@
 #include "system_reset.h"
 #include "spi_transmit.h"
 #include "wdg_task.h"
+#include "bsp_ntc.h"
+#include "bsp_laser.h"
 
 //DBC_MODULE_NAME("app_main")
 

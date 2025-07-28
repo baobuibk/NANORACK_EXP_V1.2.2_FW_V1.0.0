@@ -11,6 +11,7 @@
 #include "bsp_spi_ram.h"
 #include "main.h"
 #include "experiment_task.h"
+#include "bsp_crc.h"
 
 
 static SPI_SlaveDevice_t spi_device_instance = {
@@ -23,34 +24,21 @@ static SPI_SlaveDevice_t spi_device_instance = {
     .is_initialized = false
 };
 
-//static uint16_t UpdateCRC16_XMODEM(uint16_t crc, uint8_t byte) {
-//    const uint16_t polynomial = 0x1021; // CRC16 XMODEM
-//    crc ^= (uint16_t)byte << 8;
-//    for (uint8_t bit = 0; bit < 8; bit++) {
-//        if (crc & 0x8000) {
-//            crc = (crc << 1) ^ polynomial;
-//        } else {
-//            crc <<= 1;
-//        }
+//static uint32_t CRC_HW_Calculation(uint8_t *data_buffer, uint32_t length)
+//{
+//    if (length == 0) return 0;
+//    uint8_t* p_data = data_buffer;
+//
+//    CRC->CR = CRC_CR_RESET;
+//
+//    for (uint32_t i = 0; i < length; i ++)
+//    {
+//    	CRC->DR = *p_data;
+//    	p_data ++ ;
 //    }
-//    return crc;
+//
+//    return CRC->DR;
 //}
-
-static uint32_t CRC_HW_Calculation(uint8_t *data_buffer, uint32_t length)
-{
-    if (length == 0) return 0;
-    uint8_t* p_data = data_buffer;
-
-    CRC->CR = CRC_CR_RESET;
-
-    for (uint32_t i = 0; i < length; i ++)
-    {
-    	CRC->DR = *p_data;
-    	p_data ++ ;
-    }
-
-    return CRC->DR;
-}
 
 SPI_SlaveDevice_t* SPI_SlaveDevice_GetHandle(void)
 {

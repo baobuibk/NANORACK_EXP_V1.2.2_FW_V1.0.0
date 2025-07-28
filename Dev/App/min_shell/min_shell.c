@@ -179,6 +179,7 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
     switch (e->super.sig)
     {
     	case SIG_ENTRY:
+    		wdg_register(WDG_MINSHELL_ID, WDG_MINSHELL_TIMEOUT);
     		SST_TimeEvt_arm(&me->min_poll_timer, MIN_SHELL_POLL_INTERVAL_MS, MIN_SHELL_POLL_INTERVAL_MS);
     		return HANDLED_STATUS;
 
@@ -196,6 +197,7 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
             return HANDLED_STATUS;
 
         case EVT_MIN_BUSY:
+        	wdg_unregister(WDG_MINSHELL_ID);
         	SST_TimeEvt_disarm(&me->min_poll_timer);
         	bsp_handshake_min_busy();
         	min_shell_debug_print("Src: Min process ->> Event: min busy\r\n");
@@ -203,14 +205,23 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
         	return HANDLED_STATUS;
 
         case EVT_MIN_READY:
-        case EVT_MIN_BUSY_TIMEOUT:
+        	wdg_register(WDG_MINSHELL_ID, WDG_MINSHELL_TIMEOUT);
         	SST_TimeEvt_disarm(&me->min_busy_timeout_timer);
         	bsp_handshake_min_ready();
         	min_shell_debug_print("Src: Min process ->> Event: min ready\r\n");
         	SST_TimeEvt_arm(&me->min_poll_timer, MIN_SHELL_POLL_INTERVAL_MS, MIN_SHELL_POLL_INTERVAL_MS);
         	return HANDLED_STATUS;
 
+        case EVT_MIN_BUSY_TIMEOUT:
+        	wdg_register(WDG_MINSHELL_ID, WDG_MINSHELL_TIMEOUT);
+        	SST_TimeEvt_disarm(&me->min_busy_timeout_timer);
+        	bsp_handshake_min_ready();
+        	min_shell_debug_print("Src: Min process ->> Event: min busy timeout\r\n");
+        	SST_TimeEvt_arm(&me->min_poll_timer, MIN_SHELL_POLL_INTERVAL_MS, MIN_SHELL_POLL_INTERVAL_MS);
+        	return HANDLED_STATUS;
+
         case EVT_MIN_RESET_TO_OTA:
+        	wdg_unregister(WDG_MINSHELL_ID);
         	System_On_Bootloader_Reset();
         	return HANDLED_STATUS;
         default:
@@ -235,7 +246,7 @@ uint32_t min_shell_busy_clear(min_shell_task_t * const me)
 
 uint32_t min_shell_triger_reset(min_shell_task_t * const me)
 {
-	SST_TimeEvt_arm(&me->min_reset_timer, 1000, 0);
+	SST_TimeEvt_arm(&me->min_reset_timer, 2000, 0);
 	return ERROR_OK;
 }
 

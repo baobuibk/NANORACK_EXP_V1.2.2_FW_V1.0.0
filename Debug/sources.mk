@@ -35,6 +35,8 @@ Dev/App/system_log \
 Dev/App/temperature_control \
 Dev/App/wdg \
 Dev/BSupport/BSP/Board \
+Dev/BSupport/BSP/bsp_bkram \
+Dev/BSupport/BSP/bsp_crc \
 Dev/BSupport/BSP/bsp_heater \
 Dev/BSupport/BSP/bsp_laser \
 Dev/BSupport/BSP/bsp_ntc \

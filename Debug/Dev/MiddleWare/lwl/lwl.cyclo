@@ -7,5 +7,5 @@
 ../Dev/MiddleWare/lwl/lwl.c:236:13:lwl_buffer_full_notify	1
 ../Dev/MiddleWare/lwl/lwl.c:241:13:lwl_clear_notification	1
 ../Dev/MiddleWare/lwl/lwl.c:259:6:lwl_reinit_buffer	1
-../Dev/MiddleWare/lwl/lwl.c:264:12:lwl_get_full_buffer_addr	1
-../Dev/MiddleWare/lwl/lwl.c:269:10:lwl_log_send_to_spi	1
+../Dev/MiddleWare/lwl/lwl.c:265:12:lwl_get_full_buffer_addr	1
+../Dev/MiddleWare/lwl/lwl.c:270:10:lwl_log_send_to_spi	1

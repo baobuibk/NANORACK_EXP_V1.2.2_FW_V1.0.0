@@ -17,6 +17,10 @@
 #include "configs.h"
 #include "wdg.h"
 #include "bsp_ntc.h"
+#include "bsp_bkram.h"
+
+#include "stdbool.h"
+#include "string.h"
 
 DBC_MODULE_NAME("tec_control")
 
@@ -29,8 +33,10 @@ DBC_MODULE_NAME("tec_control")
 #define TEMP_TARGET_DEFAULT							250
 #define TEMP_LIM_MAX_DEFAULT						1000
 
-#define TEMP_PRI_NTC_DEFAULT						1
+#define TEMP_PRI_NTC_DEFAULT						0
 #define TEMP_SEC_NTC_DEFAULT						1
+
+#define TEMP_AUTO_RECOVER							1
 
 #define TEMP_TEC_VOLT_DEFAULT						600
 #define TEMP_HTR_DUTY_DEFAULT						20
@@ -40,6 +46,25 @@ DBC_MODULE_NAME("tec_control")
 
 #define TEMP_OVERRIDE_TEC_DEFAULT					4
 
+#define TEMP_AUTO_ENABLE_DEFAULT					1
+
+
+//////////////////////// BK RAM ////////////////////////
+
+struct temperature_control_profile_backup_RAM_t backup_ram_profile  __attribute__((section (".bkpram")));
+
+#define TEMP_CTRL_VARS_MAGIC			0xbabababa
+
+static void temp_ctrl_update_profile(void);
+
+static bool temp_ctrl_validate_profile(void);
+
+//////////////////////// BK RAM ////////////////////////
+
+///////////////////// CLI CONSOLE //////////////////////
+#include "embedded_cli.h"
+extern EmbeddedCli * shell_uart_cli;
+///////////////////// CLI CONSOLE //////////////////////
 
 temperature_control_task_t temperature_control_task_inst ;
 circular_buffer_t temperature_control_task_event_queue = {0}; // Circular buffer to hold shell events
@@ -48,6 +73,7 @@ static temperature_control_evt_t temperature_control_task_event_buffer[TEMPERATU
 static temperature_control_evt_t const entry_evt = {.super = {.sig = SIG_ENTRY} };
 static temperature_control_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
 
+static state_t temperature_control_default_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
 static state_t temperature_control_state_manual_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
 static state_t temperature_control_state_cooling_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
 static state_t temperature_control_state_wait_heat_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
@@ -57,24 +83,61 @@ static state_t temperature_control_state_ntc_error_handler(temperature_control_t
 
 static void temperature_control_task_init(temperature_control_task_t * const me,temperature_control_evt_t const * const e)
 {
-	temp_control_debug_print("temperature control start auto mode with default parameters\r\n");
 	temperature_control_power_control(me, 1);
-	temperature_control_auto_tec_init_all(me);
-	me->temperature_control_profile.profile_min_temp		= TEMP_LIM_MIN_DEFAULT;
-	me->temperature_control_profile.setpoint 				= TEMP_TARGET_DEFAULT;
-	me->temperature_control_profile.profile_max_temp		= TEMP_LIM_MAX_DEFAULT;
+	temperature_control_auto_tec_init_all(me);		// Init all TEC
 
-	me->temperature_control_profile.pri_NTC_idx				= TEMP_PRI_NTC_DEFAULT;
-	me->temperature_control_profile.sec_NTC_idx				= TEMP_SEC_NTC_DEFAULT;
+	if (temp_ctrl_validate_profile())
+	{
+		EnableBackupRAM();
 
-	me->temperature_control_profile.tec_voltage				= TEMP_TEC_VOLT_DEFAULT;
-	me->temperature_control_profile.heater_duty_cycle		= TEMP_HTR_DUTY_DEFAULT;
+		// Temp control profile
+		temperature_control_task_inst.temperature_control_profile.setpoint = backup_ram_profile.temp_control.setpoint;
+		temperature_control_task_inst.temperature_control_profile.profile_min_temp = backup_ram_profile.temp_control.profile_min_temp;
+		temperature_control_task_inst.temperature_control_profile.profile_max_temp = backup_ram_profile.temp_control.profile_max_temp;
 
-	me->temperature_control_profile.profile_tec_set			= TEMP_TEC_RUNNING_DEFAULT;
-	me->temperature_control_profile.profile_heater_set		= TEMP_HTR_RUNNING_DEFAULT;
+		temperature_control_task_inst.temperature_control_profile.pri_NTC_idx = backup_ram_profile.temp_control.pri_NTC_idx;
+		temperature_control_task_inst.temperature_control_profile.sec_NTC_idx = backup_ram_profile.temp_control.sec_NTC_idx;
 
-	me->temperature_tec_ovr_profile.profile_tec_ovr_set		= TEMP_OVERRIDE_TEC_DEFAULT;
-	me->temperature_tec_ovr_profile.tec_ovr_voltage			= TEMP_TEC_VOLT_DEFAULT;
+		temperature_control_task_inst.temperature_control_profile.auto_recover = backup_ram_profile.temp_control.auto_recover;
+
+		temperature_control_task_inst.temperature_control_profile.profile_tec_set = backup_ram_profile.temp_control.profile_tec_set;
+		temperature_control_task_inst.temperature_control_profile.tec_voltage = backup_ram_profile.temp_control.tec_voltage;
+
+		temperature_control_task_inst.temperature_control_profile.profile_heater_set = backup_ram_profile.temp_control.profile_heater_set;
+		temperature_control_task_inst.temperature_control_profile.heater_duty_cycle = backup_ram_profile.temp_control.heater_duty_cycle;
+
+		temperature_control_task_inst.temperature_control_profile.auto_enable = backup_ram_profile.temp_control.auto_enable;
+
+		// Tec override profile
+		temperature_control_task_inst.temperature_tec_ovr_profile.profile_tec_ovr_set = backup_ram_profile.tec_ovr_control.profile_tec_ovr_set;
+		temperature_control_task_inst.temperature_tec_ovr_profile.tec_ovr_voltage = backup_ram_profile.tec_ovr_control.tec_ovr_voltage;
+
+	    DisableBackupRAM();
+	}
+	else
+	{
+		// Default setting for temp control
+		me->temperature_control_profile.setpoint 				= TEMP_TARGET_DEFAULT;
+		me->temperature_control_profile.profile_min_temp		= TEMP_LIM_MIN_DEFAULT;
+		me->temperature_control_profile.profile_max_temp		= TEMP_LIM_MAX_DEFAULT;
+
+		me->temperature_control_profile.pri_NTC_idx				= TEMP_PRI_NTC_DEFAULT;
+		me->temperature_control_profile.sec_NTC_idx				= TEMP_SEC_NTC_DEFAULT;
+
+		me->temperature_control_profile.auto_recover			= TEMP_AUTO_RECOVER;
+
+		me->temperature_control_profile.profile_tec_set			= TEMP_TEC_RUNNING_DEFAULT;
+		me->temperature_control_profile.profile_heater_set		= TEMP_HTR_RUNNING_DEFAULT;
+
+		me->temperature_control_profile.tec_voltage				= TEMP_TEC_VOLT_DEFAULT;
+		me->temperature_control_profile.heater_duty_cycle		= TEMP_HTR_DUTY_DEFAULT;
+
+		me->temperature_control_profile.auto_enable				= TEMP_AUTO_ENABLE_DEFAULT;
+
+		// Default setting for tec override
+		me->temperature_tec_ovr_profile.profile_tec_ovr_set		= TEMP_OVERRIDE_TEC_DEFAULT;
+		me->temperature_tec_ovr_profile.tec_ovr_voltage			= TEMP_TEC_VOLT_DEFAULT;
+	}
 
 	SST_TimeEvt_arm(&me->temperature_control_task_timeout_timer, TEMPERATURE_CONTROL_TASK_TIME_LOOP, TEMPERATURE_CONTROL_TASK_TIME_LOOP);
 }
@@ -95,12 +158,6 @@ void temperature_control_task_ctor(temperature_control_task_t * const me, temper
     SST_TimeEvt_ctor(&me->temperature_control_task_timeout_timer, EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP, &(me->super));
     me->state = init->init_state; // Set the initial state to process handler
     me->tec_inited = 0;
-    me->temperature_control_profile.profile_tec_set = 0; // all off
-    me->temperature_control_profile.profile_heater_set = 0; // all off
-    me->temperature_tec_ovr_profile.profile_tec_ovr_set = 4; // take index > 3 (out range)
-    me->temperature_control_profile.auto_recover = 0;
-    me->temperature_control_profile.profile_max_temp = 1000;
-    me->temperature_control_profile.profile_min_temp = 0;
     for (uint32_t i = 0; i< 4; i++) me->tec_table[i] = init->tec_table[i];
     SST_TimeEvt_disarm(&me->temperature_control_task_timeout_timer); // Disarm the timeout timer
 }
@@ -109,7 +166,7 @@ void temperature_control_task_singleton_ctor(void)
 {
 	circular_buffer_init(&temperature_control_task_event_queue, (uint8_t * )&temperature_control_task_event_buffer, sizeof(temperature_control_task_event_buffer), TEMPERATURE_CONTROL_TASK_NUM_EVENTS, sizeof(temperature_control_evt_t));
 	temperature_control_task_init_t init = {
-			.init_state = temperature_control_state_wait_cool_handler,
+			.init_state = temperature_control_default_handler,
 			.current_evt = &temperature_control_current_event,
 			.temperature_control_task_event_buffer = &temperature_control_task_event_queue,
 			.tec_table = {&tec_0, &tec_1, &tec_2, &tec_3}
@@ -120,6 +177,21 @@ void temperature_control_task_singleton_ctor(void)
 void temperature_control_task_start(uint8_t priority)
 {
 	SST_Task_start(&temperature_control_task_inst.super,priority);
+}
+
+static state_t temperature_control_default_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e)
+{
+	if (me->temperature_control_profile.auto_enable)
+	{
+		me->state = temperature_control_state_cooling_handler;
+		cli_printf(shell_uart_cli, "Temperature control: Auto mode activated.\r\n");
+	}
+	else
+	{
+		me->state = temperature_control_state_manual_handler;
+		cli_printf(shell_uart_cli, "Temperature control: Manual mode engaged.\r\n");
+	}
+	return HANDLED_STATUS;
 }
 
 static state_t temperature_control_state_manual_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e)
@@ -539,6 +611,9 @@ static state_t temperature_control_state_ntc_error_handler(temperature_control_t
 // CMD transmit state (event)
 uint32_t temperature_control_man_mode_set(temperature_control_task_t *const me)
 {
+	me->temperature_control_profile.auto_enable  = 0;
+	temp_ctrl_update_profile();
+
 	temperature_control_evt_t man_mode_evt = {.super = {.sig = EVT_TEMPERATURE_CONTROL_HAS_CMD},
 												.cmd = TEMPERATURE_MANMODE_START,
 												};
@@ -547,6 +622,9 @@ uint32_t temperature_control_man_mode_set(temperature_control_task_t *const me)
 }
 uint32_t temperature_control_auto_mode_set(temperature_control_task_t *const me)
 {
+	me->temperature_control_profile.auto_enable  = 1;
+	temp_ctrl_update_profile();
+
 	temperature_control_evt_t auto_mode_evt = {.super = {.sig = EVT_TEMPERATURE_CONTROL_HAS_CMD},
 												.cmd = TEMPERATURE_AUTOMODE_START, };
 	SST_Task_post(&me->super, (SST_Evt *)&auto_mode_evt);
@@ -622,6 +700,8 @@ uint32_t temperature_control_profile_tec_register(temperature_control_task_t *co
 	if (tec_idx > 3) return ERROR_NOT_SUPPORTED;
 
 	me->temperature_control_profile.profile_tec_set |= (1 << tec_idx);
+	temp_ctrl_update_profile();
+
 	return ERROR_OK;
 }
 uint32_t temperature_control_profile_tec_unregister(temperature_control_task_t *const me,uint8_t tec_idx)
@@ -629,6 +709,8 @@ uint32_t temperature_control_profile_tec_unregister(temperature_control_task_t *
 	if (tec_idx > 3) return ERROR_NOT_SUPPORTED;
 
 	me->temperature_control_profile.profile_tec_set &= ~(1 << tec_idx);
+	temp_ctrl_update_profile();
+
 	return ERROR_OK;
 }
 uint8_t temperature_control_profile_tec_get(temperature_control_task_t *const me)
@@ -641,8 +723,10 @@ uint32_t temperature_control_profile_heater_duty_set( temperature_control_task_t
 {
 	if (duty > 100) return ERROR_NOT_SUPPORTED;
 
-		me->temperature_control_profile.heater_duty_cycle = duty;
-		return ERROR_OK;
+	me->temperature_control_profile.heater_duty_cycle = duty;
+	temp_ctrl_update_profile();
+
+	return ERROR_OK;
 }
 uint8_t temperature_control_profile_heater_duty_get( temperature_control_task_t *const me)
 {
@@ -654,15 +738,19 @@ uint32_t temperature_control_profile_heater_register( temperature_control_task_t
 {
 	if (heater_idx > 3) return ERROR_NOT_SUPPORTED;
 
-		me->temperature_control_profile.profile_heater_set |= (1 << heater_idx);
-		return ERROR_OK;
+	me->temperature_control_profile.profile_heater_set |= (1 << heater_idx);
+	temp_ctrl_update_profile();
+
+	return ERROR_OK;
 }
 uint32_t temperature_control_profile_heater_unregister(temperature_control_task_t *const me,uint8_t heater_idx)
 {
 	if (heater_idx > 3) return ERROR_NOT_SUPPORTED;
 
-		me->temperature_control_profile.profile_heater_set &= ~(1 << heater_idx);
-		return ERROR_OK;
+	me->temperature_control_profile.profile_heater_set &= ~(1 << heater_idx);
+	temp_ctrl_update_profile();
+
+	return ERROR_OK;
 }
 uint8_t temperature_control_profile_heater_profile_get( temperature_control_task_t *const me)
 {
@@ -673,6 +761,7 @@ uint8_t temperature_control_profile_heater_profile_get( temperature_control_task
 void temperature_control_profile_setpoint_set(temperature_control_task_t *const me, int16_t	setpoint)
 {
 	me->temperature_control_profile.setpoint = setpoint;
+	temp_ctrl_update_profile();
 }
 int16_t temperature_control_profile_setpoint_get(temperature_control_task_t *const me)
 {
@@ -684,8 +773,11 @@ uint32_t temperature_control_profile_ntc_register( temperature_control_task_t *c
 {
 	if (pri_ntc_idx > 7) return ERROR_NOT_SUPPORTED;
 	if (sec_ntc_idx > 7) return ERROR_NOT_SUPPORTED;
+
 	me->temperature_control_profile.pri_NTC_idx = pri_ntc_idx;
 	me->temperature_control_profile.sec_NTC_idx = sec_ntc_idx;
+	temp_ctrl_update_profile();
+
 	return ERROR_OK;
 }
 void temperature_control_profile_ntc_get( temperature_control_task_t *const me, uint8_t * ntc_ref_ptr)
@@ -699,6 +791,7 @@ void temperature_control_profile_temp_lim_set(temperature_control_task_t *const 
 {
 	me->temperature_control_profile.profile_max_temp = max_temp;
 	me->temperature_control_profile.profile_min_temp = min_temp;
+	temp_ctrl_update_profile();
 }
 void temperature_control_profile_temp_lim_get(temperature_control_task_t *const me, int16_t * limt_temp_ptr)
 {
@@ -747,7 +840,10 @@ void temperature_control_auto_heater_disable_output(temperature_control_task_t *
 uint32_t temperature_control_profile_set_auto_recover(temperature_control_task_t *const me, uint32_t status)
 {
 	if(status > 1) return ERROR_NOT_SUPPORTED;
+
 	me->temperature_control_profile.auto_recover = status;
+	temp_ctrl_update_profile();
+
 	return ERROR_OK;
 }
 uint32_t temperature_control_profile_get_auto_recover(temperature_control_task_t *const me)
@@ -762,12 +858,18 @@ uint32_t temperature_profile_tec_ovr_register(temperature_control_task_t *const 
 		me->temperature_tec_ovr_profile.profile_tec_ovr_set = 0xFF;
 	else
 		me->temperature_tec_ovr_profile.profile_tec_ovr_set = tec_idx;
+
+	temp_ctrl_update_profile();
+
 	return ERROR_OK;
 }
 uint32_t temperature_profile_tec_ovr_voltage_set(temperature_control_task_t *const me, uint16_t	volt_mv)
 {
 	if ((volt_mv < 500) || (volt_mv > 3000)) return ERROR_NOT_SUPPORTED;
+
 	me->temperature_tec_ovr_profile.tec_ovr_voltage = volt_mv;
+	temp_ctrl_update_profile();
+
 	return ERROR_OK;
 }
 uint32_t temperature_profile_tec_ovr_enable(temperature_control_task_t *const me)
@@ -838,7 +940,9 @@ uint32_t temperature_control_tec_enable_output(temperature_control_task_t * cons
 uint32_t temperature_control_profile_tec_voltage_set(temperature_control_task_t *const me, uint16_t	volt_mv)
 {
 	if ((volt_mv < 500) || (volt_mv > 3000)) return ERROR_NOT_SUPPORTED;
+
 	me->temperature_control_profile.tec_voltage = volt_mv;
+	temp_ctrl_update_profile();
 
 	return ERROR_OK;
 }
@@ -851,7 +955,10 @@ uint16_t temperature_control_profile_tec_voltage_get( temperature_control_task_t
 uint32_t temperature_control_set_profile(temperature_control_task_t *const me, uint16_t target_temp, uint16_t min_temp, uint16_t max_temp, \
 		uint8_t pri_ntc_id, uint8_t sec_ntc_id, uint8_t auto_recover, uint8_t tec_pos_mask, uint8_t htr_pos_mask, uint16_t tec_mV, uint8_t htr_duty)
 {
+	// Back to manual control mode
 	temperature_control_man_mode_set(&temperature_control_task_inst);
+
+	// Set profile
 	me->temperature_control_profile.setpoint = target_temp;
 	me->temperature_control_profile.profile_min_temp = min_temp;
 	me->temperature_control_profile.profile_max_temp = max_temp;
@@ -859,8 +966,59 @@ uint32_t temperature_control_set_profile(temperature_control_task_t *const me, u
 	me->temperature_control_profile.sec_NTC_idx = sec_ntc_id;
 	me->temperature_control_profile.auto_recover = auto_recover;
 	me->temperature_control_profile.profile_tec_set = tec_pos_mask;
-	me->temperature_control_profile.profile_heater_set = htr_pos_mask;
 	me->temperature_control_profile.tec_voltage = tec_mV;
+	me->temperature_control_profile.profile_heater_set = htr_pos_mask;
 	me->temperature_control_profile.heater_duty_cycle = htr_duty;
+	temp_ctrl_update_profile();
+
 	return ERROR_OK;
+}
+
+
+
+static void temp_ctrl_update_profile(void)
+{
+	EnableBackupRAM();
+	// Magic key
+	backup_ram_profile.magic = TEMP_CTRL_VARS_MAGIC;
+	// Temp control profile
+	backup_ram_profile.temp_control.setpoint = temperature_control_task_inst.temperature_control_profile.setpoint;
+	backup_ram_profile.temp_control.profile_min_temp = temperature_control_task_inst.temperature_control_profile.profile_min_temp;
+	backup_ram_profile.temp_control.profile_max_temp = temperature_control_task_inst.temperature_control_profile.profile_max_temp;
+
+	backup_ram_profile.temp_control.pri_NTC_idx = temperature_control_task_inst.temperature_control_profile.pri_NTC_idx;
+	backup_ram_profile.temp_control.sec_NTC_idx = temperature_control_task_inst.temperature_control_profile.sec_NTC_idx;
+
+	backup_ram_profile.temp_control.auto_recover = temperature_control_task_inst.temperature_control_profile.auto_recover;
+
+	backup_ram_profile.temp_control.profile_tec_set = temperature_control_task_inst.temperature_control_profile.profile_tec_set;
+	backup_ram_profile.temp_control.tec_voltage = temperature_control_task_inst.temperature_control_profile.tec_voltage;
+
+	backup_ram_profile.temp_control.profile_heater_set = temperature_control_task_inst.temperature_control_profile.profile_heater_set;
+	backup_ram_profile.temp_control.heater_duty_cycle = temperature_control_task_inst.temperature_control_profile.heater_duty_cycle;
+
+	backup_ram_profile.temp_control.auto_enable = temperature_control_task_inst.temperature_control_profile.auto_enable;
+
+	// Tec override profile
+	backup_ram_profile.tec_ovr_control.profile_tec_ovr_set = temperature_control_task_inst.temperature_tec_ovr_profile.profile_tec_ovr_set;
+	backup_ram_profile.tec_ovr_control.tec_ovr_voltage = temperature_control_task_inst.temperature_tec_ovr_profile.tec_ovr_voltage;
+
+	// CRC
+    uint32_t crc = 0x0000;
+//    crc = CRC_HW_Calculation((uint8_t *), size);
+	backup_ram_profile.crc = crc;
+
+    DisableBackupRAM();
+}
+
+static bool temp_ctrl_validate_profile(void)
+{
+	EnableBackupRAM();
+    if (backup_ram_profile.magic != TEMP_CTRL_VARS_MAGIC)
+    {
+        memset(&backup_ram_profile, 0, sizeof(backup_ram_profile));
+        return false;
+    }
+    DisableBackupRAM();
+    return true;
 }

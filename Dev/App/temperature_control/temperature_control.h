@@ -12,8 +12,13 @@
 
 
 //#define TEMPERATURE_CONTROL_DEBUG_PRINTING
+#ifdef TEMPERATURE_CONTROL_DEBUG_PRINTING
+    #define temp_control_debug_print(...) DBG(0,__VA_ARGS__)
+#else
+	#define temp_control_debug_print(...)
+#endif
 
-#define TEMPERATURE_MAX_ERROR 50		//5.0C
+#define TEMPERATURE_MAX_ERROR						50		//5.0C
 
 #define TEMPERATURE_CONTROl_COMMAND_PAYLOAD_LENGTH	15
 #include "sst.h"
@@ -25,6 +30,7 @@ typedef struct temperature_control_task_init_t temperature_control_task_init_t;
 typedef struct single_tec_data_t single_tec_data_t;
 typedef struct temperature_control_profile_t temperature_control_profile_t;
 typedef struct temperature_tec_ovr_profile_t temperature_tec_ovr_profile_t;
+
 #define TEC_COOL 0
 #define TEC_HEAT 1
 
@@ -55,11 +61,20 @@ struct temperature_control_profile_t{
 	uint8_t heater_duty_cycle; 	// duty cycle for each heater, 0-100%
 	int16_t setpoint;
     uint16_t tec_voltage; // output voltage for each tec
+	uint32_t auto_enable;
 };
 
 struct temperature_tec_ovr_profile_t{
 	uint8_t profile_tec_ovr_set;	//index of tec ovr set
     uint16_t tec_ovr_voltage; // output voltage for each tec
+};
+
+struct temperature_control_profile_backup_RAM_t
+{
+	uint32_t magic;
+	temperature_control_profile_t temp_control;
+	temperature_tec_ovr_profile_t tec_ovr_control;
+	uint32_t crc;
 };
 
 struct temperature_control_task_t {
@@ -73,6 +88,7 @@ struct temperature_control_task_t {
     uint8_t tec_inited;						//low 4 bits for TEC init status, high 4 bit for output status
     temperature_control_profile_t temperature_control_profile;
     temperature_tec_ovr_profile_t temperature_tec_ovr_profile;
+    uint32_t auto_enable;
 };
 
 struct temperature_control_task_init_t {
@@ -81,13 +97,6 @@ struct temperature_control_task_init_t {
 	circular_buffer_t * temperature_control_task_event_buffer;
 	struct lt8722_dev * tec_table[4];
 };
-
-
-#ifdef TEMPERATURE_CONTROL_DEBUG_PRINTING
-    #define temp_control_debug_print(...) DBG(0,__VA_ARGS__)
-#else
-	#define temp_control_debug_print(...)
-#endif
 
 
 void temperature_control_task_singleton_ctor(void);

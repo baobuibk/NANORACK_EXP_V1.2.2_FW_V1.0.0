@@ -20,8 +20,33 @@
 #include "bsp_handshake.h"
 #include "../spi_transmit/spi_transmit.h"
 #include "adc_monitor.h"
+#include "bsp_bkram.h"
 
 DBC_MODULE_NAME("experiment_task")
+
+
+//////////////////////// BK RAM ////////////////////////
+struct experiment_profile_backup_RAM_t
+{
+	uint32_t magic;
+	uint32_t sampling_rate;										// Hz		(Sample/second)
+	uint16_t pre_time; //time before switching					// mS
+	uint16_t experiment_time;//time when switch the laser on	// mS
+	uint16_t post_time; //time after switching off the laser	// mS
+
+	uint32_t crc;
+};
+
+struct experiment_profile_backup_RAM_t experiment_profile_bkram  __attribute__((section (".bkpram")));
+
+#define EXPERIMENT_VARS_MAGIC			0xbcbcbcbc
+
+static void experiment_update_profile(void);
+
+static bool experiment_validate_profile(void);
+
+//////////////////////// BK RAM ////////////////////////
+
 
 #define EXPERIMENT_TASK_NUM_EVENTS  		10
 #define EXPERIMENT_TASK_AQUI_TIMEOUT		20000
@@ -70,6 +95,26 @@ static void experiment_task_init(experiment_task_t * const me,experiment_evt_t c
 	bsp_photodiode_init();
 	me->laser_spi_mode = 1;
 	me->photodiode_mode = ADC_MODE;
+	if (experiment_validate_profile())
+	{
+		EnableBackupRAM();
+		me->profile.sampling_rate = experiment_profile_bkram.sampling_rate;
+		me->profile.pre_time = experiment_profile_bkram.pre_time;
+		me->profile.experiment_time = experiment_profile_bkram.experiment_time;
+		me->profile.post_time = experiment_profile_bkram.post_time;
+
+		DisableBackupRAM();
+		me->profile.num_sample = me->profile.sampling_rate * (me->profile.pre_time + me->profile.experiment_time + me->profile.post_time) / 1000000;
+	}
+	else
+	{
+		me->profile.sampling_rate = 100000;
+		me->profile.pre_time = 100;
+		me->profile.experiment_time = 4000;
+		me->profile.post_time = 100;
+		me->profile.num_sample = 420;
+	}
+
 }
 static void experiment_task_dispatch(experiment_task_t * const me,experiment_evt_t const * const e)
 {
@@ -116,25 +161,7 @@ static state_t experiment_task_state_manual_handler(experiment_task_t * const me
 	{
 		case SIG_ENTRY:
 		{
-			//exp_debug_print("entry experiment_task_state_manual_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer); //disable the timeout
-
-
-
-
-//			for (int i = 0; i < 1024; i++) {
-//			    exp_debug_print("%3d ", laser_int_current_buffer[i]);  // In 3 chữ số, cách nhau bởi dấu cách
-//			    if ((i + 1) % 16 == 0) {
-//			        exp_debug_print("\r\n");  // Xuống dòng sau mỗi 16 phần tử
-//			    }
-//			}
-//			// Nếu tổng phần tử không chia hết cho 16, in thêm dòng xuống cuối
-//			if (1024 % 16 != 0) {
-//			    exp_debug_print("\r\n");
-//			}
-
-
-
 			return HANDLED_STATUS;
 		}
 
@@ -183,34 +210,22 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			init_photo_time.sampling_rate = me->profile.sampling_rate;
 			init_photo_time.pos = me->profile.pos;
 
-
-
-//			LL_mDelay(10);
-//			bsp_laser_int_set_current(me->profile.laser_percent);
-//			bsp_laser_int_set_current(20);
-//			LL_mDelay(10);
-
 			experiment_task_laser_set_current(me, 0, me->profile.laser_percent);
+			bsp_photo_set_time(&init_photo_time);
 
-			bsp_photo_set_time(& init_photo_time);
-
-//			SST_TimeEvt_arm(&me->laser_current_trigger, EXPERIMENT_LASER_CURRENT_POLL_TIME, EXPERIMENT_LASER_CURRENT_POLL_TIME);
-//			laser_int_current_idx = 0;
 			bsp_laser_collect_current_data_to_buffer();
-
 			bsp_photodiode_sample_start();
 			me->sub_state = S_PRE_SAMPLING;
 			return HANDLED_STATUS;
 		}
+
 		case SIG_EXIT:
 		{
 			exp_debug_print("exit experiment_task_state_data_aqui_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer);
-
-//			SST_TimeEvt_disarm(&me->laser_current_trigger);
-
 			return HANDLED_STATUS;
 		}
+
 		case EVT_EXPERIMENT_FINISH_PRE_SAMPLING:
 		{
 			exp_debug_print("EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
@@ -222,6 +237,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 
 			return HANDLED_STATUS;
 		}
+
 		case EVT_EXPERIMENT_FINISH_SAMPLING:
 		{
 			exp_debug_print("EXPERIMENT_FINISH_SAMPLING\r\n");
@@ -232,6 +248,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			else me->sub_state = S_AQUI_ERROR;
 			return HANDLED_STATUS;
 		}
+
 		case EVT_EXPERIMENT_FINISH_POST_SAMPLING:
 		{
 			exp_debug_print("EXPERIMENT_FINISH_POST_SAMPLING\r\n");
@@ -254,30 +271,6 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			me->state = experiment_task_state_manual_handler;
 			return TRAN_STATUS;
 		}
-
-
-
-//		case EVT_EXPERIMENT_LASER_ADC_POLL_TIME:
-//		{
-//			if(laser_int_current_idx < EXPERIMENT_LASER_CURRENT_SIZE)
-//			{
-////				laser_int_current_buffer[laser_int_current_idx++] = bsp_laser_get_int_current();
-////				bsp_laser_int_trigger_adc();
-//
-////				laser_int_current_buffer[laser_int_current_idx++] = laser_monitor_get_laser_current(0);
-//
-//				laser_int_current_buffer[laser_int_current_idx++] = bsp_laser_get_sample_int_current();
-//				DBG(DBG_LEVEL_INFO, "   %d	\r\n", laser_int_current_buffer[laser_int_current_idx]);
-//			}
-//			else
-//			{
-//				laser_int_current_idx = 0;
-//				SST_TimeEvt_disarm(&me->laser_current_trigger);
-//			}
-//			return HANDLED_STATUS;
-//		}
-
-
 
 		default:
 			return IGNORED_STATUS;
@@ -506,19 +499,24 @@ uint32_t experiment_task_set_pda(experiment_task_t * me,experiment_profile_t * p
 {
 	if ((profile->sampling_rate == 0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
 	if (profile->num_sample > 2048) return ERROR_NOT_SUPPORTED;
+
 	me->profile.sampling_rate = profile->sampling_rate;
 	me->profile.pre_time = profile->pre_time;
 	me->profile.experiment_time = profile->experiment_time;
 	me->profile.post_time = profile->post_time;
 	me->profile.num_sample = profile->num_sample;
 	me->profile.period = profile->period;
+	experiment_update_profile();
+
 	return ERROR_OK;
 }
 
 uint32_t experiment_task_set_intensity(experiment_task_t * me,experiment_profile_t * profile)
 {
 	if ((profile->laser_percent > 100 ) ) return ERROR_NOT_SUPPORTED;
+
 	me->profile.laser_percent = profile->laser_percent;
+
 	return ERROR_OK;
 }
 
@@ -536,7 +534,10 @@ uint32_t experiment_task_set_profile(experiment_task_t * me,experiment_profile_t
 	if ((profile->laser_percent > 100 ) ) return ERROR_NOT_SUPPORTED;
 	if (profile->num_sample > 2048) return ERROR_NOT_SUPPORTED;
 	if (profile->period == 0) return ERROR_NOT_SUPPORTED;
+
 	me->profile = *profile;
+	experiment_update_profile();
+
 	return ERROR_OK;
 }
 
@@ -565,11 +566,36 @@ uint32_t experiment_sample_send_to_spi(experiment_task_t * const me, uint16_t ch
 	return ERROR_OK;
 }
 
-//uint32_t experiment_current_send_to_spi(experiment_task_t * const me)
-//{
-//	// Cấu hình địa chỉ buffer
-//	SPI_SlaveDevice_CollectData((uint16_t *)laser_int_current_buffer);
-//	// Bật tín hiệu DataReady
-//	spi_transmit_task_data_ready(p_spi_transmit_task);
-//	return ERROR_OK;
-//}
+
+
+static void experiment_update_profile(void)
+{
+	EnableBackupRAM();
+	// Magic key
+	experiment_profile_bkram.magic = EXPERIMENT_VARS_MAGIC;
+
+	// Profile
+	experiment_profile_bkram.sampling_rate = experiment_task_inst.profile.sampling_rate;
+	experiment_profile_bkram.pre_time = experiment_task_inst.profile.pre_time;
+	experiment_profile_bkram.experiment_time = experiment_task_inst.profile.experiment_time;
+	experiment_profile_bkram.post_time = experiment_task_inst.profile.post_time;
+
+	// CRC
+    uint32_t crc = 0x0000;
+//    crc = CRC_HW_Calculation((uint8_t *), size);
+    experiment_profile_bkram.crc = crc;
+
+    DisableBackupRAM();
+}
+
+static bool experiment_validate_profile(void)
+{
+	EnableBackupRAM();
+    if (experiment_profile_bkram.magic != EXPERIMENT_VARS_MAGIC)
+    {
+        memset(&experiment_profile_bkram, 0, sizeof(experiment_profile_bkram));
+        return false;
+    }
+    DisableBackupRAM();
+    return true;
+}

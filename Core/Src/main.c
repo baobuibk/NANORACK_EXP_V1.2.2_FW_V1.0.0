@@ -140,6 +140,7 @@ int main(void)
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
 
+
 //  Ex_Watchdog_Init();
 //  LED_Status_Init();
 //  UART_Driver_Init();

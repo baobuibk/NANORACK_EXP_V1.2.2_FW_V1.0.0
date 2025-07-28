@@ -76,7 +76,8 @@ Dev/App/experiment/experiment_task.o: \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_spi_slave/bsp_spi_slave.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Common/basetypedef.h \
  ../Dev/App/experiment/../spi_transmit/spi_transmit.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_bkram/bsp_bkram.h
 ../Dev/App/experiment/experiment_task.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/src/sst.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/ports/arm-cm/sst_port.h:
@@ -154,3 +155,4 @@ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_spi_slave/bsp_
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Common/basetypedef.h:
 ../Dev/App/experiment/../spi_transmit/spi_transmit.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_bkram/bsp_bkram.h:

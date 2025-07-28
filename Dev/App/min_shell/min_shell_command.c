@@ -40,9 +40,6 @@ static temperature_control_task_t *p_temperature_control_task = &temperature_con
 extern experiment_task_t experiment_task_inst;
 static experiment_task_t *p_experiment_task = &experiment_task_inst;
 
-//extern system_reset_task_t system_reset_task_inst;
-//static system_reset_task_t *p_system_reset_task = &system_reset_task_inst;
-
 extern system_log_task_t system_log_task_inst;
 static system_log_task_t *p_system_log_task = &system_log_task_inst;
 
@@ -50,32 +47,10 @@ static system_log_task_t *p_system_log_task = &system_log_task_inst;
 // Command Handlers
 // =================================================================
 
-//static uint16_t UpdateCRC16_XMODEM(uint16_t crc, uint8_t byte)
-//{
-//    const uint16_t polynomial = 0x1021; // CRC16 XMODEM
-//    crc ^= (uint16_t)byte << 8;
-//    for (uint8_t bit = 0; bit < 8; bit++)
-//    {
-//        if (crc & 0x8000)
-//        {
-//            crc = (crc << 1) ^ polynomial;
-//        }
-//        else
-//        {
-//            crc <<= 1;
-//        }
-//    }
-//    return crc;
-//}
-
 static void MIN_Handler_PLEASE_RESET_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
     MIN_Send(ctx, PLEASE_RESET_ACK, NULL, 0);
     min_shell_debug_print("RESET REQUEST:\r\n", len);
-//    LL_mDelay(200);
-//    System_On_Bootloader_Reset();
-//    system_reset(p_system_reset_task);
-
     min_shell_triger_reset(p_min_shell_task);
 }
 
@@ -84,8 +59,6 @@ static void MIN_Handler_TEST_CONNECTION_CMD(MIN_Context_t *ctx, const uint8_t *p
 	uint32_t var = (payload[0] << 24) | (payload[1] << 16) | (payload[2] << 8) | payload[3];
     MIN_Send(ctx, TEST_CONNECTION_ACK, payload, len);
     min_shell_debug_print("Payload TEST_CONNECTION_CMD (%d bytes): %d\r\n", len, var);
-//    LL_mDelay(5000);
-//    LL_mDelay(1000);
 }
 
 static void MIN_Handler_SET_WORKING_RTC_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)

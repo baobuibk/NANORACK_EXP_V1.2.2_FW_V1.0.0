@@ -71,7 +71,7 @@
 
 #define WDG_ADC_MONITOR_TIMEOUT			300			//adc_monitor interval: 10
 //#define WDG_EXPERIMENT_TIMEOUT		300
-#define WDG_MINSHELL_TIMEOUT			25000		//min_shell interval: 20000
+#define WDG_MINSHELL_TIMEOUT			300			//min_shell interval: 10
 //#define WDG_PHOTO_COOL_TIMEOUT		7000
 //#define WDG_SHELL_TIMEOUT				300
 #define WDG_SPI_TRANSMIT_TIMEOUT		300			//spi_transmit: 5
