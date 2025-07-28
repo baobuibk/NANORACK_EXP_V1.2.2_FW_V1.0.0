@@ -2,10 +2,10 @@
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_gpio.h:910:22:LL_GPIO_ResetOutputPin	1
 ../Dev/MiddleWare/lwl/lwl.c:58:16:calculate_crc8	2
 ../Dev/MiddleWare/lwl/lwl.c:135:6:lwl_init	1
-../Dev/MiddleWare/lwl/lwl.c:140:6:lwl_start	1
-../Dev/MiddleWare/lwl/lwl.c:157:6:LWL	7
-../Dev/MiddleWare/lwl/lwl.c:235:13:lwl_buffer_full_notify	1
-../Dev/MiddleWare/lwl/lwl.c:240:13:lwl_clear_notification	1
-../Dev/MiddleWare/lwl/lwl.c:258:6:lwl_reinit_buffer	1
-../Dev/MiddleWare/lwl/lwl.c:263:12:lwl_get_full_buffer_addr	1
-../Dev/MiddleWare/lwl/lwl.c:268:10:lwl_log_send_to_spi	1
+../Dev/MiddleWare/lwl/lwl.c:141:6:lwl_start	1
+../Dev/MiddleWare/lwl/lwl.c:158:6:LWL	7
+../Dev/MiddleWare/lwl/lwl.c:236:13:lwl_buffer_full_notify	1
+../Dev/MiddleWare/lwl/lwl.c:241:13:lwl_clear_notification	1
+../Dev/MiddleWare/lwl/lwl.c:259:6:lwl_reinit_buffer	1
+../Dev/MiddleWare/lwl/lwl.c:264:12:lwl_get_full_buffer_addr	1
+../Dev/MiddleWare/lwl/lwl.c:269:10:lwl_log_send_to_spi	1

@@ -19,6 +19,7 @@
 #include "date_time.h"
 #include "lwl.h"
 #include "wdg.h"
+#include "bsp_laser.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -475,7 +476,10 @@ static void MIN_Handler_GET_CHUNK_CRC_CMD(MIN_Context_t *ctx, const uint8_t *pay
 static void MIN_Handler_GET_LASER_CURRENT_DATA_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
     uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
-    experiment_current_send_to_spi(p_experiment_task);
+
+//    experiment_current_send_to_spi(p_experiment_task);
+    bsp_laser_send_current_to_spi();
+
     min_shell_debug_print("Already prepare current chunk\r\n");
     MIN_Send(ctx, GET_LASER_CURRENT_DATA_ACK, buffer, 2);
 }
@@ -493,55 +497,65 @@ static void MIN_Handler_GET_LASER_CURRENT_CRC_CMD(MIN_Context_t *ctx, const uint
     min_shell_debug_print("Current chunk CRC: 0x%08X\r\n", payload[0], crc);
 }
 
-static void MIN_Handler_SET_EXT_LASER_INTENSITY_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
+static void MIN_Handler_MANUAL_SET_LASER_INTENSITY_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
 	uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
-	int16_t percent = payload[0];
-	if (percent > 100)
+	int8_t obj = payload[0];		// int/ext
+	int16_t percent = payload[1];
+	if (percent > 100 || obj >= 2)
 	{
 		buffer[0] = MIN_RESP_FAIL;
 		buffer[1] = MIN_RESP_FAIL;
-		min_shell_debug_print("percent out of range (0-100)\r\n");
+		min_shell_debug_print("Wrong input\r\n");
 	}
 	else
 	{
-		experiment_task_laser_set_current(p_experiment_task, 1, percent);
-		min_shell_debug_print("SET_EXT_LASER_INTENSITY_ACK: %d\r\n", percent);
+		experiment_task_laser_set_current(p_experiment_task, obj, percent);
+		min_shell_debug_print("_ACK: %d\r\n", percent);
 	}
 
-	MIN_Send(ctx, SET_EXT_LASER_INTENSITY_ACK, buffer, 2);
+	MIN_Send(ctx, MANUAL_SET_LASER_INTENSITY_ACK, buffer, 2);
 }
 
-static void MIN_Handler_TURN_ON_EXT_LASER_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
+static void MIN_Handler_MANUAL_TURN_ON_LASER_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
 	uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
-	uint8_t laser_idx = payload[0];
-	if ((laser_idx > EXTERNAL_CHAIN_CHANNEL_NUM)||(laser_idx < 1))
+	uint8_t obj = payload[0];
+	uint8_t laser_idx = payload[1];
+	if ((laser_idx > EXTERNAL_CHAIN_CHANNEL_NUM) || (laser_idx < 1) || (obj >= 2))
 	{
 		buffer[0] = MIN_RESP_FAIL;
 		buffer[1] = MIN_RESP_FAIL;
-		min_shell_debug_print("laser_idx out of range (1-8)\r\n");
+		min_shell_debug_print("Wrong input\r\n");
 	}
 	else
 	{
-		experiment_task_ext_laser_switchon(p_experiment_task, laser_idx);
-		min_shell_debug_print("TURN_ON_EXT_LASER_ACK\r\n");
+		if (obj == 0)
+			experiment_task_int_laser_switchon(p_experiment_task, laser_idx);
+		else if (obj == 1)
+			experiment_task_ext_laser_switchon(p_experiment_task, laser_idx);
+		min_shell_debug_print("_ACK\r\n");
 	}
 
-	MIN_Send(ctx, TURN_ON_EXT_LASER_ACK, buffer, 2);
+	MIN_Send(ctx, MANUAL_TURN_ON_LASER_ACK, buffer, 2);
 }
-static void MIN_Handler_TURN_OFF_EXT_LASER_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
+
+static void MIN_Handler_MANUAL_TURN_OFF_LASER_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
 	uint8_t buffer[1] = {MIN_ERROR_OK};
-	MIN_Send(ctx, TURN_OFF_EXT_LASER_ACK, buffer, 1);
-	experiment_task_ext_laser_switchoff(p_experiment_task);
+	uint8_t obj = payload[0];
+	MIN_Send(ctx, MANUAL_TURN_OFF_LASER_ACK, buffer, 1);
+	if (obj == 0)
+		experiment_task_int_laser_switchoff(p_experiment_task);
+	else if (obj == 1)
+		experiment_task_ext_laser_switchoff(p_experiment_task);
 	min_shell_debug_print("TURN_OFF_EXT_LASER_ACK\r\n");
 }
 
 static void MIN_Handler_GET_LASER_CURRENT_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
-	uint16_t int_current = laser_monitor_get_laser_current(0);
-	uint16_t ext_current = laser_monitor_get_laser_current(1);
+	uint16_t int_current = bsp_laser_get_int_current();
+	uint16_t ext_current = bsp_laser_get_ext_current();
 
 	uint8_t buffer[5] = {MIN_RESP_OK, (int_current >> 8) & 0xFF, int_current & 0xFF, (ext_current >> 8) & 0xFF, ext_current & 0xFF};
 	MIN_Send(ctx, GET_LASER_CURRENT_ACK, buffer, 5);
@@ -589,9 +603,9 @@ static const MIN_Command_t command_table[] = {
     {GET_LASER_CURRENT_DATA_CMD, MIN_Handler_GET_LASER_CURRENT_DATA_CMD},
     {GET_LASER_CURRENT_CRC_CMD, MIN_Handler_GET_LASER_CURRENT_CRC_CMD},
 
-    {SET_EXT_LASER_INTENSITY_CMD, MIN_Handler_SET_EXT_LASER_INTENSITY_CMD},
-    {TURN_ON_EXT_LASER_CMD, MIN_Handler_TURN_ON_EXT_LASER_CMD},
-    {TURN_OFF_EXT_LASER_CMD, MIN_Handler_TURN_OFF_EXT_LASER_CMD},
+    {MANUAL_SET_LASER_INTENSITY_CMD, MIN_Handler_MANUAL_SET_LASER_INTENSITY_CMD},
+    {MANUAL_TURN_ON_LASER_CMD, MIN_Handler_MANUAL_TURN_ON_LASER_CMD},
+    {MANUAL_TURN_OFF_LASER_CMD, MIN_Handler_MANUAL_TURN_OFF_LASER_CMD},
 
 	{GET_LOG_CMD, MIN_Handler_GET_LOG_CMD},
 

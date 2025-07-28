@@ -15,10 +15,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "board.h"
-#include "adc_monitor.h"
+//#include "adc_monitor.h"
 #include "system_reset.h"
 #include "bsp_spi_ram.h"
 #include "bsp_laser.h"
+#include "bsp_ntc.h"
 #include "min_shell.h"
 
 extern temperature_control_task_t temperature_control_task_inst;
@@ -125,10 +126,12 @@ static void cmd_exp_data_transfer(EmbeddedCli *cli, char *args, void *context);
 //static void CMD_Sample_Get_Buf(EmbeddedCli *cli, char *args, void *context);
 //static void CMD_Sample_Get_Buf_Char(EmbeddedCli *cli, char *args, void *context);
 
-//static void CMD_test(EmbeddedCli *cli, char *args, void *context)
-//{
+static void CMD_test(EmbeddedCli *cli, char *args, void *context)
+{
 //	system_reset(system_reset_task);
-//}
+	haha();
+
+}
 
 
 
@@ -239,7 +242,7 @@ static const CliCommandBinding cliStaticBindings_internal[] = {
 
 	{ "TEST", "clear_fram",    "",  true, NULL, cmd_clear_fram },
 	{ "TEST", "read_fram",    "",  true, NULL, cmd_read_fram },
-//	{ "TEST", "test",    "",  true, NULL, CMD_test },
+	{ "TEST", "test",    "",  true, NULL, CMD_test },
 
 //		{ NULL, "get_current",  "format: get_current [int/ext]",                                   true, NULL, CMD_Get_Current },
 //	    { NULL, "pd_get",       "format: pd_get [pd_index]",                                       true, NULL, CMD_PD_Get },
@@ -311,7 +314,8 @@ static void CMD_NTC_Get_Temp(EmbeddedCli *cli, char *args, void *context)
 
 		for (uint8_t channel = 0; channel < 8; channel++)
 		{
-			temp = temperature_monitor_get_ntc_temperature(channel);
+//			temp = temperature_monitor_get_ntc_temperature(channel);
+			temp = bsp_ntc_get_temperature(channel);
 			if (temp == (int16_t)0x8000)	cli_printf(cli, "ntc[%d] = ERROR\r\n",channel);
 			else cli_printf(cli, "ntc[%d] = %d C\r\n",channel,temp);
 		}
@@ -319,7 +323,8 @@ static void CMD_NTC_Get_Temp(EmbeddedCli *cli, char *args, void *context)
 	else if ((*arg1 >= '0') &&(*arg1 <=  '7'))
 	{
 		channel = atoi(arg1);
-		temp = temperature_monitor_get_ntc_temperature(channel);
+//		temp = temperature_monitor_get_ntc_temperature(channel);
+		temp = bsp_ntc_get_temperature(channel);
 		if (temp == (int16_t)0x8000)	cli_printf(cli, "ntc[%d] = ERROR\r\n",channel);
 		else cli_printf(cli, "ntc[%d] = %d C\r\n",channel,temp);
 	}
@@ -879,7 +884,8 @@ static void CMD_Set_Laser_Ext_Current(EmbeddedCli *cli, char *args, void *contex
 
 static void CMD_Laser_Get_Current(EmbeddedCli *cli, char *args, void *context)
 {
-	uint16_t current = 0;
+	uint16_t current_int = 0;
+	uint16_t current_ext = 0;
 	uint8_t tokenCount = embeddedCliGetTokenCount(args);
 	if (tokenCount != 1)
 	{
@@ -887,20 +893,22 @@ static void CMD_Laser_Get_Current(EmbeddedCli *cli, char *args, void *context)
 		return;
 	}
 	const char *arg1 = embeddedCliGetToken(args, 1);
+
 	if (*arg1 == 'a')
 	{
-
-		for (uint8_t channel = 0; channel < 2; channel++)
-		{
-			current = laser_monitor_get_laser_current(channel);
-			cli_printf(cli, "laser_current[%s]: %d mA\r\n", (channel < 1) ? "int":"ext", current);
-		}
+		current_int = bsp_laser_get_int_current();
+		current_ext = bsp_laser_get_ext_current();
+		cli_printf(cli, "laser_current[int]: %d mA\r\nlaser_current[ext]: %d mA\r\n", current_int, current_ext);
 	}
-	else if ((*arg1 >= '0') &&(*arg1 <=  '1'))
+	else if (*arg1 == '0')
 	{
-		uint8_t channel = atoi(arg1);
-		current = laser_monitor_get_laser_current(channel);
-		cli_printf(cli, "laser_current[%s]: %d mA\r\n", (channel < 1) ? "int":"ext", current);
+		current_int = bsp_laser_get_int_current();
+		cli_printf(cli, "laser_current[int]: %d mA\r\n", current_int);
+	}
+	else if (*arg1 == '1')
+	{
+		current_int = bsp_laser_get_ext_current();
+		cli_printf(cli, "laser_current[ext]: %d mA\r\n", current_ext);
 	}
 	else cli_printf(cli, "Wrong arguments\r\n");
 

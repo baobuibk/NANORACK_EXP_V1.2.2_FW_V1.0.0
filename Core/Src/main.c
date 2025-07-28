@@ -140,15 +140,15 @@ int main(void)
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
 
- // Ex_Watchdog_Init();
- // LED_Status_Init();
+//  Ex_Watchdog_Init();
+//  LED_Status_Init();
 //  UART_Driver_Init();
- // CLI_Command_Init(EXP_UART_CONSOLE_HANDLE);
- // NTC_DMA_ADC_Init();
- // Sensor_I2C_Init();
+//  CLI_Command_Init(EXP_UART_CONSOLE_HANDLE);
+//  NTC_DMA_ADC_Init();
+//  Sensor_I2C_Init();
 //  MIN_Process_Init();
 
-  // Laser board
+//// Laser board
 //  MCP4902_Device_Init(&DAC_device, SPI4, LASER_DAC_CS_GPIO_Port, LASER_DAC_CS_Pin, LASER_DAC_LATCH_GPIO_Port, LASER_DAC_LATCH_Pin);
 //  ADG1414_Chain_Init(&laser_int, SPI4, LASER_INT_SW_CS_GPIO_Port, LASER_INT_SW_CS_Pin, INTERNAL_CHAIN_SWITCH_NUM);
 //  ADG1414_Chain_Init(&laser_ext, SPI4, LASER_EXT_SW_CS_GPIO_Port, LASER_EXT_SW_CS_Pin, EXTERNAL_CHAIN_SWITCH_NUM);
@@ -163,13 +163,14 @@ int main(void)
 //  LED_Status_CreateTask();
 //  CLI_Command_CreateTask();
 //  Temperature_GetSet_CreateTask();
-////  MIN_CreateTask();
+//  MIN_CreateTask();
 //  SCH_StartSchedular();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
 //  bsp_spi_ram_init();
 //
 //  uint16_t read_buffer[2000] = {0};
@@ -204,14 +205,13 @@ int main(void)
 ////  bsp_spi_ram_read_dma(20000, 20000, (uint8_t *)read_buffer2);
 ////    while(!bsp_spi_ram_is_transfer_done());
 //__NOP();
+
+
   app_init();
   app_start();
   app_run();
   while (1)
   {
-	//  SCH_HandleScheduledTask();
-//	  bsp_ntc_trigger_adc();
-//	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

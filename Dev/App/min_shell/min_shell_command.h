@@ -77,14 +77,25 @@
 #define GET_LASER_CURRENT_CRC_CMD         0x26
 #define GET_LASER_CURRENT_CRC_ACK         0x27
 
-#define SET_EXT_LASER_INTENSITY_CMD       0x28
-#define SET_EXT_LASER_INTENSITY_ACK       0x29
 
-#define TURN_ON_EXT_LASER_CMD             0x2A
-#define TURN_ON_EXT_LASER_ACK             0x2B
+#define MANUAL_SET_LASER_INTENSITY_CMD                 0x28
+#define MANUAL_SET_LASER_INTENSITY_ACK                 0x29
 
-#define TURN_OFF_EXT_LASER_CMD            0x2C
-#define TURN_OFF_EXT_LASER_ACK            0x2D
+#define MANUAL_TURN_ON_LASER_CMD                       0x2A
+#define MANUAL_TURN_ON_LASER_ACK                       0x2B
+
+#define MANUAL_TURN_OFF_LASER_CMD                      0x2C
+#define MANUAL_TURN_OFF_LASER_ACK                      0x2D
+
+
+//#define SET_EXT_LASER_INTENSITY_CMD       0x28
+//#define SET_EXT_LASER_INTENSITY_ACK       0x29
+//
+//#define TURN_ON_EXT_LASER_CMD             0x2A
+//#define TURN_ON_EXT_LASER_ACK             0x2B
+//
+//#define TURN_OFF_EXT_LASER_CMD            0x2C
+//#define TURN_OFF_EXT_LASER_ACK            0x2D
 
 #define SET_LASER_INT_CMD                 0x2E
 #define SET_LASER_INT_ACK                 0x2F

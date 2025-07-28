@@ -4,6 +4,8 @@
  *  Created on: Jun 16, 2025
  *      Author: Admin
  */
+
+#include "temperature_control.h"
 #include "bsp_tec.h"
 #include "bsp_heater.h"
 #include "dbc_assert.h"
@@ -11,10 +13,10 @@
 #include "error_codes.h"
 #include "uart_dbg.h"
 #include "stddef.h"
-#include "temperature_control.h"
 #include "adc_monitor.h"
 #include "configs.h"
 #include "wdg.h"
+#include "bsp_ntc.h"
 
 DBC_MODULE_NAME("tec_control")
 
@@ -143,7 +145,7 @@ static state_t temperature_control_state_manual_handler(temperature_control_task
 			{
 				case TEMPERATURE_AUTOMODE_START:
 				{
-					temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+					temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 					temp_control_debug_print("Src: MANUAL ->> Event: CMD TEMPERATURE_AUTOMODE_START\r\n");
 					if (me->tec_heater_power_status == 0)
 					{
@@ -157,21 +159,21 @@ static state_t temperature_control_state_manual_handler(temperature_control_task
 						me->temperature_control_profile.profile_max_temp,
 						me->temperature_control_profile.profile_min_temp))
 					{
-						temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+						temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 						temp_control_debug_print("Src: MANUAL ->> Dest: NTC_ERROR\r\n");
 						me->state = temperature_control_state_ntc_error_handler;
 						return TRAN_STATUS;
 					}
-					int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx);
+					int16_t temperature = bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx);
 					if (temperature > me->temperature_control_profile.setpoint)
 					{
-						temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+						temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 						temp_control_debug_print("Src: MANUAL ->> Dest: COOLING\r\n");
 						me->state = temperature_control_state_cooling_handler;
 					}
 					else
 					{
-						temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+						temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 						temp_control_debug_print("Src: MANUAL ->> Dest: WAIT_HEAT\r\n");
 						me->state = temperature_control_state_wait_heat_handler;
 					}
@@ -210,24 +212,24 @@ static state_t temperature_control_state_cooling_handler(temperature_control_tas
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
 			wdg_feed(WDG_TEMP_CTRL_ID);
-			temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+			temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 			temp_control_debug_print("Src: COOLING ->> Event: time_loop\r\n");
 			if(temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
 				me->temperature_control_profile.sec_NTC_idx,
 				me->temperature_control_profile.profile_max_temp,
 				me->temperature_control_profile.profile_min_temp))
 			{
-				temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+				temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 				temp_control_debug_print("Src: COOLING ->> Dest: NTC_ERROR\r\n");
 				me->state = temperature_control_state_ntc_error_handler;
 				return TRAN_STATUS;
 			}
-			int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx); //get NTC temperature
+			int16_t temperature = bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx); //get NTC temperature
 			if (temperature > me->temperature_control_profile.setpoint)
 				return HANDLED_STATUS;	// Continue cooling
 			else // Stop cooling, transition to stopped state to wait for natural heating
 			{
-				temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+				temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 				temp_control_debug_print("Src: COOLING ->> Dest: WAIT_HEAT\r\n");
 				me->state = temperature_control_state_wait_heat_handler;
 				return TRAN_STATUS;
@@ -239,7 +241,7 @@ static state_t temperature_control_state_cooling_handler(temperature_control_tas
 			{
 				case TEMPERATURE_MANMODE_START:
 				{
-					temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+					temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 					temp_control_debug_print("Src: COOLING ->> Event: CMD TEMPERATURE_MANMODE_START\r\n");
 					temp_control_debug_print("Src: COOLING ->> Dest: MANUAL\r\n");
 					me->state = temperature_control_state_manual_handler; // Transition to manual mode
@@ -274,23 +276,23 @@ static state_t temperature_control_state_wait_heat_handler(temperature_control_t
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
 			wdg_feed(WDG_TEMP_CTRL_ID);
-			temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+			temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 			temp_control_debug_print("Src: WAIT_HEAT ->> Event: time_loop\r\n");
 			if(temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
 				me->temperature_control_profile.sec_NTC_idx,
 				me->temperature_control_profile.profile_max_temp,
 				me->temperature_control_profile.profile_min_temp))
 			{
-				temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+				temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 				temp_control_debug_print("Src: WAIT_HEAT ->> Dest: NTC_ERROR\r\n");
 				me->state = temperature_control_state_ntc_error_handler;
 				return TRAN_STATUS;
 			}
-			int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx);
+			int16_t temperature = bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx);
 			if (temperature > me->temperature_control_profile.setpoint)
 			{
 				// temperature larger than setpoint, turn on TEC on COOL mode
-				temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+				temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 				temp_control_debug_print("Src: WAIT_HEAT ->> Dest: COOLING\r\n");
 				me->state = temperature_control_state_cooling_handler;
 				return TRAN_STATUS;
@@ -302,7 +304,7 @@ static state_t temperature_control_state_wait_heat_handler(temperature_control_t
 				if ((me->counter >= TEMPERATURE_CONTROL_WAIT_TIMEOUT_NUM) || ((me->temperature_control_profile.setpoint - temperature) > TEMPERATURE_CONTROL_HYSTERIS))
 				{
 					// can not wait any longer, turn on heater
-					temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+					temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 					temp_control_debug_print("Src: WAIT_HEAT ->> Dest: HEATING\r\n");
 					me->state = temperature_control_state_heating_heater_handler;
 					return TRAN_STATUS;
@@ -315,7 +317,7 @@ static state_t temperature_control_state_wait_heat_handler(temperature_control_t
 			{
 				case TEMPERATURE_MANMODE_START:
 				{
-					temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+					temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 					temp_control_debug_print("Src: WAIT_HEAT ->> Event: CMD TEMPERATURE_MANMODE_START\r\n");
 					temp_control_debug_print("Src: WAIT_HEAT ->> Dest: MANUAL\r\n");
 					me->state = temperature_control_state_manual_handler; // Transition to manual mode
@@ -349,24 +351,24 @@ static state_t temperature_control_state_heating_heater_handler(temperature_cont
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
 			wdg_feed(WDG_TEMP_CTRL_ID);
-			temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+			temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 			temp_control_debug_print("Src: HEATING ->> Event: time_loop\r\n");
 			if(temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
 				me->temperature_control_profile.sec_NTC_idx,
 				me->temperature_control_profile.profile_max_temp,
 				me->temperature_control_profile.profile_min_temp))
 			{
-				temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+				temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 				temp_control_debug_print("Src: HEATING ->> Dest: NTC_ERROR\r\n");
 				me->state = temperature_control_state_ntc_error_handler;
 			   return TRAN_STATUS;
 			}
-			int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx);
+			int16_t temperature = bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx);
 			if (temperature < me->temperature_control_profile.setpoint)
 				return HANDLED_STATUS; //temperature smaller than setpoint, keep heating
 			else // temperature is larger than setpoint, wait for natural cooling, calculate time to wait
 			{
-				temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+				temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 				temp_control_debug_print("Src: HEATING ->> Dest: WAIT_COOL\r\n");
 				me->state = temperature_control_state_wait_cool_handler;
 				return TRAN_STATUS;
@@ -378,7 +380,7 @@ static state_t temperature_control_state_heating_heater_handler(temperature_cont
 			{
 				case TEMPERATURE_MANMODE_START:
 				{
-					temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+					temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 					temp_control_debug_print("Src: HEATING ->> Event: CMD TEMPERATURE_MANMODE_START\r\n");
 					temp_control_debug_print("Src: HEATING ->> Dest: MANUAL\r\n");
 					me->state = temperature_control_state_manual_handler; // Transition to manual mode
@@ -411,23 +413,23 @@ static state_t temperature_control_state_wait_cool_handler(temperature_control_t
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
 			wdg_feed(WDG_TEMP_CTRL_ID);
-			temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+			temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 			temp_control_debug_print("Src: WAIT_COOL ->> Event: time_loop\r\n");
 			if(temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
 				me->temperature_control_profile.sec_NTC_idx,
 				me->temperature_control_profile.profile_max_temp,
 				me->temperature_control_profile.profile_min_temp))
 			{
-				temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+				temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 				temp_control_debug_print("Src: WAIT_COOL ->> Dest: NTC_ERROR\r\n");
 				me->state = temperature_control_state_ntc_error_handler;
 				return TRAN_STATUS;
 			}
-			int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx);
+			int16_t temperature = bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx);
 			if (temperature < me->temperature_control_profile.setpoint)
 			{
 				// temperature automatically below setpoint, heat it up
-				temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+				temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 				temp_control_debug_print("Src: WAIT_COOL ->> Dest: HEATING\r\n");
 				me->state = temperature_control_state_heating_heater_handler;
 				return TRAN_STATUS;
@@ -439,7 +441,7 @@ static state_t temperature_control_state_wait_cool_handler(temperature_control_t
 				if (me->counter >= TEMPERATURE_CONTROL_WAIT_TIMEOUT_NUM)
 				{
 					// can not wait any longer, turn on TEC to cool
-					temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+					temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 					temp_control_debug_print("Src: WAIT_COOL ->> Dest: COOLING\r\n");
 					me->state = temperature_control_state_cooling_handler;
 					return TRAN_STATUS;
@@ -453,7 +455,7 @@ static state_t temperature_control_state_wait_cool_handler(temperature_control_t
 			{
 				case TEMPERATURE_MANMODE_START:
 				{
-					temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+					temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 					temp_control_debug_print("Src: WAIT_COOL ->> Event: CMD TEMPERATURE_MANMODE_START\r\n");
 					temp_control_debug_print("Src: WAIT_COOL ->> Dest: MANUAL\r\n");
 					me->state = temperature_control_state_manual_handler; // Transition to manual mode
@@ -496,16 +498,16 @@ static state_t temperature_control_state_ntc_error_handler(temperature_control_t
 					me->temperature_control_profile.profile_min_temp))
 				{
 					// Không còn lỗi do NTC nữa
-					int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx);
+					int16_t temperature = bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx);
 					if (temperature > me->temperature_control_profile.setpoint)
 					{
-						temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+						temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 						temp_control_debug_print("Src: NTC_ERROR (Recovery) ->> Dest: COOLING\r\n");
 						me->state = temperature_control_state_cooling_handler;
 					}
 					else
 					{
-						temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
+						temp_control_debug_print("Pri_NTC %d\r\n", bsp_ntc_get_temperature(me->temperature_control_profile.pri_NTC_idx));
 						temp_control_debug_print("Src: NTC_ERROR (Recovery) ->> Dest: WAIT_HEAT\r\n");
 						me->state = temperature_control_state_wait_heat_handler;
 					}

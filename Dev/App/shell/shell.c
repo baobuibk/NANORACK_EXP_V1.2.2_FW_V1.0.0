@@ -50,7 +50,9 @@ uint8_t tx_static_buffer[SHELL_UART_TX_BUFFER_SIZE];
 
 static bool enable_shell_empty = false;
 
-#define SHELL_UART_CLI_BUFFER_SIZE			4096
+#define SHELL_UART_CLI_BUFFER_SIZE			32768
+
+//#define SHELL_UART_CLI_BUFFER_SIZE			4096
 #define SHELL_UART_CLI_RX_BUFFER_SIZE		128
 #define SHELL_UART_CLI_CMD_BUFFER_SIZE		64
 #define SHELL_UART_CLI_HISTORY_BUFFER_SIZE	256
@@ -59,7 +61,9 @@ static bool enable_shell_empty = false;
 
 #define SHELL_UART_INITATION		    	"EXP $ "
 
-static EmbeddedCli * shell_uart_cli = NULL;
+EmbeddedCli * shell_uart_cli = NULL;
+
+//static EmbeddedCli * shell_uart_cli = NULL;
 static CLI_UINT  shell_buffer[BYTES_TO_CLI_UINTS(SHELL_UART_CLI_BUFFER_SIZE * sizeof(char))];
 
 static uint32_t shell_cli_init(void);
@@ -241,15 +245,6 @@ static state_t shell_state_send_long_buffer_handler(shell_task_t * const me, she
         			me->htoa_buffer_index++;
         		}
         	}
-
-//        	if(!me->total_remain)
-//			{
-//        		me->state = shell_state_process_handler;
-//				SST_TimeEvt_arm(&me->shell_task_timeout_timer, SHELL_POLL_INTERVAL, SHELL_POLL_INTERVAL);
-//				return TRAN_STATUS;
-//			}
-//			else return HANDLED_STATUS;
-
         }
         case EVT_SHELL_UART_EMPTY:
     		while (me->htoa_buffer_index < 5)	//print the rest of previous htoa buffer

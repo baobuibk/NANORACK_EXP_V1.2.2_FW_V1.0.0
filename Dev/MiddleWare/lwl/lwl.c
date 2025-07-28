@@ -86,8 +86,8 @@ typedef struct lwl_t{
 	struct lwl_data_buffer lwl_data_buf[2];
 }lwl_t;
 
-__attribute__((aligned(4))) static uint8_t lwl_data_buf_0[LWL_BUF_SIZE];
-__attribute__((aligned(4))) static uint8_t lwl_data_buf_1[LWL_BUF_SIZE];
+__attribute__((aligned(4))) static uint8_t lwl_data_buf_0[LWL_BUF_SIZE] = {0};
+__attribute__((aligned(4))) static uint8_t lwl_data_buf_1[LWL_BUF_SIZE] = {0};
 
 static lwl_t lwl = {
     .lwl_working_buf_index = 0,
@@ -134,12 +134,13 @@ static const uint8_t lwl_msg_table_size = sizeof(lwl_msg_table) / sizeof(lwl_msg
 
 void lwl_init(lwl_t *lwl) {
     // Xóa toàn bộ cấu trúc về 0 bằng memset
-    memset(lwl, 0, sizeof(lwl_t));
+    memset(lwl->lwl_data_buf[0].p_buf, 0, LWL_BUF_SIZE);
+    memset(lwl->lwl_data_buf[1].p_buf, 0, LWL_BUF_SIZE);
 }
 
 void lwl_start() {
     // Xóa toàn bộ cấu trúc về 0 bằng memset
-	lwl_init(&lwl);
+//	lwl_init(&lwl);
 	lwl_clear_notification();
 }
 

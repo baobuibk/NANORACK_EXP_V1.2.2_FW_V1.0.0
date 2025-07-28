@@ -62,10 +62,10 @@ Dev/App/shell/CLI_Command/cli_command.o: \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/experiment/experiment_task.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/photodiode_cool/photodiode_cool.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/shell/shell.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/system_reset/system_reset.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_spi_ram/bsp_spi_ram.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_laser/bsp_laser.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_ntc/bsp_ntc.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/min_shell/min_shell.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/MIN_Protocol/min.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/STDIO/uart_dbg.h \
@@ -134,10 +134,10 @@ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/experiment/experiment_task.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/photodiode_cool/photodiode_cool.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/shell/shell.h:
-D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/system_reset/system_reset.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_spi_ram/bsp_spi_ram.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_laser/bsp_laser.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_ntc/bsp_ntc.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/min_shell/min_shell.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/MIN_Protocol/min.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/STDIO/uart_dbg.h:

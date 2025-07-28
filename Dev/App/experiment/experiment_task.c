@@ -26,6 +26,8 @@ DBC_MODULE_NAME("experiment_task")
 #define EXPERIMENT_TASK_NUM_EVENTS  		10
 #define EXPERIMENT_TASK_AQUI_TIMEOUT		20000
 
+#define EXPERIMENT_LASER_CURRENT_POLL_TIME	10
+
 extern shell_task_t shell_task_inst;
 static shell_task_t *p_shell_task = &shell_task_inst;
 
@@ -52,8 +54,8 @@ static data_profile_t remain_data_profile;
 __attribute__((aligned(4))) static uint16_t experiment_data_buffer[EXPERIMENT_BUFFER_SAMPLE_SIZE];
 static uint16_t batch_size;
 
-__attribute__((aligned(4))) static uint16_t laser_int_current_buffer[EXPERIMENT_LASER_CURRENT_SIZE];
-static uint16_t laser_int_current_idx;
+//__attribute__((aligned(4))) static uint16_t laser_int_current_buffer[EXPERIMENT_LASER_CURRENT_SIZE];
+//static uint16_t laser_int_current_idx;
 
 static state_t experiment_task_state_manual_handler(experiment_task_t * const me, experiment_evt_t const * const e);
 static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const me, experiment_evt_t const * const e);
@@ -85,8 +87,8 @@ void experiment_task_ctor(experiment_task_t * const me, experiment_task_init_t c
                                 (SST_Evt *)init->current_evt, init->event_buffer);
     me->state = init->init_state;
     SST_TimeEvt_ctor(&me->timeout_timer, EVT_EXPERIMENT_DATA_AQUISITION_TIMEOUT, &(me->super));
-    SST_TimeEvt_ctor(&me->laser_current_trigger, EVT_EXPERIMENT_LASER_ADC_POLL_TIME, &(me->super));
-    SST_TimeEvt_disarm(&me->laser_current_trigger); // Disarm the timeout timer
+//    SST_TimeEvt_ctor(&me->laser_current_trigger, EVT_EXPERIMENT_LASER_ADC_POLL_TIME, &(me->super));
+//    SST_TimeEvt_disarm(&me->laser_current_trigger); // Disarm the timeout timer
     SST_TimeEvt_disarm(&me->timeout_timer); // Disarm the timeout timer
     me->sub_state = init->sub_state;
 }
@@ -180,11 +182,21 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			init_photo_time.post_time = me->profile.post_time ;
 			init_photo_time.sampling_rate = me->profile.sampling_rate;
 			init_photo_time.pos = me->profile.pos;
-			bsp_laser_int_set_current(me->profile.laser_percent);
+
+
+
+//			LL_mDelay(10);
+//			bsp_laser_int_set_current(me->profile.laser_percent);
+//			bsp_laser_int_set_current(20);
+//			LL_mDelay(10);
+
+			experiment_task_laser_set_current(me, 0, me->profile.laser_percent);
+
 			bsp_photo_set_time(& init_photo_time);
 
-			SST_TimeEvt_arm(&me->laser_current_trigger, EXPERIMENT_LASER_CURRENT_POLL_TIME, EXPERIMENT_LASER_CURRENT_POLL_TIME);
-			laser_int_current_idx = 0;
+//			SST_TimeEvt_arm(&me->laser_current_trigger, EXPERIMENT_LASER_CURRENT_POLL_TIME, EXPERIMENT_LASER_CURRENT_POLL_TIME);
+//			laser_int_current_idx = 0;
+			bsp_laser_collect_current_data_to_buffer();
 
 			bsp_photodiode_sample_start();
 			me->sub_state = S_PRE_SAMPLING;
@@ -194,21 +206,8 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		{
 			exp_debug_print("exit experiment_task_state_data_aqui_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer);
-			SST_TimeEvt_disarm(&me->laser_current_trigger);
 
-//			for (int i = 0; i < 1024; i++)
-//			{
-//			    exp_debug_print("%02X  ", laser_int_current_buffer[i]);  // In 3 chữ số, cách nhau bởi dấu cách
-//			    if ((i + 1) % 16 == 0) {
-//			        exp_debug_print("\r\n");  // Xuống dòng sau mỗi 16 phần tử
-//			    }
-//			}
-//			// Nếu tổng phần tử không chia hết cho 16, in thêm dòng xuống cuối
-//			if (1024 % 16 != 0)
-//			{
-//			    exp_debug_print("\r\n");
-//			}
-
+//			SST_TimeEvt_disarm(&me->laser_current_trigger);
 
 			return HANDLED_STATUS;
 		}
@@ -255,24 +254,31 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			me->state = experiment_task_state_manual_handler;
 			return TRAN_STATUS;
 		}
-		case EVT_EXPERIMENT_LASER_ADC_POLL_TIME:
-		{
-			if(laser_int_current_idx < EXPERIMENT_LASER_CURRENT_SIZE)
-			{
-//				laser_int_current_buffer[laser_int_current_idx++] = bsp_laser_get_int_current();
-//				bsp_laser_int_trigger_adc();
 
-//				laser_int_current_buffer[laser_int_current_idx++] = laser_monitor_get_laser_current(0);
-				laser_int_current_buffer[laser_int_current_idx++] = bsp_laser_get_sample_int_current();
-//				exp_debug_print("%d\r\n", laser_int_current_buffer[laser_int_current_idx]);
-			}
-			else
-			{
-				laser_int_current_idx = 0;
-				SST_TimeEvt_disarm(&me->laser_current_trigger);
-			}
-			return HANDLED_STATUS;
-		}
+
+
+//		case EVT_EXPERIMENT_LASER_ADC_POLL_TIME:
+//		{
+//			if(laser_int_current_idx < EXPERIMENT_LASER_CURRENT_SIZE)
+//			{
+////				laser_int_current_buffer[laser_int_current_idx++] = bsp_laser_get_int_current();
+////				bsp_laser_int_trigger_adc();
+//
+////				laser_int_current_buffer[laser_int_current_idx++] = laser_monitor_get_laser_current(0);
+//
+//				laser_int_current_buffer[laser_int_current_idx++] = bsp_laser_get_sample_int_current();
+//				DBG(DBG_LEVEL_INFO, "   %d	\r\n", laser_int_current_buffer[laser_int_current_idx]);
+//			}
+//			else
+//			{
+//				laser_int_current_idx = 0;
+//				SST_TimeEvt_disarm(&me->laser_current_trigger);
+//			}
+//			return HANDLED_STATUS;
+//		}
+
+
+
 		default:
 			return IGNORED_STATUS;
 	}
@@ -416,7 +422,10 @@ uint32_t experiment_task_laser_set_current(experiment_task_t * const me, uint32_
 uint32_t experiment_task_laser_get_current(experiment_task_t * const me, uint32_t laser_id)
 {
 	uint32_t index;
-	if (laser_id > 0) index = 1; else index = 0;
+	if (laser_id > 0)
+		index = 1;
+	else
+		index = 0;
 	return me->laser_current[index];
 }
 
@@ -473,11 +482,7 @@ uint32_t experiment_task_ext_laser_switchoff(experiment_task_t * const me)
 uint32_t experiment_task_photodiode_switchon(experiment_task_t * const me, uint32_t photo_id)
 {
 	if (photo_id > INTERNAL_CHAIN_CHANNEL_NUM) return ERROR_NOT_SUPPORTED;
-//	if(me->photodiode_mode != SW_MODE)
-//	{
-		bsp_photodiode_sw_spi_change_mode();
-//		me->photodiode_mode = SW_MODE;
-//	}
+	bsp_photodiode_sw_spi_change_mode();
 	bsp_photo_switch_on(photo_id);
 	me->photo_pos = photo_id;
 	return ERROR_OK;
@@ -485,11 +490,7 @@ uint32_t experiment_task_photodiode_switchon(experiment_task_t * const me, uint3
 
 uint32_t experiment_task_photodiode_switchoff(experiment_task_t * const me)
 {
-//	if(me->photodiode_mode != SW_MODE)
-//	{
-		bsp_photodiode_sw_spi_change_mode();
-//		me->photodiode_mode = SW_MODE;
-//	}
+	bsp_photodiode_sw_spi_change_mode();
 	bsp_photo_switch_off_all();
 	me->photo_pos = 0xFF; //photo is OFF
 	return ERROR_OK;
@@ -497,11 +498,7 @@ uint32_t experiment_task_photodiode_switchoff(experiment_task_t * const me)
 
 uint32_t experiment_task_photo_ADC_prepare_SPI(experiment_task_t * const me)
 {
-//	if(me->photodiode_mode != ADC_MODE)
-//	{
-		bsp_photodiode_adc_spi_change_mode();
-//		me->photodiode_mode = ADC_MODE;
-//	}
+	bsp_photodiode_adc_spi_change_mode();
 	return ERROR_OK;
 }
 
@@ -541,7 +538,6 @@ uint32_t experiment_task_set_profile(experiment_task_t * me,experiment_profile_t
 	if (profile->period == 0) return ERROR_NOT_SUPPORTED;
 	me->profile = *profile;
 	return ERROR_OK;
-
 }
 
 void experiment_task_get_profile(experiment_task_t * me, experiment_profile_t * profile)
@@ -569,11 +565,11 @@ uint32_t experiment_sample_send_to_spi(experiment_task_t * const me, uint16_t ch
 	return ERROR_OK;
 }
 
-uint32_t experiment_current_send_to_spi(experiment_task_t * const me)
-{
-	// Cấu hình địa chỉ buffer
-	SPI_SlaveDevice_CollectData((uint16_t *)laser_int_current_buffer);
-	// Bật tín hiệu DataReady
-	spi_transmit_task_data_ready(p_spi_transmit_task);
-	return ERROR_OK;
-}
+//uint32_t experiment_current_send_to_spi(experiment_task_t * const me)
+//{
+//	// Cấu hình địa chỉ buffer
+//	SPI_SlaveDevice_CollectData((uint16_t *)laser_int_current_buffer);
+//	// Bật tín hiệu DataReady
+//	spi_transmit_task_data_ready(p_spi_transmit_task);
+//	return ERROR_OK;
+//}

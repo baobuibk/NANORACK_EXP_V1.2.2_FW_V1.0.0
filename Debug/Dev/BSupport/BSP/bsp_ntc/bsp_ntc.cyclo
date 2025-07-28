@@ -1,4 +1,5 @@
-../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:39:6:bsp_ntc_adc_init	1
-../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:45:6:bsp_ntc_trigger_adc	1
-../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:50:9:bsp_ntc_get_temperature	1
-../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:56:6:bsp_ntc_dma_adc_irq	7
+../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:44:6:bsp_ntc_adc_init	1
+../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:50:6:bsp_ntc_trigger_adc	1
+../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:55:9:bsp_ntc_get_temperature	2
+../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:66:10:temperature_monitor_get_ntc_error	4
+../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c:77:6:bsp_ntc_dma_adc_irq	3

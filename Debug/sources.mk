@@ -24,7 +24,6 @@ OBJCOPY_BIN :=
 SUBDIRS := \
 Core/Src \
 Core/Startup \
-Dev/App/adc_monitor \
 Dev/App/app_main \
 Dev/App/experiment \
 Dev/App/min_shell \

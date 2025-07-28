@@ -24,13 +24,16 @@
 
 void app_init(void)
 {
+	bsp_ntc_adc_init();
+	bsp_laser_adc_init();
+
 	experiment_task_singleton_ctor();
 	shell_task_ctor_singleton();
 	temperature_control_task_singleton_ctor();
-	adc_monitor_task_ctor_singleton();
+//	adc_monitor_task_ctor_singleton();
 	tec_ovr_control_task_singleton_ctor();
 	min_shell_task_ctor_singleton();
-//	system_log_task_ctor_singleton();
+	system_log_task_ctor_singleton();
 
 	spi_transmit_task_singleton_ctor();
 	wdg_task_ctor_singleton();
@@ -41,9 +44,9 @@ void app_start(void)
 	experiment_task_start(1);
 	shell_task_start(4);
 	temperature_control_task_start(2);
-	adc_monitor_task_start(3);
+//	adc_monitor_task_start(3);
 	tec_ovr_control_task_start(5);
-//	system_log_task_start(6);
+	system_log_task_start(6);
 	min_shell_task_start(7);
 
 	spi_transmit_task_start(8);

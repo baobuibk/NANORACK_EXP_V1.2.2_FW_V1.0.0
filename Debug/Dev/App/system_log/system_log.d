@@ -41,7 +41,28 @@ Dev/App/system_log/system_log.o: ../Dev/App/system_log/system_log.c \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/DateTime/date_time.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/Board/configs.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/wdg/wdg.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_ntc/bsp_ntc.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/Board/board.h \
+ ../Core/Inc/main.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_adc.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_dma.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_iwdg.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_spi.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_tim.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_usart.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_rcc.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_system.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_gpio.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_exti.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_bus.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_cortex.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_utils.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_pwr.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/ADG1414/adg1414.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/ADS8327/ads8327.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/MCP4902/mcp4902.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/LT8722/lt8722.h
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/lwl/lwl.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/Signals/app_signals.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h:
@@ -84,4 +105,25 @@ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/Utils/dbc_assert.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/DateTime/date_time.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/Board/configs.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/wdg/wdg.h:
-D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_ntc/bsp_ntc.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/Board/board.h:
+../Core/Inc/main.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_adc.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_dma.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_i2c.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_iwdg.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_spi.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_tim.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_usart.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_rcc.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_system.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_gpio.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_exti.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_bus.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_cortex.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_utils.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_pwr.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/ADG1414/adg1414.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/ADS8327/ads8327.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/MCP4902/mcp4902.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/LT8722/lt8722.h:

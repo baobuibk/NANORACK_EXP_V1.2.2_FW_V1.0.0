@@ -22,7 +22,6 @@
 #define EXPERIMENT_BUFFER_BYTE_SIZE			(EXPERIMENT_BUFFER_SAMPLE_SIZE * 2)
 
 #define EXPERIMENT_LASER_CURRENT_SIZE		(EXPERIMENT_CHUNK_SAMPLE_SIZE * 1024)
-#define EXPERIMENT_LASER_CURRENT_POLL_TIME	1
 
 // =================================================================
 // END: Total define for experiment, min_shell_command, spi_slave
@@ -76,7 +75,7 @@ struct experiment_task_t{
 	SST_Task super;
 	experiment_task_handler_t state;
 	SST_TimeEvt timeout_timer;
-	SST_TimeEvt laser_current_trigger;
+//	SST_TimeEvt laser_current_trigger;
 	experiment_profile_t profile;
 	data_profile_t data_profile;
 	uint8_t	sub_state;

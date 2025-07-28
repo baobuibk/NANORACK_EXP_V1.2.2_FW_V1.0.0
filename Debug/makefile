@@ -57,7 +57,6 @@ RM := rm -rf
 -include Dev/App/min_shell/subdir.mk
 -include Dev/App/experiment/subdir.mk
 -include Dev/App/app_main/subdir.mk
--include Dev/App/adc_monitor/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include objects.mk

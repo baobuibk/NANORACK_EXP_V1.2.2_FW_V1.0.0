@@ -12,6 +12,8 @@
 #include "fsm.h"
 #include "embedded_cli.h"
 #include "uart_stdio.h"
+
+
 typedef struct shell_task_t shell_task_t;
 typedef struct shell_evt_t shell_evt_t;
 typedef struct shell_task_init_t shell_task_init_t;

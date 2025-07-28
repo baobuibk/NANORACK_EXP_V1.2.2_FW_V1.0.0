@@ -53,11 +53,21 @@ Dev/BSupport/BSP/bsp_laser/bsp_laser.o: \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/Signals/app_signals.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/experiment/experiment_task.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/src/sst.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/ports/arm-cm/sst_port.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/container/circular_buffer.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/fsm.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/Utils/error_codes.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_spi_slave/bsp_spi_slave.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Common/basetypedef.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/STDIO/uart_dbg.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/STDIO/uart_stdio.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/container/circular_char_buffer.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/Board/configs.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/spi_transmit/spi_transmit.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/CLI_Terminal/CLI_Src/embedded_cli.h
 ../Dev/BSupport/BSP/bsp_laser/bsp_laser.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/Board/board.h:
 ../Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f7xx.h:
@@ -111,8 +121,18 @@ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/LT8722/lt8722.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/Signals/app_signals.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/experiment/experiment_task.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/src/sst.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/ports/arm-cm/sst_port.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/container/circular_buffer.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/fsm.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/Utils/error_codes.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_spi_slave/bsp_spi_slave.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Common/basetypedef.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/STDIO/uart_dbg.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/STDIO/uart_stdio.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/container/circular_char_buffer.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/Board/configs.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/spi_transmit/spi_transmit.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/CLI_Terminal/CLI_Src/embedded_cli.h:

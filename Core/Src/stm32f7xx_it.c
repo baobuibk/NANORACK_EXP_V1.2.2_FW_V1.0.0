@@ -194,6 +194,9 @@ void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
   //SCH_RunSystemTickTimer();
+  bsp_ntc_trigger_adc();
+  bsp_laser_trigger_adc();
+
   SST_TimeEvt_tick();
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();

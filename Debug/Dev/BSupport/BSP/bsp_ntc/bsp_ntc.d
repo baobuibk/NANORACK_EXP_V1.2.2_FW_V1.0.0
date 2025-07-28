@@ -50,14 +50,17 @@ Dev/BSupport/BSP/bsp_ntc/bsp_ntc.o: ../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.c \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/MCP4902/mcp4902.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/LT8722/lt8722.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/NTC/ntc.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/Signals/app_signals.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/temperature_control/temperature_control.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/STDIO/uart_stdio.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/container/circular_char_buffer.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/src/sst.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/ports/arm-cm/sst_port.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/container/circular_buffer.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/fsm.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/Signals/app_signals.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/Utils/error_codes.h
 ../Dev/BSupport/BSP/bsp_ntc/bsp_ntc.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/Board/board.h:
 ../Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f7xx.h:
@@ -109,11 +112,14 @@ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/ADS8327/ads8327.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/MCP4902/mcp4902.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/LT8722/lt8722.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/Devices/NTC/ntc.h:
-D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/Signals/app_signals.h:
-D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h:
-D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/adc_monitor/adc_monitor.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/temperature_control/temperature_control.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/STDIO/uart_stdio.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/container/circular_char_buffer.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/src/sst.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/ports/arm-cm/sst_port.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/container/circular_buffer.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/fsm.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/Signals/app_signals.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/FSM/FSM_signals.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/Utils/error_codes.h:

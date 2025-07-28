@@ -74,7 +74,8 @@ Dev/App/min_shell/min_shell_command.o: \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/system_log/system_log.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/DateTime/date_time.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/lwl/lwl.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/wdg/wdg.h
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/wdg/wdg.h \
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_laser/bsp_laser.h
 ../Dev/App/min_shell/min_shell_command.h:
 ../Dev/App/min_shell/min_shell.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/src/sst.h:
@@ -150,3 +151,4 @@ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/system_log/system_log.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/DateTime/date_time.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/lwl/lwl.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/wdg/wdg.h:
+D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_laser/bsp_laser.h:

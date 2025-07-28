@@ -5,7 +5,6 @@
 "./Core/Src/sysmem.o"
 "./Core/Src/system_stm32f7xx.o"
 "./Core/Startup/startup_stm32f765vgtx.o"
-"./Dev/App/adc_monitor/adc_monitor.o"
 "./Dev/App/app_main/app_main.o"
 "./Dev/App/experiment/experiment_task.o"
 "./Dev/App/min_shell/min_shell.o"
