@@ -19,8 +19,8 @@
 ../Dev/App/min_shell/min_shell_command.c:460:13:MIN_Handler_GET_LASER_CURRENT_CRC_CMD	56	static
 ../Dev/App/min_shell/min_shell_command.c:473:13:MIN_Handler_MANUAL_SET_LASER_INTENSITY_CMD	48	static
 ../Dev/App/min_shell/min_shell_command.c:493:13:MIN_Handler_MANUAL_TURN_ON_LASER_CMD	48	static
-../Dev/App/min_shell/min_shell_command.c:516:13:MIN_Handler_MANUAL_TURN_OFF_LASER_CMD	48	static
-../Dev/App/min_shell/min_shell_command.c:528:13:MIN_Handler_GET_LASER_CURRENT_CMD	56	static
-../Dev/App/min_shell/min_shell_command.c:540:13:MIN_Handler_GET_LOG_CMD	40	static
-../Dev/App/min_shell/min_shell_command.c:595:22:MIN_GetCommandTable	4	static
-../Dev/App/min_shell/min_shell_command.c:600:5:MIN_GetCommandTableSize	4	static
+../Dev/App/min_shell/min_shell_command.c:517:13:MIN_Handler_MANUAL_TURN_OFF_LASER_CMD	48	static
+../Dev/App/min_shell/min_shell_command.c:529:13:MIN_Handler_GET_LASER_CURRENT_CMD	56	static
+../Dev/App/min_shell/min_shell_command.c:541:13:MIN_Handler_GET_LOG_CMD	40	static
+../Dev/App/min_shell/min_shell_command.c:596:22:MIN_GetCommandTable	4	static
+../Dev/App/min_shell/min_shell_command.c:601:5:MIN_GetCommandTableSize	4	static

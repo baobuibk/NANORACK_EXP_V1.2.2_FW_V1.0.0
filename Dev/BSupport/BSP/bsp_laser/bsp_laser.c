@@ -260,9 +260,9 @@ extern EmbeddedCli * shell_uart_cli;
 
 void haha(void)
 {
-    for (int i = 0; i < EXPERIMENT_LASER_CURRENT_SIZE; i += 16) {
+    for (int i = 0; i < 4096; i += 16) {
         for (int j = 0; j < 16; ++j) {
-            if (i + j < EXPERIMENT_LASER_CURRENT_SIZE) {
+            if (i + j < 4096) {
 				cli_printf(shell_uart_cli, "%d  ", laser_int_current_buffer[i + j]);
             }
         }

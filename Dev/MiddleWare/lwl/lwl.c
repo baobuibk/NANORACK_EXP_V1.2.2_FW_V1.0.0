@@ -104,12 +104,24 @@ static lwl_t lwl = {
 // Log message table (ID is the index)
 static const struct lwl_msg lwl_msg_table[] = {
     {NULL, 0}, // ID 0: invalid
-	{"Time: Day %2d, %2d:%2d:%2d", 4},
-	{"NTC channel %1d : %2d", 3},
-    {"Temperature NTC0: %2d NTC1: %2d NTC3:%2d NTC4: %2d NTC5:%2d NTC6:%2d NTC7:%2d NTC8: %2d", 16}, // ID 2: TEMPERATURE_NTC, 8x2 bytes
 
-	{"Temperature: ERROR, Pri NTC = %2d Sec NTC = %2d", 4}, // ID 3: TEMPERATURE_ERROR, 2x2 bytes
-    {"Temperature: AUTO MODE", 0}, // ID 4: TEMPERATURE_AUTOMMODE_ON, No arguments
+	{"Time: Day %1d, %1d:%1d:%1d", 4},	// ID 1:
+
+	{"Temperature: NTC[%1d]: %2d", 3},	// ID 2:
+	{"Temperature: ERROR, Pri NTC = %1d Sec NTC = %1d", 2}, // ID 3: TEMPERATURE_ERROR, 2x2 bytes
+    {"Temperature: AUTO mode", 0}, // ID 4: TEMPERATURE_AUTOMMODE_ON, No arguments
+	{"Temperature: MANUAL mode", 0}, // ID 5:
+	{"Temperature: COOLING", 0}, // ID 6:
+	{"Temperature: HEATING", 0}, // ID 7:
+
+	{"Temperature: Turn on tec override: tec[%1d]", 1}, // ID 8:
+	{"Temperature: Turn off tec override: tec[%1d]", 1}, // ID 9:
+	{"Temperature: Change temp profile: target_temp: %d, min_temp: %d, max_temp: %d, ntc_primary: %d, ntc_secondary: %d, auto_recover: %d, tec_mask: %d, heater_mask: %d, tec_vol: %d, heater_duty: %d", 10}, // ID 10:
+	{"Temperature: Change tec override profile: interval: %d, tec[%d]: %d mV", 3}, // ID 11:
+
+
+
+
     {"TEC: AUTO mode TEC ON with voltage %2d", 2}, // ID 5: TEMPERATURE_AUTOMMODE_TEC_ON, 2 bytes
     {"TEC: AUTO mode TEC OFF", 0}, // ID 6: TEMPERATURE_AUTOMMODE_TEC_OFF, No arguments
     {"TEC: %1d ON", 1}, // ID 7: TEMPERATURE_TEC_ON, 1 byte

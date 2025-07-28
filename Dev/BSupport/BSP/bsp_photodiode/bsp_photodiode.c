@@ -369,14 +369,7 @@ void TIM2_IRQHandler(void)
 	switch (photo_diode_state)
 	{
 		case PHOTO_SAMPLED_PRE:
-
-
-
-//			bsp_laser_int_switch_on(photo_diode_adc.timing.pos);
-
-
-
-
+			bsp_laser_int_switch_on(photo_diode_adc.timing.pos);
 			photo_diode_state = PHOTO_SAMPLED_SAMPLING;
 //			bsp_photodiode_set_sampling_time();
 			PHOTO_TIMER->ARR = timer_timing.sampling_time_ARR - 1;
@@ -387,12 +380,7 @@ void TIM2_IRQHandler(void)
 		break;
 
 		case PHOTO_SAMPLED_SAMPLING:
-
-
-//			bsp_laser_int_switch_off_all();
-
-
-
+			bsp_laser_int_switch_off_all();
 			photo_diode_state = PHOTO_SAMPLING_STOP;
 //			bsp_photodiode_set_sampling_time();
 			PHOTO_TIMER->ARR = timer_timing.post_time_ARR - 1;

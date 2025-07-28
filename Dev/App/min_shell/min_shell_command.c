@@ -495,7 +495,8 @@ static void MIN_Handler_MANUAL_TURN_ON_LASER_CMD(MIN_Context_t *ctx, const uint8
 	uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
 	uint8_t obj = payload[0];
 	uint8_t laser_idx = payload[1];
-	if ((laser_idx > EXTERNAL_CHAIN_CHANNEL_NUM) || (laser_idx < 1) || (obj >= 2))
+	if (((obj == 0) && ((laser_idx > INTERNAL_CHAIN_CHANNEL_NUM) || (laser_idx < 1)))
+			|| ((obj == 1) && ((laser_idx > EXTERNAL_CHAIN_CHANNEL_NUM) || (laser_idx < 1))))
 	{
 		buffer[0] = MIN_RESP_FAIL;
 		buffer[1] = MIN_RESP_FAIL;
