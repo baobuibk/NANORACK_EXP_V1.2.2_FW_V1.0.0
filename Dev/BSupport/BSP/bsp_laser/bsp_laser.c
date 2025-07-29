@@ -11,6 +11,7 @@
 #include "error_codes.h"
 #include "bsp_spi_slave.h"
 #include "spi_transmit.h"
+#include "lwl.h"
 
 #include <stdbool.h>
 
@@ -223,6 +224,9 @@ void bsp_laser_collect_current_data_to_buffer(void)
 
 uint32_t bsp_laser_send_current_to_spi(void)
 {
+	// Add log
+	LWL(LWL_EXP_TRANS_LOG_DATA);
+
 	// Cấu hình địa chỉ buffer
 	SPI_SlaveDevice_CollectData((uint16_t *)laser_int_current_buffer);
 	// Bật tín hiệu DataReady
@@ -265,13 +269,8 @@ extern EmbeddedCli * shell_uart_cli;
 
 void haha(void)
 {
-    for (int i = 0; i < 4096; i += 16) {
-        for (int j = 0; j < 16; ++j) {
-            if (i + j < 4096) {
-				cli_printf(shell_uart_cli, "%d  ", laser_int_current_buffer[i + j]);
-            }
-        }
-		cli_printf(shell_uart_cli, "");
+    for (int i = 0; i < 512; i ++) {
+		cli_printf(shell_uart_cli, "%d  ", laser_int_current_buffer[i]);
     }
     cli_printf(shell_uart_cli, "");
 }

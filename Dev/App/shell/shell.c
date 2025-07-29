@@ -274,14 +274,6 @@ static state_t shell_state_send_long_buffer_handler(shell_task_t * const me, she
         		}
         	}
 
-
-//			if(!me->total_remain)
-//			{
-//	        	me->state = shell_state_process_handler;
-//	            return TRAN_STATUS;
-//			}
-//			else return HANDLED_STATUS;
-
         default:
             // Handle other events if necessary
             return IGNORED_STATUS;
@@ -307,7 +299,6 @@ static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const 
 			}
 
 			// Create event if done send evt
-//			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_header_evt);
 			experiment_task_done_send_header_evt(p_experiment_task);
 			return HANDLED_STATUS;
         }
@@ -330,7 +321,6 @@ static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const 
 				}
 			}
 			// Create event if done send chunk and have other chunk
-//			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
 			experiment_task_done_send_chunk(p_experiment_task);
 			return HANDLED_STATUS;
         }
@@ -351,7 +341,6 @@ static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const 
 				if(!me->remain_word)
 				{
 					enable_shell_empty = false;
-//					SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
 					experiment_task_done_send_chunk(p_experiment_task);
 				}
 			}
@@ -373,7 +362,6 @@ static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const 
 				if(!me->remain_word)
 				{
 					enable_shell_empty = false;
-//					SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
 					experiment_task_done_send_chunk(p_experiment_task);
 				}
 			}
@@ -433,7 +421,6 @@ static void shell_htoa(shell_task_t * const me)
 	me->htoa_buffer[4] = ' ';
     me->htoa_buffer_index = 0;
     if (!me->remain_word)
-//    	SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
     	experiment_task_done_send_chunk(p_experiment_task);
 }
 

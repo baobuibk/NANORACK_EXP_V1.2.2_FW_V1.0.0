@@ -219,6 +219,12 @@ void SPI1_ReInit(void);
 
 /* USER CODE BEGIN Private defines */
 
+//#define EXP_DEBUG_PRINTING
+//#define MIN_SHELL_DEBUG_PRINTING
+//#define PHOTO_COOL_DEBUG_PRINTING
+//#define SPI_TRANS_DEBUG_PRINTING
+//#define TEMPERATURE_CONTROL_DEBUG_PRINTING
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

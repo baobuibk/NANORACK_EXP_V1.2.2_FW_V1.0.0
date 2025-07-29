@@ -6,5 +6,5 @@
 ../Dev/App/spi_transmit/spi_transmit.c:54:13:spi_transmit_task_init	16	static
 ../Dev/App/spi_transmit/spi_transmit.c:59:13:spi_transmit_task_dispatch	16	static
 ../Dev/App/spi_transmit/spi_transmit.c:64:6:spi_transmit_task_start	16	static
-../Dev/App/spi_transmit/spi_transmit.c:69:16:spi_transmit_handler	32	static
-../Dev/App/spi_transmit/spi_transmit.c:112:6:spi_transmit_task_data_ready	32	static
+../Dev/App/spi_transmit/spi_transmit.c:69:16:spi_transmit_handler	16	static
+../Dev/App/spi_transmit/spi_transmit.c:112:6:spi_transmit_task_data_ready	16	static

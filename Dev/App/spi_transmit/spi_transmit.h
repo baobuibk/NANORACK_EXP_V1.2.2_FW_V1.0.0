@@ -10,6 +10,14 @@
 
 #include "sst.h"
 #include "fsm.h"
+#include "main.h"
+
+//#define SPI_TRANS_DEBUG_PRINTING
+#ifdef SPI_TRANS_DEBUG_PRINTING
+    #define spi_trans_debug_print(...) DBG(0,__VA_ARGS__)
+#else
+	#define spi_trans_debug_print(...)
+#endif
 
 typedef struct spi_transmit_task_t spi_transmit_task_t;
 typedef struct spi_transmit_evt_t  spi_transmit_evt_t;
@@ -39,13 +47,6 @@ void spi_transmit_task_start(uint8_t priority);
 
 
 void spi_transmit_task_data_ready(spi_transmit_task_t *const me);
-
-#define SPI_TRANS_DEBUG_PRINTING
-#ifdef SPI_TRANS_DEBUG_PRINTING
-    #define spi_trans_debug_print(...) DBG(0,__VA_ARGS__)
-#else
-	#define spi_trans_debug_print(...)
-#endif
 
 
 #endif /* APP_SPI_TRANSMIT_SPI_TRANSMIT_H_ */

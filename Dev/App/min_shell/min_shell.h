@@ -12,13 +12,18 @@
 #include "fsm.h"
 #include "min.h"
 #include "uart_stdio.h"
+#include "main.h"
 
+//#define MIN_SHELL_DEBUG_PRINTING
+#ifdef MIN_SHELL_DEBUG_PRINTING
+    #define min_shell_debug_print(...) DBG(0,__VA_ARGS__)
+#else
+	#define min_shell_debug_print(...)
+#endif
 
-#define MIN_SHELL_DEBUG_PRINTING
 
 #define AUTO_REINIT_ON_TIMEOUT
 
-#define MIN_FRAME_TIMEOUT_MS 3000U
 
 /**
  * @brief Maximum number of MIN contexts that can be registered.
@@ -128,12 +133,6 @@ struct min_shell_task_init_t {
     min_shell_evt_t const *current_evt; // Pointer to the current event being processed
     circular_buffer_t *min_shell_event_buffer; // Pointer to the circular buffer for events
 };
-
-#ifdef MIN_SHELL_DEBUG_PRINTING
-    #define min_shell_debug_print(...) DBG(0,__VA_ARGS__)
-#else
-	#define min_shell_debug_print(...)
-#endif
 
 typedef void (*MIN_ResponseHandler)(uint8_t min_id, const uint8_t *payload, uint8_t len);
 void MIN_RegisterResponseHandler(MIN_ResponseHandler handler);

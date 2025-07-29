@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "board.h"
-//#include "adc_monitor.h"
 #include "system_reset.h"
 #include "bsp_spi_ram.h"
 #include "bsp_laser.h"
@@ -30,9 +29,6 @@ static experiment_task_t *p_experiment_task = &experiment_task_inst;
 
 extern min_shell_task_t min_shell_task_inst;
 static min_shell_task_t *p_min_shell_task = &min_shell_task_inst;
-
-//extern system_reset_task_t system_reset_task_inst;
-//static system_reset_task_t *p_system_reset_task = &system_reset_task_inst;
 
 static bool is_measured = false;
 

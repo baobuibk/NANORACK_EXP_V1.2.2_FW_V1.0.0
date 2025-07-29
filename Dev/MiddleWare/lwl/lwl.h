@@ -57,33 +57,60 @@
 // Public (global) function declarations
 ////////////////////////////////////////////////////////////////////////////////
 
-// Core module interface functions.
-// Define log message IDs
-enum {
-    INVALID = 0, // ID 0 is reserved (invalid)
-    TIMESTAMP = 1,
-	TEMPERATURE_SINGLE_NTC,
-    TEMPERATURE_NTC,
-    TEMPERATURE_ERROR,
-    TEMPERATURE_AUTOMMODE_ON,
-    TEMPERATURE_AUTOMMODE_TEC_ON,
-    TEMPERATURE_AUTOMMODE_TEC_OFF,
-    TEMPERATURE_TEC_ON,
-    TEMPERATURE_TEC_OFF,
-    TEMPERATURE_TEC_STATUS,
-    TEMPERATURE_HEATER_ON,
-    TEMPERATURE_HEATER_OFF,
-    TEMPERATURE_HEATER_STATUS,
-    TEMPERATURE_INTERNAL_LASER_ON,
-    TEMPERATURE_INTERNAL_LASER_OFF,
-    TEMPERATURE_EXTERNAL_LASER_ON,
-    TEMPERATURE_EXTERNAL_LASER_OFF,
-    PHOTODIODE_START_SAMPLING,
-    PHOTODIODE_FINISH_SAMPLING,
-    SYSTEM_RESET,
-    SYSTEM_INITIALIZED,
-    SYSTEM_STARTED
-};
+typedef enum {
+    LWL_EXP_INVALID = 0,                  // ID 0: Reserved
+    LWL_EXP_TIMESTAMP,                    // ID 1: System timestamp log
+
+    LWL_EXP_TEMP_SINGLE_NTC,              // ID 2: Log single NTC value
+    LWL_EXP_TEMP_PROFILE_SET,            // ID 3: Set temperature control profile
+
+    LWL_EXP_TEMP_MANUAL_MODE,            // ID 4: Manual temperature control mode
+    LWL_EXP_TEMP_AUTO_MODE,              // ID 5: Automatic temperature control mode
+    LWL_EXP_TEMP_COOLING,                // ID 6: Cooling active
+    LWL_EXP_TEMP_HEATING,                // ID 7: Heating active
+    LWL_EXP_TEMP_ERROR,                  // ID 8: NTC error (primary/secondary)
+
+    LWL_EXP_TEMP_TEC_OVERRIDE_PROFILE,   // ID 9: TEC override profile configuration
+    LWL_EXP_TEMP_TEC_OVERRIDE_ON,        // ID 10: Enable TEC override
+    LWL_EXP_TEMP_TEC_OVERRIDE_OFF,       // ID 11: Disable TEC override
+
+    LWL_EXP_TEC_MANUAL_ON,               // ID 12: Manually turn on TEC
+    LWL_EXP_TEC_MANUAL_OFF,              // ID 13: Manually turn off TEC
+    LWL_EXP_TEC_AUTO_ON,                 // ID 14: Automatically turn on TEC
+    LWL_EXP_TEC_AUTO_OFF,                // ID 15: Automatically turn off TEC
+
+    LWL_EXP_HEATER_MANUAL_ON,            // ID 16: Manually turn on heater
+    LWL_EXP_HEATER_MANUAL_OFF,           // ID 17: Manually turn off heater
+    LWL_EXP_HEATER_AUTO_ON,              // ID 18: Automatically turn on heater
+    LWL_EXP_HEATER_AUTO_OFF,             // ID 19: Automatically turn off heater
+
+    LWL_EXP_LASER_INT_MANUAL_ON,         // ID 20: Internal laser manual ON
+    LWL_EXP_LASER_INT_MANUAL_OFF,        // ID 21: Internal laser manual OFF
+    LWL_EXP_LASER_INT_SAMPLE_ON,         // ID 22: Internal laser sampling ON
+    LWL_EXP_LASER_INT_SAMPLE_OFF,        // ID 23: Internal laser sampling OFF
+
+    LWL_EXP_LASER_EXT_MANUAL_ON,         // ID 24: External laser manual ON
+    LWL_EXP_LASER_EXT_MANUAL_OFF,        // ID 25: External laser manual OFF
+    LWL_EXP_LASER_EXT_SAMPLE_ON,         // ID 26: External laser sampling ON
+    LWL_EXP_LASER_EXT_SAMPLE_OFF,        // ID 27: External laser sampling OFF
+
+    LWL_EXP_PHOTO_SAMPLE_ON,             // ID 28: Start sampling photodiode (photo)
+    LWL_EXP_PHOTO_SAMPLE_OFF,            // ID 29: Stop sampling photodiode (photo)
+
+    LWL_EXP_SET_PHOTO_PROFILE,           // ID 30: Configure photo sampling profile
+    LWL_EXP_SET_LASER_INTENSITY,         // ID 31: Set laser intensity
+    LWL_EXP_SET_LASER_PHOTO_INDEX,       // ID 32: Set laser and photo sensor index
+    LWL_EXP_START,                       // ID 33: Start experiment
+    LWL_EXP_STOP,                        // ID 34: Stop experiment
+
+    LWL_EXP_SYS_RESET_OTA,               // ID 35: OTA system reset trigger
+	LWL_EXP_SET_RTC,		// ID 36:
+
+	LWL_EXP_TRANS_PHOTO_DATA,
+	LWL_EXP_TRANS_CURRENT_DATA,
+	LWL_EXP_TRANS_LOG_DATA,
+} log_msg_id_t;
+
 
 void lwl_start(void);
 

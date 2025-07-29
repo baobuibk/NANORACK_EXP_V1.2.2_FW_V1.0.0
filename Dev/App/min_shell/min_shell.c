@@ -23,6 +23,8 @@ DBC_MODULE_NAME("min_shell")
 #define MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE 	256
 #define MIN_SHELL_BUSY_TIMEOUT					20000
 
+#define MIN_FRAME_TIMEOUT_MS		3000U
+
 
 min_shell_task_t min_shell_task_inst;
 circular_buffer_t min_shell_task_event_queue = {0}; // Circular buffer to hold shell events

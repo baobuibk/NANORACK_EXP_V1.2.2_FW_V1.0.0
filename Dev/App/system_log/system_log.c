@@ -21,7 +21,6 @@
 #define SYSTEM_LOG_NUM_EVENT 		1
 #define DEFAULT_POLL_TIME 			1000
 
-
 system_log_task_t system_log_task_inst;
 circular_buffer_t system_log_event_queue = {0};
 static system_log_evt_t system_log_current_event = {0};
@@ -78,14 +77,12 @@ static state_t system_log_normal_state_handler(system_log_task_t * const me, sys
 
 void system_log_house_keeping(system_log_task_t * const me)
 {
-//	LWL(TIMESTAMP, LWL_4(SST_getTick()));
-
-//	uint8_t days, hours, minutes, seconds;
-//	date_time_get(&days, &hours, &minutes, &seconds);
-//	LWL(TIMESTAMP, LWL_1(days), LWL_1(hours), LWL_1(minutes), LWL_1(seconds));
+	uint8_t days, hours, minutes, seconds;
+	date_time_get(&days, &hours, &minutes, &seconds);
+	LWL(LWL_EXP_TIMESTAMP, LWL_1(days), LWL_1(hours), LWL_1(minutes), LWL_1(seconds));
 	for (uint32_t i=0;i<8;i++)
 		if (me->ntc_log_mask & (0x01 << i))
-			LWL(TEMPERATURE_SINGLE_NTC, LWL_1(i), LWL_2(bsp_ntc_get_temperature(i)));
+			LWL(LWL_EXP_TEMP_SINGLE_NTC, LWL_1(i), LWL_2(bsp_ntc_get_temperature(i)));
 }
 
 void system_log_set_interval(uint32_t interval)

@@ -10,9 +10,9 @@
 #include "spi_transmit.h"
 #include "experiment_task.h"
 
-/////////////
+////////////////////////////////////////////////////////////////////////////////
 // EXTERN
-/////////////
+////////////////////////////////////////////////////////////////////////////////
 extern spi_transmit_task_t spi_transmit_task_inst;
 static spi_transmit_task_t *p_spi_transmit_task = &spi_transmit_task_inst;
 
@@ -21,7 +21,7 @@ static spi_transmit_task_t *p_spi_transmit_task = &spi_transmit_task_inst;
 // Common macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define LWL_START_BYTE 0xAA // Start byte for each log record
+#define LWL_START_BYTE				0xAA // Start byte for each log record
 
 #ifdef CONFIG_LWL_BUF_SIZE
     #define 	LWL_BUF_SIZE 		(CONFIG_LWL_BUF_SIZE)
@@ -99,47 +99,66 @@ static lwl_t lwl = {
     }
 };
 
-//static struct lwl_t lwl;
-
 // Log message table (ID is the index)
 static const struct lwl_msg lwl_msg_table[] = {
-    {NULL, 0}, // ID 0: invalid
+    {NULL, 0},                                       // ID 0: EXP_INVALID
 
-	{"Time: Day %1d, %1d:%1d:%1d", 4},	// ID 1:
+    {"Time: Day %1d, %1d:%1d:%1d", 4},               // ID 1: EXP_TIMESTAMP
 
-	{"Temperature: NTC[%1d]: %2d", 3},	// ID 2:
-	{"Temperature: ERROR, Pri NTC = %1d Sec NTC = %1d", 2}, // ID 3: TEMPERATURE_ERROR, 2x2 bytes
-    {"Temperature: AUTO mode", 0}, // ID 4: TEMPERATURE_AUTOMMODE_ON, No arguments
-	{"Temperature: MANUAL mode", 0}, // ID 5:
-	{"Temperature: COOLING", 0}, // ID 6:
-	{"Temperature: HEATING", 0}, // ID 7:
+    {"Temperature: NTC[%1d]: %2d", 3},               // ID 2: EXP_TEMP_SINGLE_NTC
+    {"Temperature: Set temperature profile: Target_temp: %2d, Min_temp: %2d, Max_temp: %2d, NTC_primary: %1d, NTC_secondary: %1d, \
+        	Auto_recover: %1d, TEC_mask: %1d, Heater_mask: %1d, TEC_vol: %2d, Heater_duty: %1d", 14}, // ID 3: EXP_TEMP_PROFILE_SET
 
-	{"Temperature: Turn on tec override: tec[%1d]", 1}, // ID 8:
-	{"Temperature: Turn off tec override: tec[%1d]", 1}, // ID 9:
-	{"Temperature: Change temp profile: target_temp: %d, min_temp: %d, max_temp: %d, ntc_primary: %d, ntc_secondary: %d, auto_recover: %d, tec_mask: %d, heater_mask: %d, tec_vol: %d, heater_duty: %d", 10}, // ID 10:
-	{"Temperature: Change tec override profile: interval: %d, tec[%d]: %d mV", 3}, // ID 11:
+    {"Temperature: MANUAL mode", 0},                 // ID 4: EXP_TEMP_MANUAL_MODE
+    {"Temperature: AUTO mode", 0},                   // ID 5: EXP_TEMP_AUTO_MODE
+    {"Temperature: COOLING", 0},                     // ID 6: EXP_TEMP_COOLING
+    {"Temperature: HEATING", 0},                     // ID 7: EXP_TEMP_HEATING
+    {"Temperature: ERROR, Primary NTC = %1d Secondary NTC = %1d", 2}, // ID 8: EXP_TEMP_ERROR
 
+    {"Temperature: Set TEC override profile: Interval: %2d, TEC[%1d]: %2d mV", 5}, // ID 9: EXP_TEMP_TEC_OVERRIDE_PROFILE
+    {"Temperature: TEC override ON", 0},     // ID 10: EXP_TEMP_TEC_OVERRIDE_ON
+    {"Temperature: TEC override OFF", 0},    // ID 11: EXP_TEMP_TEC_OVERRIDE_OFF
 
+    {"TEC: MANUAL mode: TEC[%1d] ON", 1},            // ID 12: EXP_TEC_MANUAL_ON
+    {"TEC: MANUAL mode: TEC[%1d] OFF", 1},           // ID 13: EXP_TEC_MANUAL_OFF
+    {"TEC: AUTO mode: TEC ON with %2dmV", 2},        // ID 14: EXP_TEC_AUTO_ON
+    {"TEC: AUTO mode: TEC OFF", 0},                  // ID 15: EXP_TEC_AUTO_OFF
 
+    {"Heater: MANUAL mode: Heater[%1d] ON", 1},      	// ID 16: EXP_HEATER_MANUAL_ON
+    {"Heater: MANUAL mode: Heater[%1d] OFF", 1},     	// ID 17: EXP_HEATER_MANUAL_OFF
+    {"Heater: AUTO mode: Heater ON with duty %1d", 1}, 	// ID 18: EXP_HEATER_AUTO_ON
+    {"Heater: AUTO mode: Heater OFF", 0},            	// ID 19: EXP_HEATER_AUTO_OFF
 
-    {"TEC: AUTO mode TEC ON with voltage %2d", 2}, // ID 5: TEMPERATURE_AUTOMMODE_TEC_ON, 2 bytes
-    {"TEC: AUTO mode TEC OFF", 0}, // ID 6: TEMPERATURE_AUTOMMODE_TEC_OFF, No arguments
-    {"TEC: %1d ON", 1}, // ID 7: TEMPERATURE_TEC_ON, 1 byte
-    {"TEC: %1d OFF", 1}, // ID 8: TEMPERATURE_TEC_OFF, 1 byte
-    {"TEC Status Tec 0: %1d Tec 1: %1d Tec 2: %1d Tec 3: %1d Tec 4: %1d Tec 5: %1d Tec 6: %1d Tec 7: %1d", 8}, // ID 9: TEMPERATURE_TEC_STATUS, 8x1 bytes
-    {"Heater Number: %1d ON", 1}, // ID 10: TEMPERATURE_HEATER_ON, 1 byte
-    {"Heater Number: %1d OFF", 1}, // ID 11: TEMPERATURE_HEATER_OFF, 1 byte
-    {"Heater Status Heater 0: %1d heater 1: %1d heater 2: %1d heater 3: %1d heater 4: %1d heater 5: %1d heater 6: %1d heater 7: %1d", 8}, // ID 12: TEMPERATURE_HEATER_STATUS, 8x1 bytes
-    {"Laser: Internal laser %1d ON at %1d percent", 2}, // ID 13: TEMPERATURE_INTERNAL_LASER_ON, 2x1 bytes
-    {"Laser: Internal laser %1d OFF", 1}, // ID 14: TEMPERATURE_INTERNAL_LASER_OFF, 1 byte
-    {"Laser: External laser %1d ON at %1d percent", 2}, // ID 15: TEMPERATURE_EXTERNAL_LASER_ON, 2x1 bytes
-    {"Laser: External laser %1d OFF", 1}, // ID 16: TEMPERATURE_EXTERNAL_LASER_OFF, 1 byte
-    {"Photodiode: Start sampling photodiode number %1d", 1}, // ID 17: PHOTODIODE_START_SAMPLING, 1 byte
-    {"Photodiode: Finish sampling", 0}, // ID 18: PHOTODIODE_FINISH_SAMPLING, No arguments
-    {"System: Reseting", 0}, // ID 19: SYSTEM_RESET, No arguments
-    {"System: Finish Peripheral Initialization", 0}, // ID 20: SYSTEM_INITIALIZED, No arguments
-    {"System: Start Applications", 0}, // ID 21: SYSTEM_STARTED, No arguments
+    {"Internal laser: MANUAL mode: Switch ON: Index: %1d, Current: %1d", 2}, // ID 20: EXP_LASER_INT_MANUAL_ON
+    {"Internal laser: MANUAL mode: Switch OFF", 0},  // ID 21: EXP_LASER_INT_MANUAL_OFF
+    {"Internal laser: SAMPLING mode: Switch ON: Index: %1d, Current: %1d", 2}, // ID 22: EXP_LASER_INT_SAMPLE_ON
+    {"Internal laser: SAMPLING mode: Switch OFF", 0}, // ID 23: EXP_LASER_INT_SAMPLE_OFF
+
+    {"External laser: MANUAL mode: Switch ON: Index: %1d, Current: %1d", 2}, // ID 24: EXP_LASER_EXT_MANUAL_ON
+    {"External laser: MANUAL mode: Switch OFF", 0},  // ID 25: EXP_LASER_EXT_MANUAL_OFF
+    {"External laser: SAMPLING mode: Switch ON: Index: %1d, Current: %1d", 2}, // ID 26: EXP_LASER_EXT_SAMPLE_ON
+    {"External laser: SAMPLING mode: Switch OFF", 0}, // ID 27: EXP_LASER_EXT_SAMPLE_OFF
+
+    {"Photo: SAMPLING mode: Switch ON: Index: %1d", 1}, // ID 28: EXP_PHOTO_SAMPLE_ON
+    {"Photo: SAMPLING mode: Switch OFF", 0},         // ID 29: EXP_PHOTO_SAMPLE_OFF
+
+    {"Experiment: Set photo profile: Sample_rate: %4d (sample/s), Pre_duration: %2d (mS), \
+    		Sample_duration: %2d (mS), Post_duration: %2d (mS)", 10}, // ID 30: EXP_SET_PHOTO_PROFILE
+    {"Experiment: Set laser intensity: %1d", 1},      // ID 31: EXP_SET_LASER_INTENSITY
+    {"Experiment: Set laser&photo index: %1d", 1},   // ID 32: EXP_SET_LASER_PHOTO_INDEX
+    {"Experiment: Start", 0},                        // ID 33: EXP_START
+    {"Experiment: Stop", 0},                         // ID 34: EXP_STOP
+
+    {"System: Reset OTA", 0},                        // ID 35: EXP_SYS_RESET_OTA
+
+	{"System: Set time: Day: %1d, Hour: %1d, Minute: %1d, Second: %1d", 4},                        // ID 36:
+
+	{"Transmit: Send photo chunk[%1d] data", 1},
+	{"Transmit: Send laser current data", 0},
+	{"Transmit: Send log data", 0},
 };
+
+
 
 static const uint8_t lwl_msg_table_size = sizeof(lwl_msg_table) / sizeof(lwl_msg_table[0]);
 
@@ -157,6 +176,39 @@ void lwl_start() {
 }
 
 
+
+#include "embedded_cli.h"
+extern EmbeddedCli * shell_uart_cli;
+
+//#define CLI_DEBUG
+
+#ifdef CLI_DEBUG
+
+#define cli_debug(id)  do { \
+    switch (id) { \
+        case 4: \
+            cli_printf(shell_uart_cli, "Temperature: MANUAL mode\r\n"); \
+            break; \
+        case 5: \
+            cli_printf(shell_uart_cli, "Temperature: AUTO mode\r\n"); \
+            break; \
+        case 6: \
+            cli_printf(shell_uart_cli, "Temperature: COOLING\r\n"); \
+            break; \
+        case 7: \
+            cli_printf(shell_uart_cli, "Temperature: HEATING\r\n"); \
+            break; \
+        default: \
+            cli_printf(shell_uart_cli, "Unknown debug ID: %d\r\n", id); \
+            break; \
+    } \
+} while (0)
+
+#else
+#define cli_debug(id)  ((void)0)
+#endif
+
+
 /*
  * @brief Record a lightweight log with start byte, length, and CRC.
  *
@@ -167,7 +219,11 @@ void lwl_start() {
  * LENGTH = 1 (length) + 1 (id) + num_arg_bytes + 1 (CRC)
  * CRC is calculated over [ID][ARG_BYTES]
  */
-void LWL(uint8_t id, ...) {
+void LWL(uint8_t id, ...)
+{
+	// CLI_debug
+	cli_debug(id);
+
     CRIT_STATE_VAR;
     va_list ap;
     uint32_t put_idx;
@@ -282,6 +338,9 @@ uint16_t * lwl_get_full_buffer_addr(void)
 
 uint32_t lwl_log_send_to_spi(void)
 {
+	// Add log
+	LWL(LWL_EXP_TRANS_LOG_DATA);
+
 	lwl_clear_notification();
 	// Cấu hình địa chỉ buffer
 	SPI_SlaveDevice_CollectData((uint16_t *)lwl_get_full_buffer_addr());

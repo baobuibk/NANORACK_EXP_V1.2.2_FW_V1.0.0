@@ -9,7 +9,7 @@
 #define APP_TEMPERATURE_CONTROL_TEMPERATURE_CONTROL_TASK_H_
 
 #include "uart_stdio.h"
-
+#include "main.h"
 
 //#define TEMPERATURE_CONTROL_DEBUG_PRINTING
 #ifdef TEMPERATURE_CONTROL_DEBUG_PRINTING
@@ -17,6 +17,7 @@
 #else
 	#define temp_control_debug_print(...)
 #endif
+
 
 #define TEMPERATURE_MAX_ERROR						50		//5.0C
 

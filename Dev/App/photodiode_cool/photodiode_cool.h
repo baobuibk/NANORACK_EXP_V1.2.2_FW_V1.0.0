@@ -8,17 +8,22 @@
 #ifndef APP_tec_ovr_CONTROL_tec_ovr_CONTROL_TASK_H_
 #define APP_tec_ovr_CONTROL_tec_ovr_CONTROL_TASK_H_
 
-#define PHOTO_COOL_DEBUG_PRINTING
-
-#define TEC_OVR_CONTROL_COMMAND_PAYLOAD_LENGTH	15
 #include "sst.h"
 #include "fsm.h"
+#include "main.h"
 
+//#define PHOTO_COOL_DEBUG_PRINTING
 #ifdef PHOTO_COOL_DEBUG_PRINTING
     #define photo_cool_debug_print(...) DBG(0,__VA_ARGS__)
 #else
 	#define photo_cool_debug_print(...)
 #endif
+
+
+#define TEC_OVR_CONTROL_COMMAND_PAYLOAD_LENGTH	15
+
+
+
 
 typedef struct tec_ovr_control_task_t tec_ovr_control_task_t;
 typedef struct tec_ovr_control_evt_t tec_ovr_control_evt_t;

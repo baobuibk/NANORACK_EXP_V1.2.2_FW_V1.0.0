@@ -18,6 +18,7 @@
 #include "wdg.h"
 #include "bsp_ntc.h"
 #include "bsp_bkram.h"
+#include "lwl.h"
 
 #include "stdbool.h"
 #include "string.h"
@@ -184,11 +185,13 @@ static state_t temperature_control_default_handler(temperature_control_task_t * 
 	if (me->temperature_control_profile.auto_enable)
 	{
 		me->state = temperature_control_state_cooling_handler;
+		temperature_control_auto_mode_set(&temperature_control_task_inst);
 		cli_printf(shell_uart_cli, "Temperature control: Auto mode activated.\r\n");
 	}
 	else
 	{
 		me->state = temperature_control_state_manual_handler;
+		temperature_control_man_mode_set(&temperature_control_task_inst);
 		cli_printf(shell_uart_cli, "Temperature control: Manual mode engaged.\r\n");
 	}
 	return HANDLED_STATUS;
@@ -268,6 +271,9 @@ static state_t temperature_control_state_cooling_handler(temperature_control_tas
 	{
 		case SIG_ENTRY:
 		{
+			// Add log
+			LWL(LWL_EXP_TEMP_COOLING);
+
 			temp_control_debug_print("Entry COOLING\r\n");
 			me->counter = 0;
 			temperature_control_auto_tec_set_output(me);	// Set all tecs on the profile to the desired voltage
@@ -408,6 +414,9 @@ static state_t temperature_control_state_heating_heater_handler(temperature_cont
 	{
 		case SIG_ENTRY:
 		{
+			// Add log
+			LWL(LWL_EXP_TEMP_HEATING);
+
 			temp_control_debug_print("Entry HEATING\r\n");
    			me->counter = 0;
    			temperature_control_auto_tec_disable_output(me);
@@ -611,6 +620,9 @@ static state_t temperature_control_state_ntc_error_handler(temperature_control_t
 // CMD transmit state (event)
 uint32_t temperature_control_man_mode_set(temperature_control_task_t *const me)
 {
+	// Add log
+	LWL(LWL_EXP_TEMP_MANUAL_MODE);
+
 	me->temperature_control_profile.auto_enable  = 0;
 	temp_ctrl_update_profile();
 
@@ -622,6 +634,9 @@ uint32_t temperature_control_man_mode_set(temperature_control_task_t *const me)
 }
 uint32_t temperature_control_auto_mode_set(temperature_control_task_t *const me)
 {
+	// Add log
+	LWL(LWL_EXP_TEMP_AUTO_MODE);
+
 	me->temperature_control_profile.auto_enable  = 1;
 	temp_ctrl_update_profile();
 

@@ -23,9 +23,9 @@
 #include "bsp_bkram.h"
 #include "bsp_ntc.h"
 #include "bsp_laser.h"
+#include "lwl.h"
 
 DBC_MODULE_NAME("experiment_task")
-
 
 //////////////////////// BK RAM ////////////////////////
 struct experiment_profile_backup_RAM_t
@@ -48,6 +48,11 @@ static void experiment_update_profile(void);
 static bool experiment_validate_profile(void);
 
 //////////////////////// BK RAM ////////////////////////
+
+///////////////////// CLI CONSOLE //////////////////////
+#include "embedded_cli.h"
+extern EmbeddedCli * shell_uart_cli;
+///////////////////// CLI CONSOLE //////////////////////
 
 
 #define EXPERIMENT_TASK_NUM_EVENTS  		10
@@ -138,8 +143,6 @@ void experiment_task_ctor(experiment_task_t * const me, experiment_task_init_t c
                                 (SST_Evt *)init->current_evt, init->event_buffer);
     me->state = init->init_state;
     SST_TimeEvt_ctor(&me->timeout_timer, EVT_EXPERIMENT_DATA_AQUISITION_TIMEOUT, &(me->super));
-//    SST_TimeEvt_ctor(&me->laser_current_trigger, EVT_EXPERIMENT_LASER_ADC_POLL_TIME, &(me->super));
-//    SST_TimeEvt_disarm(&me->laser_current_trigger); // Disarm the timeout timer
     SST_TimeEvt_disarm(&me->timeout_timer); // Disarm the timeout timer
     me->sub_state = init->sub_state;
 }
@@ -173,6 +176,9 @@ static state_t experiment_task_state_manual_handler(experiment_task_t * const me
 
 		case EVT_EXPERIMENT_START_MEASURE:
 		{
+	    	// Add log
+	    	LWL(LWL_EXP_START);
+
 			me->state = experiment_task_state_data_aqui_handler;
 			return TRAN_STATUS;
 		}
@@ -203,6 +209,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		case SIG_ENTRY:
 		{
 			exp_debug_print("Start Sampling...\r\n");
+			cli_printf(shell_uart_cli, "Start Sampling...\r\n");
 			SST_TimeEvt_arm(&me->timeout_timer, EXPERIMENT_TASK_AQUI_TIMEOUT, 0);
 
 	      	// Switch the photodiode on
@@ -244,6 +251,8 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		case EVT_EXPERIMENT_FINISH_PRE_SAMPLING:
 		{
 			exp_debug_print("EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
+			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
+
 			if (me->sub_state == S_PRE_SAMPLING)
 			{
 				me->sub_state = S_DATA_SAMPLING;
@@ -256,6 +265,8 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		case EVT_EXPERIMENT_FINISH_SAMPLING:
 		{
 			exp_debug_print("EXPERIMENT_FINISH_SAMPLING\r\n");
+			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_SAMPLING\r\n");
+
 			if (me->sub_state == S_DATA_SAMPLING)
 			{
 				me->sub_state = S_POST_SAMPLING;
@@ -266,13 +277,18 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 
 		case EVT_EXPERIMENT_FINISH_POST_SAMPLING:
 		{
+	    	// Add log
+	    	LWL(LWL_EXP_STOP);
+
 			exp_debug_print("EXPERIMENT_FINISH_POST_SAMPLING\r\n");
+			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_POST_SAMPLING\r\n");
 			if (me->sub_state == S_POST_SAMPLING)
 			{
 				me->sub_state = NO_SUBSTATE;
 			}
 			else me->sub_state = S_AQUI_ERROR;
 			exp_debug_print("Sampling Done!\r\n");
+			cli_printf(shell_uart_cli, "Sampling Done!\r\n");
 
 			// Cho phép giao tiếp Min với OBC
 			min_shell_busy_clear(p_min_shell_task);
@@ -579,8 +595,6 @@ uint32_t experiment_sample_send_to_spi(experiment_task_t * const me, uint16_t ch
 	SST_Task_post(&me->super, (SST_Evt *)&start_send_to_spi_evt);
 	return ERROR_OK;
 }
-
-
 
 static void experiment_update_profile(void)
 {

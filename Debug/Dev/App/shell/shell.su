@@ -13,10 +13,10 @@
 ../Dev/App/shell/shell.c:216:6:CLI_UART_stdio_tx_callback	24	static
 ../Dev/App/shell/shell.c:227:6:USART6_IRQHandler	8	static
 ../Dev/App/shell/shell.c:233:16:shell_state_send_long_buffer_handler	24	static
-../Dev/App/shell/shell.c:292:16:shell_state_send_long_buffer_binary_handler	32	static
-../Dev/App/shell/shell.c:403:13:crc16_CCITT_update	24	static
-../Dev/App/shell/shell.c:414:13:shell_binary	24	static
-../Dev/App/shell/shell.c:424:13:shell_htoa	48	static
-../Dev/App/shell/shell.c:440:6:shell_send_buffer	24	static
-../Dev/App/shell/shell.c:452:6:shell_uart_send_buffer_bin_evt	16	static
-../Dev/App/shell/shell.c:457:6:shell_uart_send_crc_evt	16	static
+../Dev/App/shell/shell.c:284:16:shell_state_send_long_buffer_binary_handler	32	static
+../Dev/App/shell/shell.c:391:13:crc16_CCITT_update	24	static
+../Dev/App/shell/shell.c:402:13:shell_binary	24	static
+../Dev/App/shell/shell.c:412:13:shell_htoa	48	static
+../Dev/App/shell/shell.c:427:6:shell_send_buffer	24	static
+../Dev/App/shell/shell.c:439:6:shell_uart_send_buffer_bin_evt	16	static
+../Dev/App/shell/shell.c:444:6:shell_uart_send_crc_evt	16	static

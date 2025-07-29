@@ -10,7 +10,14 @@
 
 #include "sst.h"
 #include "fsm.h"
+#include "main.h"
 
+//#define EXP_DEBUG_PRINTING
+#ifdef EXP_DEBUG_PRINTING
+    #define exp_debug_print(...) DBG(0,__VA_ARGS__)
+#else
+	#define exp_debug_print(...)
+#endif
 
 // =================================================================
 // BEGIN: Total define for experiment, min_shell_command, spi_slave
@@ -28,13 +35,6 @@
 // =================================================================
 
 
-#define EXP_DEBUG_PRINTING
-
-#ifdef EXP_DEBUG_PRINTING
-    #define exp_debug_print(...) DBG(0,__VA_ARGS__)
-#else
-	#define exp_debug_print(...)
-#endif
 
 #define EXPERIMENT_COMMAND_PAYLOAD_LENGTH 16
 typedef struct experiment_task_t experiment_task_t;
@@ -75,7 +75,6 @@ struct experiment_task_t{
 	SST_Task super;
 	experiment_task_handler_t state;
 	SST_TimeEvt timeout_timer;
-//	SST_TimeEvt laser_current_trigger;
 	experiment_profile_t profile;
 	data_profile_t data_profile;
 	uint8_t	sub_state;

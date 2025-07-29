@@ -63,14 +63,17 @@ static void MIN_Handler_TEST_CONNECTION_CMD(MIN_Context_t *ctx, const uint8_t *p
 
 static void MIN_Handler_SET_WORKING_RTC_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
-	uint8_t day  = payload[0];
-	uint8_t hour = payload[1];
-	uint8_t min  = payload[2];
-	uint8_t second  = payload[3];
+	uint8_t days  = payload[0];
+	uint8_t hours = payload[1];
+	uint8_t minutes  = payload[2];
+	uint8_t seconds  = payload[3];
 
 	MIN_Send(ctx, SET_WORKING_RTC_ACK, payload, len);
-	date_time_set(day, hour, min, second);
-	min_shell_debug_print("set time: day: %d %d:%d:%d\r\n", day, hour, min, second);
+	// Add log
+	LWL(LWL_EXP_SET_RTC, LWL_1(days), LWL_1(hours), LWL_1(minutes), LWL_1(seconds));
+
+	date_time_set(days, hours, minutes, seconds);
+	min_shell_debug_print("set time: day: %d %d:%d:%d\r\n", days, hours, minutes, seconds);
 }
 
 static void MIN_Handler_SET_NTC_CONTROL_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
@@ -131,6 +134,11 @@ static void MIN_Handler_SET_TEMP_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *
     	min_shell_debug_print("htr_pos_mask: 0x%02X\r\n", htr_pos_mask);
     	min_shell_debug_print("tec_mV: %d mV\r\n", tec_mV);
     	min_shell_debug_print("htr_duty: %d%%\r\n", htr_duty);
+
+    	// Add log
+    	LWL(LWL_EXP_TEMP_PROFILE_SET, LWL_2(target_temp), LWL_2(min_temp), LWL_2(max_temp),
+    	    LWL_1(pri_ntc_id), LWL_1(sec_ntc_id), LWL_1(auto_recover),
+    	    LWL_1(tec_pos_mask), LWL_1(htr_pos_mask), LWL_2(tec_mV), LWL_1(htr_duty));
     }
     else
     {
@@ -145,6 +153,10 @@ static void MIN_Handler_START_TEMP_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t
 {
     uint8_t reserved = 0xFF;
     min_shell_debug_print("Start temperature control auto\r\n");
+
+    // Add log
+    LWL(LWL_EXP_TEMP_AUTO_MODE);
+
     temperature_control_auto_mode_set(p_temperature_control_task);
     MIN_Send(ctx, START_TEMP_PROFILE_ACK, &reserved, 1);
 }
@@ -153,6 +165,10 @@ static void MIN_Handler_STOP_TEMP_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t 
 {
     uint8_t reserved = 0xFF;
     min_shell_debug_print("Stop temperature control auto\r\n");
+
+    // Add log
+    LWL(LWL_EXP_TEMP_MANUAL_MODE);
+
     temperature_control_man_mode_set(p_temperature_control_task);
     MIN_Send(ctx, STOP_TEMP_PROFILE_ACK, &reserved, 1);
 }
@@ -205,6 +221,9 @@ static void MIN_Handler_SET_OVERRIDE_TEC_PROFILE_CMD(MIN_Context_t *ctx, const u
         tec_over_set_interval(interval);
         temperature_profile_tec_ovr_register(p_temperature_control_task, over_tec_id);
         temperature_profile_tec_ovr_voltage_set(p_temperature_control_task, over_TEC_mV);
+
+        // Add log
+        LWL(LWL_EXP_TEMP_TEC_OVERRIDE_PROFILE, LWL_2(interval), LWL_1(over_tec_id), LWL_2(over_TEC_mV));
     }
     else
     {
@@ -220,6 +239,10 @@ static void MIN_Handler_START_OVERRIDE_TEC_PROFILE_CMD(MIN_Context_t *ctx, const
 {
     uint8_t reserved = 0xFF;
     MIN_Send(ctx, START_OVERRIDE_TEC_PROFILE_ACK, &reserved, 1);
+
+    // Add log
+    LWL(LWL_EXP_TEMP_TEC_OVERRIDE_ON);
+
     min_shell_debug_print("Min start tec override\r\n");
     tec_ovr_start();
 }
@@ -228,6 +251,10 @@ static void MIN_Handler_STOP_OVERRIDE_TEC_PROFILE_CMD(MIN_Context_t *ctx, const 
 {
     uint8_t reserved = 0xFF;
     MIN_Send(ctx, STOP_OVERRIDE_TEC_PROFILE_ACK, &reserved, 1);
+
+    // Add log
+	LWL(LWL_EXP_TEMP_TEC_OVERRIDE_OFF);
+
     min_shell_debug_print("Min stop tec override\r\n");
     tec_ovr_stop();
 }
@@ -238,12 +265,12 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
     uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
 
     uint16_t ret = 0;
-    uint32_t samp_rate = (uint32_t)((uint32_t)payload[0] << 24) | ((uint32_t)payload[1] << 16) | ((uint32_t)payload[2] << 8) | payload[3];
+    uint32_t sample_rate = (uint32_t)((uint32_t)payload[0] << 24) | ((uint32_t)payload[1] << 16) | ((uint32_t)payload[2] << 8) | payload[3];
     uint16_t pre_time  = (uint16_t)((uint16_t)payload[4] << 8) | payload[5];
-    uint16_t samp_time = (uint16_t)((uint16_t)payload[6] << 8) | payload[7];
+    uint16_t sample_time = (uint16_t)((uint16_t)payload[6] << 8) | payload[7];
     uint16_t post_time = (uint16_t)((uint16_t)payload[8] << 8) | payload[9];
 
-    if ((samp_rate < 1000) || (samp_rate > 800000))
+    if ((sample_rate < 1000) || (sample_rate > 800000))
     {
         ret++;
         min_shell_debug_print("sampling rate out of range (1K-800K)\r\n");
@@ -255,7 +282,7 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
         min_shell_debug_print("pre_time should be larger than 0\r\n");
     }
 
-    if (samp_time == 0)
+    if (sample_time == 0)
     {
         ret++;
         min_shell_debug_print("sample time should be larger than 0\r\n");
@@ -267,7 +294,7 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
         min_shell_debug_print("post_time should be larger than 0\r\n");
     }
 
-    uint32_t num_sample = ((pre_time + samp_time + post_time) * samp_rate) / 1000000;
+    uint32_t num_sample = ((pre_time + sample_time + post_time) * sample_rate) / 1000000;
     if (num_sample > 2048) // larrger than 4MB
     {
         ret++;
@@ -277,14 +304,17 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
     if (!ret)
     {
         experiment_profile_t profile;
-        profile.sampling_rate = samp_rate;    // Hz	// (Sample/second)
+        profile.sampling_rate = sample_rate;    // Hz	// (Sample/second)
         profile.pre_time = pre_time;          // mS
-        profile.experiment_time = samp_time;  // mS
+        profile.experiment_time = sample_time;  // mS
         profile.post_time = post_time;        // mS
         profile.num_sample = num_sample;      // kSample
-        profile.period = 1000000 / samp_rate; // uS
+        profile.period = 1000000 / sample_rate; // uS
         if (!experiment_task_set_pda(p_experiment_task, &profile))
         {
+        	// Add log
+        	LWL(LWL_EXP_SET_PHOTO_PROFILE, LWL_4(sample_rate), LWL_2(pre_time), LWL_2(sample_time), LWL_2(post_time));
+
             min_shell_debug_print("Min set PDA DONE\r\n");
         }
         else
@@ -322,6 +352,9 @@ static void MIN_Handler_SET_LASER_INTENSITY_CMD(MIN_Context_t *ctx, const uint8_
         profile.laser_percent = percent;
         if (!experiment_task_set_intensity(p_experiment_task, &profile))
         {
+        	// Add log
+        	LWL(LWL_EXP_SET_LASER_INTENSITY, LWL_1(percent));
+
             min_shell_debug_print("Min SET_LASER_INTENSITY DONE\r\n");
         }
         else
@@ -352,6 +385,9 @@ static void MIN_Handler_SET_POSITION_CMD(MIN_Context_t *ctx, const uint8_t *payl
         profile.pos = laser_idx;
         if (!experiment_task_set_position(p_experiment_task, &profile))
         {
+        	// Add log
+        	LWL(LWL_EXP_SET_LASER_PHOTO_INDEX, LWL_1(laser_idx));
+
             min_shell_debug_print("Min SET_POSITION DONE\r\n");
         }
         else
@@ -427,6 +463,9 @@ static void MIN_Handler_GET_CHUNK_CMD(MIN_Context_t *ctx, const uint8_t *payload
     }
     else
     {
+    	// Add log
+    	LWL(LWL_EXP_TRANS_PHOTO_DATA, LWL_1(chunk_id));
+
     	experiment_sample_send_to_spi(p_experiment_task, chunk_id);
         min_shell_debug_print("Already prepare sample chunk %d\r\n", chunk_id);
     }
@@ -450,7 +489,6 @@ static void MIN_Handler_GET_LASER_CURRENT_DATA_CMD(MIN_Context_t *ctx, const uin
 {
     uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
 
-//    experiment_current_send_to_spi(p_experiment_task);
     bsp_laser_send_current_to_spi();
 
     min_shell_debug_print("Already prepare current chunk\r\n");
