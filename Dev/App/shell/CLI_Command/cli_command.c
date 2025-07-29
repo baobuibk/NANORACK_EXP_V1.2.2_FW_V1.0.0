@@ -1043,7 +1043,8 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 	profile.post_time = post_time;				// mS
 	profile.num_sample = num_sample;			// kSample
 	profile.period = 1000000 / sampling_rate;	// uS
-	if(!experiment_task_set_profile(p_experiment_task,&profile)) cli_printf(cli, "OK\r\n");
+	if(!experiment_task_set_profile(p_experiment_task, &profile))
+		cli_printf(cli, "OK\r\n");
 	else cli_printf(cli, "ERROR\r\n");
 }
 

@@ -21,6 +21,8 @@
 #include "../spi_transmit/spi_transmit.h"
 #include "adc_monitor.h"
 #include "bsp_bkram.h"
+#include "bsp_ntc.h"
+#include "bsp_laser.h"
 
 DBC_MODULE_NAME("experiment_task")
 
@@ -93,6 +95,10 @@ static void experiment_task_init(experiment_task_t * const me,experiment_evt_t c
 	bsp_laser_init();
 	bsp_spi_ram_init();
 	bsp_photodiode_init();
+
+	bsp_ntc_adc_init();
+	bsp_laser_adc_init();
+
 	me->laser_spi_mode = 1;
 	me->photodiode_mode = ADC_MODE;
 	if (experiment_validate_profile())
@@ -198,9 +204,6 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		{
 			exp_debug_print("Start Sampling...\r\n");
 			SST_TimeEvt_arm(&me->timeout_timer, EXPERIMENT_TASK_AQUI_TIMEOUT, 0);
-			// Switch the laser on with 0mA
-			experiment_task_laser_set_current(me, 0, 0);
-			experiment_task_int_laser_switchon(me, me->profile.pos);
 
 	      	// Switch the photodiode on
 			experiment_task_photodiode_switchon(me, me->profile.pos);
@@ -216,9 +219,13 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			init_photo_time.sampling_rate = me->profile.sampling_rate;
 			init_photo_time.pos = me->profile.pos;
 
-//			experiment_task_laser_set_current(me, 0, me->profile.laser_percent);
+			// Set current for int laser
+			bsp_laser_int_set_current(me->profile.laser_percent);
 
+			// Set sample timer (photo adc timer)
 			bsp_photo_set_time(&init_photo_time);
+
+			// Get current data when sampling time
 			bsp_laser_collect_current_data_to_buffer();
 
 			// start sampling

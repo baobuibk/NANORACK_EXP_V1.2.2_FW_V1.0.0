@@ -40,9 +40,9 @@
 ../Dev/App/shell/CLI_Command/cli_command.c:962:13:CMD_Int_Laser_Switch_Off	24	static
 ../Dev/App/shell/CLI_Command/cli_command.c:968:13:CMD_Ext_Laser_Switch_Off	24	static
 ../Dev/App/shell/CLI_Command/cli_command.c:979:13:cmd_exp_set_profile	80	static
-../Dev/App/shell/CLI_Command/cli_command.c:1050:13:cmd_exp_get_profile	88	static
-../Dev/App/shell/CLI_Command/cli_command.c:1070:13:cmd_exp_start_measuring	24	static
-../Dev/App/shell/CLI_Command/cli_command.c:1083:13:cmd_exp_ram_read	40	static
-../Dev/App/shell/CLI_Command/cli_command.c:1128:13:cmd_exp_data_transfer	24	static
-../Dev/App/shell/CLI_Command/cli_command.c:1143:26:getCliStaticBindings	4	static
-../Dev/App/shell/CLI_Command/cli_command.c:1147:10:getCliStaticBindingCount	4	static
+../Dev/App/shell/CLI_Command/cli_command.c:1051:13:cmd_exp_get_profile	88	static
+../Dev/App/shell/CLI_Command/cli_command.c:1071:13:cmd_exp_start_measuring	24	static
+../Dev/App/shell/CLI_Command/cli_command.c:1084:13:cmd_exp_ram_read	40	static
+../Dev/App/shell/CLI_Command/cli_command.c:1129:13:cmd_exp_data_transfer	24	static
+../Dev/App/shell/CLI_Command/cli_command.c:1144:26:getCliStaticBindings	4	static
+../Dev/App/shell/CLI_Command/cli_command.c:1148:10:getCliStaticBindingCount	4	static

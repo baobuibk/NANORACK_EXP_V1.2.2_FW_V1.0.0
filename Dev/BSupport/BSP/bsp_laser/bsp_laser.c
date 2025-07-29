@@ -33,30 +33,19 @@ bool collect_data_flag = false;
 __attribute__((aligned(4))) static uint16_t laser_int_current_buffer[EXPERIMENT_LASER_CURRENT_SIZE];
 static uint16_t laser_int_current_idx;
 
-//static uint16_t ld_adc_value[2] = {0};
-//static uint16_t ld_adc_value_average[2] = {0};
-//static uint32_t sample_count = 0;
-
 static uint16_t ld_adc_value[2] = {0};
 static uint16_t ld_adc_value_buff[2][10] = {0};
 static uint8_t ld_adc_value_buff_idx = 0;
-
-
 
 MCP4902_Device_t DAC_device;
 ADG1414_Device_t laser_int;
 ADG1414_Device_t laser_ext;
 
-
-//extern monitor_task_t monitor_task_inst ;
-//static monitor_task_t *p_monitor_task = &monitor_task_inst;
+static uint8_t bsp_laser_int_current = 0;
+static uint8_t bsp_laser_ext_current = 0;
 
 extern spi_transmit_task_t spi_transmit_task_inst;
 static spi_transmit_task_t *p_spi_transmit_task = &spi_transmit_task_inst;
-
-
-//static monitor_evt_t const ld_adc_evt = {.super = {.sig = EVT_MONITOR_LD_ADC_COMPLETED} };
-
 
 static uint16_t current_calculate(uint16_t adc_val)	// return mA
 {
@@ -108,59 +97,77 @@ void bsp_laser_init(void)
 	bsp_laser_set_spi_mode(SPI_MODE_1);
 	ADG1414_Chain_Init(&laser_int, LASER_SPI, LASER_INT_SW_CS_GPIO_Port, LASER_INT_SW_CS_Pin, INTERNAL_CHAIN_SWITCH_NUM);
 	ADG1414_Chain_Init(&laser_ext, LASER_SPI, LASER_EXT_SW_CS_GPIO_Port, LASER_EXT_SW_CS_Pin, EXTERNAL_CHAIN_SWITCH_NUM);
+
+	// Switch off all laser (turn on laser with current 0mA)
+	bsp_laser_int_switch_off_all();
 }
 
 void bsp_laser_int_switch_on(uint32_t channel_idx)
 {
 	bsp_laser_set_spi_mode(SPI_MODE_1);
 	ADG1414_Chain_SwitchOn(&laser_int, channel_idx);
+	bsp_laser_set_spi_mode(SPI_MODE_0);
+	MCP4902_Set_DAC(&DAC_device, 0, bsp_laser_int_current);
 }
 
-void bsp_laser_int_switch_off_all(void){
+void bsp_laser_int_switch_off_all(void)
+{
+//	bsp_laser_set_spi_mode(SPI_MODE_1);
+//	ADG1414_Chain_SwitchAllOff(&laser_int);
+
+	bsp_laser_set_spi_mode(SPI_MODE_0);
+	MCP4902_Set_DAC(&DAC_device, 0, 0);
 	bsp_laser_set_spi_mode(SPI_MODE_1);
-	ADG1414_Chain_SwitchAllOff(&laser_int);
+	ADG1414_Chain_SwitchAllOn(&laser_int);
 }
 
 void bsp_laser_ext_switch_on(uint32_t channel_idx)
 {
 	bsp_laser_set_spi_mode(SPI_MODE_1);
 	ADG1414_Chain_SwitchOn(&laser_ext, channel_idx);
+	bsp_laser_set_spi_mode(SPI_MODE_0);
+	MCP4902_Set_DAC(&DAC_device, 1, bsp_laser_ext_current);
 }
 
-void bsp_laser_ext_switch_off_all(void){
+void bsp_laser_ext_switch_off_all(void)
+{
+//	bsp_laser_set_spi_mode(SPI_MODE_1);
+//	ADG1414_Chain_SwitchAllOff(&laser_ext);
+
+	bsp_laser_set_spi_mode(SPI_MODE_0);
+	MCP4902_Set_DAC(&DAC_device, 1, 0);
 	bsp_laser_set_spi_mode(SPI_MODE_1);
-	ADG1414_Chain_SwitchAllOff(&laser_ext);
+	ADG1414_Chain_SwitchAllOn(&laser_ext);
 }
-
-/*
- * current source has 250 ohm shunt
- * with maximum voltage of 3V, we calculate the voltage for ADC and send to ADC
- */
 
 void bsp_laser_int_set_current(uint32_t percent)
 {
-	bsp_laser_set_spi_mode(SPI_MODE_0);
+//	bsp_laser_set_spi_mode(SPI_MODE_0);
+//	if (percent > 100) percent = 100;
+//	MCP4902_Set_DAC(&DAC_device, 0, 255*percent/100);
+
 	if (percent > 100) percent = 100;
-	MCP4902_Set_DAC(&DAC_device, 0, 255*percent/100);
+	bsp_laser_int_current = 255 *percent /100;
 }
 
 void bsp_laser_ext_set_current(uint32_t percent)
 {
-	bsp_laser_set_spi_mode(SPI_MODE_0);
+//	bsp_laser_set_spi_mode(SPI_MODE_0);
+//	if (percent > 100) percent = 100;
+//	MCP4902_Set_DAC(&DAC_device, 1, 255*percent/100);
+
 	if (percent > 100) percent = 100;
-	MCP4902_Set_DAC(&DAC_device, 1, 255*percent/100);
+	bsp_laser_ext_current = 255 *percent /100;
 }
 
 void bsp_laser_set_current(uint32_t id, uint32_t percent)
 {
-	if (id == 0)  bsp_laser_int_set_current(percent);
+	if (id == 0) bsp_laser_int_set_current(percent);
 	else bsp_laser_ext_set_current(percent);
 }
 
 uint16_t bsp_laser_get_int_current(void)
 {
-//	return current_calculate(ld_adc_value_average[0]);
-
 	uint32_t sum = 0;
 	for(uint8_t i = 0; i < 10; i++) {
 		sum += ld_adc_value_buff[0][i];
@@ -170,8 +177,6 @@ uint16_t bsp_laser_get_int_current(void)
 
 uint16_t bsp_laser_get_ext_current(void)
 {
-//	return current_calculate(ld_adc_value_average[1]);
-
 	uint32_t sum = 0;
 	for(uint8_t i = 0; i < 10; i++) {
 		sum += ld_adc_value_buff[1][i];

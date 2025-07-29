@@ -19,16 +19,11 @@
 #include "system_reset.h"
 #include "spi_transmit.h"
 #include "wdg_task.h"
-#include "bsp_ntc.h"
-#include "bsp_laser.h"
 
 //DBC_MODULE_NAME("app_main")
 
 void app_init(void)
 {
-	bsp_ntc_adc_init();
-	bsp_laser_adc_init();
-
 	experiment_task_singleton_ctor();
 	shell_task_ctor_singleton();
 	temperature_control_task_singleton_ctor();

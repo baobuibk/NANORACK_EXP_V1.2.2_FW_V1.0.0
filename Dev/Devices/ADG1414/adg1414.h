@@ -40,6 +40,9 @@ void ADG1414_Chain_SwitchOn(ADG1414_Device_t *dev, uint8_t channel_num);
 void ADG1414_Chain_SwitchOff(ADG1414_Device_t *dev, uint8_t channel_num);
 
 /* Hàm tắt tất cả các switch */
+void ADG1414_Chain_SwitchAllOn(ADG1414_Device_t *dev);
+
+/* Hàm tắt tất cả các switch */
 void ADG1414_Chain_SwitchAllOff(ADG1414_Device_t *dev);
 
 #endif /* __ADG1414_H */

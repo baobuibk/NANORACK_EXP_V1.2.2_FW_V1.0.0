@@ -73,9 +73,7 @@ Dev/App/app_main/app_main.o: ../Dev/App/app_main/app_main.c \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/system_log/system_log.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/system_reset/system_reset.h \
  D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/spi_transmit/spi_transmit.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/wdg/wdg_task.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_ntc/bsp_ntc.h \
- D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_laser/bsp_laser.h
+ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/wdg/wdg_task.h
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/CLI_Terminal/CLI_Src/embedded_cli.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/shell/shell.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/MiddleWare/sst0_c/src/sst.h:
@@ -151,5 +149,3 @@ D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/system_log/system_log.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/system_reset/system_reset.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/spi_transmit/spi_transmit.h:
 D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/App/wdg/wdg_task.h:
-D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_ntc/bsp_ntc.h:
-D:/STworkspace/NANORACK_EXP_V1.2.2_FW_V1.0.0/Dev/BSupport/BSP/bsp_laser/bsp_laser.h:

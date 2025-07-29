@@ -252,6 +252,7 @@ __weak void lwl_buffer_full_notify()
 
 __weak void lwl_clear_notification()
 {
+	lwl.lwl_buf_over_threshold = 0;
 	bsp_handshake_spi_clear_notification();
 }
 
@@ -281,6 +282,7 @@ uint16_t * lwl_get_full_buffer_addr(void)
 
 uint32_t lwl_log_send_to_spi(void)
 {
+	lwl_clear_notification();
 	// Cấu hình địa chỉ buffer
 	SPI_SlaveDevice_CollectData((uint16_t *)lwl_get_full_buffer_addr());
 	// Bật tín hiệu DataReady

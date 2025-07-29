@@ -69,7 +69,7 @@ static experiment_evt_t const finish_sampling_phase_evt = {.super = {.sig = EVT_
 static experiment_evt_t const finish_post_phase_evt = {.super = {.sig = EVT_EXPERIMENT_FINISH_POST_SAMPLING} };
 
 extern experiment_task_t experiment_task_inst;
-static experiment_task_t * p_experiment_task = &experiment_task_inst;
+//static experiment_task_t * p_experiment_task = &experiment_task_inst;
 
 void bsp_photo_set_time(bsp_photodiode_time_t * init_photo_time);
 void bsp_photodiode_init(void);
@@ -330,6 +330,8 @@ void bsp_photodiode_dma_sampling_irq(void)
 			LL_DMA_DisableIT_TC(PHOTO_DMA, PHOTO_DMA_STREAM);
 			LL_DMA_DisableIT_HT(PHOTO_DMA, PHOTO_DMA_STREAM);
 			LL_SPI_DisableDMAReq_RX(photo_diode_adc.spi);
+
+			// Done finish post-sampling event trigger
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_post_phase_evt);
 		}
 	}
@@ -370,13 +372,14 @@ void TIM2_IRQHandler(void)
 	switch (photo_diode_state)
 	{
 		case PHOTO_SAMPLED_PRE:
-
-//			bsp_laser_int_switch_on(photo_diode_adc.timing.pos);
-			experiment_task_laser_set_current(p_experiment_task, 0, p_experiment_task->profile.laser_percent);
+			// Switch on laser[pos] (Start sampling time)
+			bsp_laser_int_switch_on(photo_diode_adc.timing.pos);
 
 			photo_diode_state = PHOTO_SAMPLED_SAMPLING;
-//			bsp_photodiode_set_sampling_time();
+			// Set laser timer with sampling time
 			PHOTO_TIMER->ARR = timer_timing.sampling_time_ARR - 1;
+
+			// Done finish pre-sampling event trigger
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_pre_phase_evt);
 
 			// Enable timer2 counter
@@ -384,10 +387,14 @@ void TIM2_IRQHandler(void)
 		break;
 
 		case PHOTO_SAMPLED_SAMPLING:
+			// Switch off laser[pos] (Stop sampling time)
 			bsp_laser_int_switch_off_all();
+
 			photo_diode_state = PHOTO_SAMPLING_STOP;
-//			bsp_photodiode_set_sampling_time();
+			// Set laser timer with posting time
 			PHOTO_TIMER->ARR = timer_timing.post_time_ARR - 1;
+
+			// Done finish sampling event trigger
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_sampling_phase_evt);
 
 			// Disable timer2 counter
