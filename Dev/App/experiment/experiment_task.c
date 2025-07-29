@@ -198,11 +198,17 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		{
 			exp_debug_print("Start Sampling...\r\n");
 			SST_TimeEvt_arm(&me->timeout_timer, EXPERIMENT_TASK_AQUI_TIMEOUT, 0);
-//	      	Switch the photodiode on
+			// Switch the laser on with 0mA
+			experiment_task_laser_set_current(me, 0, 0);
+			experiment_task_int_laser_switchon(me, me->profile.pos);
+
+	      	// Switch the photodiode on
 			experiment_task_photodiode_switchon(me, me->profile.pos);
-//			Switch the SPI to ADC supported mode
+
+			// Switch the SPI to ADC supported mode
 			experiment_task_photo_ADC_prepare_SPI(me);
-//			Prepare the timer for sampling
+
+			// Prepare the timer for sampling
 			bsp_photodiode_time_t init_photo_time;
 			init_photo_time.pre_time = me->profile.pre_time ;
 			init_photo_time.sampling_time = me->profile.experiment_time ;
@@ -210,10 +216,12 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			init_photo_time.sampling_rate = me->profile.sampling_rate;
 			init_photo_time.pos = me->profile.pos;
 
-			experiment_task_laser_set_current(me, 0, me->profile.laser_percent);
-			bsp_photo_set_time(&init_photo_time);
+//			experiment_task_laser_set_current(me, 0, me->profile.laser_percent);
 
+			bsp_photo_set_time(&init_photo_time);
 			bsp_laser_collect_current_data_to_buffer();
+
+			// start sampling
 			bsp_photodiode_sample_start();
 			me->sub_state = S_PRE_SAMPLING;
 			return HANDLED_STATUS;
@@ -283,7 +291,6 @@ static state_t experiment_task_state_send_to_shell_handler(experiment_task_t * c
 	{
 		case SIG_ENTRY:
 		{
-			//exp_debug_print("entry experiment_task_state_send_to_shell_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer); //disable the timeout
 		    remain_data_profile.num_data = me->data_profile.num_data;
 		    remain_data_profile.start_address = me->data_profile.start_address;

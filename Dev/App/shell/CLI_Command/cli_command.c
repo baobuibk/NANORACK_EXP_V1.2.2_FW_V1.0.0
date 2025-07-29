@@ -907,7 +907,7 @@ static void CMD_Laser_Get_Current(EmbeddedCli *cli, char *args, void *context)
 	}
 	else if (*arg1 == '1')
 	{
-		current_int = bsp_laser_get_ext_current();
+		current_ext = bsp_laser_get_ext_current();
 		cli_printf(cli, "laser_current[ext]: %d mA\r\n", current_ext);
 	}
 	else cli_printf(cli, "Wrong arguments\r\n");

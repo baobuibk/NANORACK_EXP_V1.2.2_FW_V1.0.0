@@ -148,7 +148,7 @@ void bsp_laser_ext_set_current(uint32_t percent)
 {
 	bsp_laser_set_spi_mode(SPI_MODE_0);
 	if (percent > 100) percent = 100;
-	MCP4902_Set_DAC(&DAC_device, 0, 255*percent/100);
+	MCP4902_Set_DAC(&DAC_device, 1, 255*percent/100);
 }
 
 void bsp_laser_set_current(uint32_t id, uint32_t percent)

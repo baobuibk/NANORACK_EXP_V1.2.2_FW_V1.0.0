@@ -69,6 +69,7 @@ static experiment_evt_t const finish_sampling_phase_evt = {.super = {.sig = EVT_
 static experiment_evt_t const finish_post_phase_evt = {.super = {.sig = EVT_EXPERIMENT_FINISH_POST_SAMPLING} };
 
 extern experiment_task_t experiment_task_inst;
+static experiment_task_t * p_experiment_task = &experiment_task_inst;
 
 void bsp_photo_set_time(bsp_photodiode_time_t * init_photo_time);
 void bsp_photodiode_init(void);
@@ -369,7 +370,10 @@ void TIM2_IRQHandler(void)
 	switch (photo_diode_state)
 	{
 		case PHOTO_SAMPLED_PRE:
-			bsp_laser_int_switch_on(photo_diode_adc.timing.pos);
+
+//			bsp_laser_int_switch_on(photo_diode_adc.timing.pos);
+			experiment_task_laser_set_current(p_experiment_task, 0, p_experiment_task->profile.laser_percent);
+
 			photo_diode_state = PHOTO_SAMPLED_SAMPLING;
 //			bsp_photodiode_set_sampling_time();
 			PHOTO_TIMER->ARR = timer_timing.sampling_time_ARR - 1;
