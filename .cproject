@@ -301,8 +301,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry excluding="Devices/DateTime|LED|Sche|MiddleWare/Utils/ports/stm32f4xx|Scheduler|CLI_Terminal/CLI_Command|CLI_Terminal/CLI_Setup|MiddleWare/sst0_c/examples|Temperature/temp|bsp|App/system_reset|MIN_Proto|App/adc_monitor" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Dev"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 					</sourceEntries>
 				</configuration>
@@ -636,8 +636,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry excluding="Devices/DateTime|LED|Sche|MiddleWare/Utils/ports/stm32f4xx|Scheduler|CLI_Terminal/CLI_Command|CLI_Terminal/CLI_Setup|MiddleWare/sst0_c/examples|Temperature/temp|bsp|App/system_reset|MIN_Proto|App/adc_monitor" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Dev"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 					</sourceEntries>
 				</configuration>

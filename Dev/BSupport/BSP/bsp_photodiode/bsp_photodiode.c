@@ -99,12 +99,12 @@ void bsp_photodiode_start_dma(photo_diode_t *config, uint32_t *buffer, uint32_t 
 
 void bsp_photo_set_time(bsp_photodiode_time_t * init_photo_time)
 {
-	photo_diode_adc.timing = *init_photo_time;
+	photo_diode_adc.timing = * init_photo_time;
 	bsp_photodiode_time_t * photo_time = &photo_diode_adc.timing;
 	//timer2 clock is 100 Mhz, meam 100 tick = 1us
-	timer_timing.post_time_ARR = photo_time->post_time * 100000;
 	timer_timing.pre_time_ARR = photo_time->pre_time * 100000;
 	timer_timing.sampling_time_ARR = photo_time->sampling_time * 100000;
+	timer_timing.post_time_ARR = photo_time->post_time * 100000;
 	//sampling rate in Khz, timer1 clock is 200 Mhz, mean 200 tick = 1us
 	timer_timing.sampling_period_ARR = (200000000 / photo_time->sampling_rate); // ticks
 }
@@ -287,7 +287,7 @@ void bsp_photodiode_sample_start()
 	experiment_task_inst.num_chunk = photo_diode_adc.block_count;
 	experiment_task_inst.num_data_real = experiment_task_inst.num_chunk * BUFFER_FULL_SIZE;
 
-	bsp_photodiode_start_dma(&photo_diode_adc,(uint32_t *)&photo_data_buffer,BUFFER_FULL_SIZE);
+	bsp_photodiode_start_dma(&photo_diode_adc,(uint32_t *)&photo_data_buffer, BUFFER_FULL_SIZE);
 	bsp_photo_start_timer_sampling();
 }
 

@@ -67,9 +67,9 @@ void ADG1414_Chain_SwitchOn(ADG1414_Device_t *dev, uint8_t channel_num)
     	(dev->num_of_sw == INTERNAL_CHAIN_SWITCH_NUM))
     	return;  // Kiểm tra giới hạn
 
-    if ((channel_num > EXTERNAL_CHAIN_CHANNEL_NUM)&&
-		(dev->num_of_sw == EXTERNAL_CHAIN_SWITCH_NUM))
-		return;  // Kiểm tra giới hạn
+//    if ((channel_num > EXTERNAL_CHAIN_CHANNEL_NUM)&&
+//		(dev->num_of_sw == EXTERNAL_CHAIN_SWITCH_NUM))
+//		return;  // Kiểm tra giới hạn
 
     if (dev->num_of_sw == INTERNAL_CHAIN_SWITCH_NUM)
 	{
@@ -89,7 +89,8 @@ void ADG1414_Chain_SwitchOn(ADG1414_Device_t *dev, uint8_t channel_num)
 	{
     	if(channel_num)
     	{
-    		dev->switch_state[0] = (1 << (channel_num - 1));
+//    		dev->switch_state[0] = (1 << (channel_num - 1));
+    		dev->switch_state[0] = channel_num;
     	}
 
     	else
@@ -106,11 +107,11 @@ void ADG1414_Chain_SwitchOff(ADG1414_Device_t *dev, uint8_t channel_num)
 {
 	if (!channel_num) return;
 
-	if ((channel_num >= INTERNAL_CHAIN_CHANNEL_NUM)&&
+	if ((channel_num >= INTERNAL_CHAIN_CHANNEL_NUM) &&
 		(dev->num_of_sw == INTERNAL_CHAIN_SWITCH_NUM))
 		return;  // Kiểm tra giới hạn
 
-	if ((channel_num >= EXTERNAL_CHAIN_CHANNEL_NUM)&&
+	if ((channel_num >= EXTERNAL_CHAIN_CHANNEL_NUM) &&
 		(dev->num_of_sw == EXTERNAL_CHAIN_SWITCH_NUM))
 		return;  // Kiểm tra giới hạn
 

@@ -44,6 +44,7 @@ ADG1414_Device_t laser_ext;
 
 static uint8_t bsp_laser_int_current = 0;
 static uint8_t bsp_laser_ext_current = 0;
+static uint8_t bsp_laser_ext_mask = 0;
 
 extern spi_transmit_task_t spi_transmit_task_inst;
 static spi_transmit_task_t *p_spi_transmit_task = &spi_transmit_task_inst;
@@ -124,8 +125,9 @@ void bsp_laser_int_switch_off_all(void)
 
 void bsp_laser_ext_switch_on(uint32_t channel_idx)
 {
+	bsp_laser_ext_mask |= (1 << (channel_idx - 1));
 	bsp_laser_set_spi_mode(SPI_MODE_1);
-	ADG1414_Chain_SwitchOn(&laser_ext, channel_idx);
+	ADG1414_Chain_SwitchOn(&laser_ext, bsp_laser_ext_mask);
 	bsp_laser_set_spi_mode(SPI_MODE_0);
 	MCP4902_Set_DAC(&DAC_device, 1, bsp_laser_ext_current);
 }
@@ -135,8 +137,9 @@ void bsp_laser_ext_switch_off_all(void)
 //	bsp_laser_set_spi_mode(SPI_MODE_1);
 //	ADG1414_Chain_SwitchAllOff(&laser_ext);
 
+	bsp_laser_ext_mask = 0;
 	bsp_laser_set_spi_mode(SPI_MODE_0);
-	MCP4902_Set_DAC(&DAC_device, 1, 0);
+	MCP4902_Set_DAC(&DAC_device, 1, bsp_laser_ext_mask);
 	bsp_laser_set_spi_mode(SPI_MODE_1);
 	ADG1414_Chain_SwitchAllOn(&laser_ext);
 }

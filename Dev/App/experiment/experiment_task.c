@@ -208,7 +208,6 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 	{
 		case SIG_ENTRY:
 		{
-			exp_debug_print("Start Sampling...\r\n");
 			cli_printf(shell_uart_cli, "Start Sampling...\r\n");
 			SST_TimeEvt_arm(&me->timeout_timer, EXPERIMENT_TASK_AQUI_TIMEOUT, 0);
 
