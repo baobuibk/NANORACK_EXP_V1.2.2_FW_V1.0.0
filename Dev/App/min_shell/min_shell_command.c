@@ -270,7 +270,7 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
     uint16_t sample_time = (uint16_t)((uint16_t)payload[6] << 8) | payload[7];
     uint16_t post_time = (uint16_t)((uint16_t)payload[8] << 8) | payload[9];
 
-    if ((sample_rate < 1000) || (sample_rate > 800000))
+    if ((sample_rate < 1000) || (sample_rate > 850000))
     {
         ret++;
         min_shell_debug_print("sampling rate out of range (1K-800K)\r\n");

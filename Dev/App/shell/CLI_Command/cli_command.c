@@ -983,11 +983,11 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 	}
 
 	uint32_t sample_rate = atoi(embeddedCliGetToken(args, 1));
-//	if ((sample_rate < 1000) || (sample_rate > 800000))
-//	{
-//		cli_printf(cli, "sampling rate out of range (1K-800K)\r\n");
-//		return;
-//	}
+	if ((sample_rate < 1000) || (sample_rate > 850000))
+	{
+		cli_printf(cli, "sampling rate out of range (1K-800K)\r\n");
+		return;
+	}
 
 	uint32_t pos = atoi(embeddedCliGetToken(args, 2));
 	if ((pos == 0) || (pos > 36))
