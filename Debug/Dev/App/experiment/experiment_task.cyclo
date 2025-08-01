@@ -21,12 +21,12 @@
 ../Dev/App/experiment/experiment_task.c:505:10:experiment_task_photodiode_switchon	2
 ../Dev/App/experiment/experiment_task.c:514:10:experiment_task_photodiode_switchoff	1
 ../Dev/App/experiment/experiment_task.c:522:10:experiment_task_photo_ADC_prepare_SPI	1
-../Dev/App/experiment/experiment_task.c:528:10:experiment_task_set_pda	4
+../Dev/App/experiment/experiment_task.c:528:10:experiment_task_set_pda	2
 ../Dev/App/experiment/experiment_task.c:544:10:experiment_task_set_intensity	2
 ../Dev/App/experiment/experiment_task.c:553:10:experiment_task_set_position	3
-../Dev/App/experiment/experiment_task.c:560:10:experiment_task_set_profile	8
+../Dev/App/experiment/experiment_task.c:560:10:experiment_task_set_profile	6
 ../Dev/App/experiment/experiment_task.c:574:6:experiment_task_get_profile	1
-../Dev/App/experiment/experiment_task.c:579:10:experiment_start_measuring	7
+../Dev/App/experiment/experiment_task.c:579:10:experiment_start_measuring	5
 ../Dev/App/experiment/experiment_task.c:590:10:experiment_sample_send_to_spi	1
 ../Dev/App/experiment/experiment_task.c:599:13:experiment_update_profile	1
 ../Dev/App/experiment/experiment_task.c:619:13:experiment_validate_profile	2

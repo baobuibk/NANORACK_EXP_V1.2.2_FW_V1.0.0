@@ -527,7 +527,7 @@ uint32_t experiment_task_photo_ADC_prepare_SPI(experiment_task_t * const me)
 
 uint32_t experiment_task_set_pda(experiment_task_t * me,experiment_profile_t * profile)
 {
-	if ((profile->sampling_rate == 0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
+//	if ((profile->sampling_rate == 0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
 	if (profile->num_sample_x1024 > 2048) return ERROR_NOT_SUPPORTED;
 
 	me->profile.sampling_rate = profile->sampling_rate;
@@ -559,7 +559,7 @@ uint32_t experiment_task_set_position(experiment_task_t * me,experiment_profile_
 
 uint32_t experiment_task_set_profile(experiment_task_t * me,experiment_profile_t * profile)
 {
-	if ((profile->sampling_rate == 0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
+//	if ((profile->sampling_rate == 0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
 	if ((profile->pos == 0 ) || (profile->pos > 36)) return ERROR_NOT_SUPPORTED;
 	if ((profile->laser_percent > 100 ) ) return ERROR_NOT_SUPPORTED;
 	if (profile->num_sample_x1024 > 2048) return ERROR_NOT_SUPPORTED;
@@ -579,7 +579,7 @@ void experiment_task_get_profile(experiment_task_t * me, experiment_profile_t * 
 uint32_t experiment_start_measuring(experiment_task_t * const me)
 {
 	experiment_profile_t * profile = &me->profile;
-	if ((profile->sampling_rate ==0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
+//	if ((profile->sampling_rate ==0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
 	if ((profile->pos ==0 ) || (profile->pos > 36)) return ERROR_NOT_SUPPORTED;
 	if ((profile->laser_percent > 100 ) ) return ERROR_NOT_SUPPORTED;
 	if (profile->num_sample_x1024 > 2048) return ERROR_NOT_SUPPORTED;
