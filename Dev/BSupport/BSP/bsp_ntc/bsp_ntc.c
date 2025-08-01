@@ -116,23 +116,6 @@ void bsp_ntc_dma_adc_irq(void)
 	{
 		NTC_DMA->HIFCR = DMA_HIFCR_CTCIF4;	// Clear Transfer-complete flag
 
-//		if (sample_count == 0)
-//		{
-//			for (uint32_t i = 0; i < 8; i++ ) ntc_ADC_value_average[i] = ntc_ADC_value[i];
-//			sample_count++;
-//		}
-//		else if(sample_count < 10)
-//		{
-//			for (uint32_t i = 0; i< 8; i++ ) ntc_ADC_value_average[i] = (ntc_ADC_value[i] + ntc_ADC_value_average[i])/2;
-//			sample_count++;
-//		}
-//		else
-//		{
-//			sample_count = 0;
-//			SST_Task_post(&monitor_task_inst.super, (SST_Evt *)&ntc_adc_evt); //post to temperature monitor task
-//		}
-
-
 		ntc_adc_value_buff[0][ntc_adc_value_buff_idx] = ntc_ADC_value[0];
 		ntc_adc_value_buff[1][ntc_adc_value_buff_idx] = ntc_ADC_value[1];
 		ntc_adc_value_buff[2][ntc_adc_value_buff_idx] = ntc_ADC_value[2];

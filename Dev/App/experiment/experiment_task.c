@@ -115,18 +115,19 @@ static void experiment_task_init(experiment_task_t * const me,experiment_evt_t c
 		me->profile.post_time = experiment_profile_bkram.post_time;
 
 		DisableBackupRAM();
-		me->profile.num_sample = me->profile.sampling_rate * (me->profile.pre_time + me->profile.experiment_time + me->profile.post_time) / 1000000;
+		me->profile.num_sample_x1024 = (me->profile.sampling_rate * ((me->profile.pre_time + me->profile.experiment_time + me->profile.post_time) /1000)) /1024;
 	}
 	else
 	{
-		me->profile.sampling_rate = 100000;
+		me->profile.sampling_rate = 500000;
 		me->profile.pre_time = 100;
-		me->profile.experiment_time = 4000;
+		me->profile.experiment_time = 3800;
 		me->profile.post_time = 100;
-		me->profile.num_sample = 420;
+		me->profile.num_sample_x1024 = 1954;
 	}
 
 }
+
 static void experiment_task_dispatch(experiment_task_t * const me,experiment_evt_t const * const e)
 {
     experiment_task_handler_t prev_state = me->state; /* save for later */
@@ -137,6 +138,7 @@ static void experiment_task_dispatch(experiment_task_t * const me,experiment_evt
         (me->state)(me, &entry_evt);
     }
 }
+
 void experiment_task_ctor(experiment_task_t * const me, experiment_task_init_t const * const init) {
     DBC_ASSERT(0u, me != NULL);
     SST_Task_ctor(&me->super, (SST_Handler) experiment_task_init, (SST_Handler)experiment_task_dispatch, \
@@ -146,6 +148,7 @@ void experiment_task_ctor(experiment_task_t * const me, experiment_task_init_t c
     SST_TimeEvt_disarm(&me->timeout_timer); // Disarm the timeout timer
     me->sub_state = init->sub_state;
 }
+
 void experiment_task_singleton_ctor(void)
 {
 	circular_buffer_init(&experiment_task_event_queue, (uint8_t * )&experiment_task_event_buffer, sizeof(experiment_task_event_buffer), EXPERIMENT_TASK_NUM_EVENTS, sizeof(experiment_evt_t));
@@ -249,7 +252,6 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 
 		case EVT_EXPERIMENT_FINISH_PRE_SAMPLING:
 		{
-			exp_debug_print("EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
 			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
 
 			if (me->sub_state == S_PRE_SAMPLING)
@@ -263,7 +265,6 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 
 		case EVT_EXPERIMENT_FINISH_SAMPLING:
 		{
-			exp_debug_print("EXPERIMENT_FINISH_SAMPLING\r\n");
 			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_SAMPLING\r\n");
 
 			if (me->sub_state == S_DATA_SAMPLING)
@@ -527,13 +528,13 @@ uint32_t experiment_task_photo_ADC_prepare_SPI(experiment_task_t * const me)
 uint32_t experiment_task_set_pda(experiment_task_t * me,experiment_profile_t * profile)
 {
 	if ((profile->sampling_rate == 0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
-	if (profile->num_sample > 2048) return ERROR_NOT_SUPPORTED;
+	if (profile->num_sample_x1024 > 2048) return ERROR_NOT_SUPPORTED;
 
 	me->profile.sampling_rate = profile->sampling_rate;
 	me->profile.pre_time = profile->pre_time;
 	me->profile.experiment_time = profile->experiment_time;
 	me->profile.post_time = profile->post_time;
-	me->profile.num_sample = profile->num_sample;
+	me->profile.num_sample_x1024 = profile->num_sample_x1024;
 	me->profile.period = profile->period;
 	experiment_update_profile();
 
@@ -561,7 +562,7 @@ uint32_t experiment_task_set_profile(experiment_task_t * me,experiment_profile_t
 	if ((profile->sampling_rate == 0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
 	if ((profile->pos == 0 ) || (profile->pos > 36)) return ERROR_NOT_SUPPORTED;
 	if ((profile->laser_percent > 100 ) ) return ERROR_NOT_SUPPORTED;
-	if (profile->num_sample > 2048) return ERROR_NOT_SUPPORTED;
+	if (profile->num_sample_x1024 > 2048) return ERROR_NOT_SUPPORTED;
 	if (profile->period == 0) return ERROR_NOT_SUPPORTED;
 
 	me->profile = *profile;
@@ -581,7 +582,7 @@ uint32_t experiment_start_measuring(experiment_task_t * const me)
 	if ((profile->sampling_rate ==0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
 	if ((profile->pos ==0 ) || (profile->pos > 36)) return ERROR_NOT_SUPPORTED;
 	if ((profile->laser_percent > 100 ) ) return ERROR_NOT_SUPPORTED;
-	if (profile->num_sample > 2048) return ERROR_NOT_SUPPORTED;
+	if (profile->num_sample_x1024 > 2048) return ERROR_NOT_SUPPORTED;
 	SST_Task_post(&me->super, (SST_Evt *)&start_measuring_evt);
 	return ERROR_OK;
 }

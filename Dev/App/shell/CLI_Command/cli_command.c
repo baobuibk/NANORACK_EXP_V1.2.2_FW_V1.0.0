@@ -981,8 +981,8 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "format: exp_set_profile [sampling_rate] [pos] [laser_percent] [pre_time] [experiment_time] [post_time]\r\n");
 		return;
 	}
-	uint32_t sampling_rate = atoi(embeddedCliGetToken(args, 1));
-	if ((sampling_rate < 1000) || (sampling_rate > 800000))
+	uint32_t sample_rate = atoi(embeddedCliGetToken(args, 1));
+	if ((sample_rate < 1000) || (sample_rate > 800000))
 	{
 		cli_printf(cli, "sampling rate out of range (1K-800K)\r\n");
 		return;
@@ -1023,22 +1023,23 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		return;
 	}
 
-	uint32_t num_sample = ((pre_time + sample_time + post_time) * sampling_rate ) /1000000;
-	if (num_sample > 2048)	//larger than 4MB
+    uint32_t num_sample_x1024 = (((pre_time + sample_time + post_time) /1000) * sample_rate) /1024;
+	if (num_sample_x1024 > 2048)	//larger than 4MB
 	{
 		cli_printf(cli, "total sample must be less than 2048K \r\n");
 		return;
 	}
 
 	experiment_profile_t profile;
-	profile.sampling_rate = sampling_rate;		// Hz
+	profile.sampling_rate = sample_rate;				// Hz
 	profile.pos = pos;
 	profile.laser_percent = percent;
-	profile.pre_time = pre_time;				// mS
-	profile.experiment_time = sample_time;		// mS
-	profile.post_time = post_time;				// mS
-	profile.num_sample = num_sample;			// kSample
-	profile.period = 1000000 / sampling_rate;	// uS
+	profile.pre_time = pre_time;						// mS
+	profile.experiment_time = sample_time;				// mS
+	profile.post_time = post_time;						// mS
+	profile.num_sample_x1024 = num_sample_x1024;		// kSample
+	profile.period = 1000000 / sample_rate;				// uS
+
 	if(!experiment_task_set_profile(p_experiment_task, &profile))
 		cli_printf(cli, "OK\r\n");
 	else cli_printf(cli, "ERROR\r\n");
@@ -1061,7 +1062,7 @@ static void cmd_exp_get_profile(EmbeddedCli *cli, char *args, void *context)
 					profile.pre_time,
 					profile.experiment_time,
 					profile.post_time,
-					profile.num_sample);
+					profile.num_sample_x1024);
 }
 
 static void cmd_exp_start_measuring(EmbeddedCli *cli, char *args, void *context)

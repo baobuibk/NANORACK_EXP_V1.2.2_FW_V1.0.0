@@ -294,8 +294,8 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
         min_shell_debug_print("post_time should be larger than 0\r\n");
     }
 
-    uint32_t num_sample = ((pre_time + sample_time + post_time) * sample_rate) / 1000000;
-    if (num_sample > 2048) // larrger than 4MB
+    uint32_t num_sample_x1024 = (((pre_time + sample_time + post_time) /1000) * sample_rate) /1024;
+    if (num_sample_x1024 > 2048) // larrger than 4MB
     {
         ret++;
         min_shell_debug_print("total sample must be less than 2048K \r\n");
@@ -304,12 +304,12 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
     if (!ret)
     {
         experiment_profile_t profile;
-        profile.sampling_rate = sample_rate;    // Hz	// (Sample/second)
-        profile.pre_time = pre_time;          // mS
-        profile.experiment_time = sample_time;  // mS
-        profile.post_time = post_time;        // mS
-        profile.num_sample = num_sample;      // kSample
-        profile.period = 1000000 / sample_rate; // uS
+        profile.sampling_rate = sample_rate;    	// Hz	// (Sample/second)
+        profile.pre_time = pre_time;          		// mS
+        profile.experiment_time = sample_time;  	// mS
+        profile.post_time = post_time;        		// mS
+        profile.num_sample_x1024 = num_sample_x1024;// kSample
+        profile.period = 1000000 / sample_rate; 	// uS
         if (!experiment_task_set_pda(p_experiment_task, &profile))
         {
         	// Add log
@@ -422,7 +422,7 @@ static void MIN_Handler_GET_INFO_SAMPLE_CMD(MIN_Context_t *ctx, const uint8_t *p
     uint8_t buffer[2];
     experiment_profile_t profile;
     experiment_task_get_profile(p_experiment_task, &profile);
-    if (profile.num_sample == 0)
+    if (profile.num_sample_x1024 == 0)
     {
         buffer[0] = 0;
         buffer[1] = 0;
@@ -430,8 +430,8 @@ static void MIN_Handler_GET_INFO_SAMPLE_CMD(MIN_Context_t *ctx, const uint8_t *p
     }
     else
     {
-        uint16_t total_chunks = (profile.num_sample / EXPERIMENT_CHUNK_SAMPLE_SIZE);
-        if (profile.num_sample % EXPERIMENT_CHUNK_SAMPLE_SIZE)
+        uint16_t total_chunks = (profile.num_sample_x1024 / EXPERIMENT_CHUNK_SAMPLE_SIZE);
+        if (profile.num_sample_x1024 % EXPERIMENT_CHUNK_SAMPLE_SIZE)
         	total_chunks += 1;
         min_shell_debug_print("Total sample chunks: %d\r\n", total_chunks);
         buffer[0] = (uint8_t)(total_chunks >> 8) 	& 0xFF;
@@ -446,8 +446,8 @@ static void MIN_Handler_GET_CHUNK_CMD(MIN_Context_t *ctx, const uint8_t *payload
     uint8_t chunk_id = payload[0];
     experiment_profile_t profile;
     experiment_task_get_profile(p_experiment_task, &profile);
-    uint16_t total_chunks = (profile.num_sample / EXPERIMENT_CHUNK_SAMPLE_SIZE);
-    if (profile.num_sample % EXPERIMENT_CHUNK_SAMPLE_SIZE)
+    uint16_t total_chunks = (profile.num_sample_x1024 / EXPERIMENT_CHUNK_SAMPLE_SIZE);
+    if (profile.num_sample_x1024 % EXPERIMENT_CHUNK_SAMPLE_SIZE)
     	total_chunks += 1;
     if (total_chunks == 0)
     {

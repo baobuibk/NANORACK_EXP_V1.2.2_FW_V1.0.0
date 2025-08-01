@@ -18,7 +18,6 @@
 	#define PHOTO_DMA_STREAM	LL_DMA_STREAM_1
 
 	#define PHOTO_SPI			SPI2
-	#define PHOTO_TIMER			TIM2
 #endif
 
 #define HW_V122
@@ -27,8 +26,12 @@
 	#define PHOTO_DMA_STREAM	LL_DMA_STREAM_0
 
 	#define PHOTO_SPI			SPI4
-	#define PHOTO_TIMER			TIM2
 #endif
+
+///////////////////// CLI CONSOLE //////////////////////
+#include "embedded_cli.h"
+extern EmbeddedCli * shell_uart_cli;
+///////////////////// CLI CONSOLE //////////////////////
 
 uint16_t photo_data_buffer[BUFFER_FULL_SIZE];
 uint16_t * const upper_data_buffer = photo_data_buffer + BUFFER_HALF_SIZE;
@@ -287,7 +290,7 @@ void bsp_photodiode_sample_start()
 	experiment_task_inst.num_chunk = photo_diode_adc.block_count;
 	experiment_task_inst.num_data_real = experiment_task_inst.num_chunk * BUFFER_FULL_SIZE;
 
-	bsp_photodiode_start_dma(&photo_diode_adc,(uint32_t *)&photo_data_buffer, BUFFER_FULL_SIZE);
+	bsp_photodiode_start_dma(&photo_diode_adc, (uint32_t *)&photo_data_buffer, BUFFER_FULL_SIZE);
 	bsp_photo_start_timer_sampling();
 }
 
@@ -297,8 +300,7 @@ void bsp_photodiode_dma_sampling_irq(void)
 {
 	TIM1->CR1 &= ~TIM_CR1_CEN;		// Stop timer trigger
 
-//	GPIOD->BSRR = GPIO_BSRR_BS_9; 	// CS_HIGH
-	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin;
+	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin;	// CS_HIGH
 
 	// Half-transfer
 	if (PHOTO_DMA->LISR & DMA_LISR_HTIF0)
@@ -316,24 +318,36 @@ void bsp_photodiode_dma_sampling_irq(void)
 		bsp_spi_ram_write_dma(photo_diode_adc.ram_current_address, BUFFER_HALF_SIZE_BYTE, (uint8_t *)upper_data_buffer);
 		photo_diode_adc.ram_current_address += BUFFER_HALF_SIZE_BYTE;
 		photo_diode_adc.block_count --;
+
 		TIM1->CR1 |= TIM_CR1_CEN;		// Continue start timer trigger
+
 		if ((photo_diode_adc.block_count) == 0)
 		{
-			PHOTO_TIMER->CR1 &= ~TIM_CR1_CEN;
-			PHOTO_TIMER->DIER &= ~TIM_DIER_UIE;
-			PHOTO_TIMER->SR = ~TIM_SR_UIF;
 			TIM1->CR1 &= ~TIM_CR1_CEN;
 			TIM1->DIER &= ~TIM_DIER_UIE;
 			TIM1->SR = ~TIM_SR_UIF;
+
+			TIM2->CR1 &= ~TIM_CR1_CEN;
+			TIM2->DIER &= ~TIM_DIER_UIE;
+			TIM2->SR = ~TIM_SR_UIF;
+
 			NVIC_ClearPendingIRQ(TIM1_UP_TIM10_IRQn);
-			LL_DMA_DisableStream(PHOTO_DMA, PHOTO_DMA_STREAM);
-			LL_DMA_DisableIT_TC(PHOTO_DMA, PHOTO_DMA_STREAM);
-			LL_DMA_DisableIT_HT(PHOTO_DMA, PHOTO_DMA_STREAM);
-			LL_SPI_DisableDMAReq_RX(photo_diode_adc.spi);
+
+		    // Dừng DMA và SPI
+		    LL_DMA_DisableIT_TC(PHOTO_DMA, PHOTO_DMA_STREAM);
+		    LL_DMA_DisableIT_HT(PHOTO_DMA, PHOTO_DMA_STREAM);
+		    LL_DMA_DisableStream(PHOTO_DMA, PHOTO_DMA_STREAM);
+		    while (LL_DMA_IsEnabledStream(PHOTO_DMA, PHOTO_DMA_STREAM));  // đảm bảo đã disable
+
+		    // Xoá cờ ngắt TC/HT cho DMA2 Stream 0
+		    DMA2->LIFCR = DMA_LIFCR_CTCIF0 | DMA_LIFCR_CHTIF0;
+
+		    LL_SPI_DisableDMAReq_RX(photo_diode_adc.spi);
 
 			// Done finish post-sampling event trigger
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_post_phase_evt);
 		}
+
 	}
 
 	// Clear all unexpected interrupt flag (stream 0)
@@ -368,7 +382,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
 
 void TIM2_IRQHandler(void)
 {
-	PHOTO_TIMER->SR = ~TIM_SR_UIF;	// Xóa cờ ngắt update
+	TIM2->SR = ~TIM_SR_UIF;	// Xóa cờ ngắt update
 	switch (photo_diode_state)
 	{
 		case PHOTO_SAMPLED_PRE:
@@ -377,7 +391,8 @@ void TIM2_IRQHandler(void)
 
 			photo_diode_state = PHOTO_SAMPLED_SAMPLING;
 			// Set laser timer with sampling time
-			PHOTO_TIMER->ARR = timer_timing.sampling_time_ARR - 1;
+			TIM2->ARR = timer_timing.sampling_time_ARR - 1;
+//			bsp_photodiode_timer2_init(timer_timing.sampling_time_ARR - 1);
 
 			// Done finish pre-sampling event trigger
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_pre_phase_evt);
@@ -390,15 +405,14 @@ void TIM2_IRQHandler(void)
 			// Switch off laser[pos] (Stop sampling time)
 			bsp_laser_int_switch_off_all();
 
+			// Disable timer2 counter
+			TIM2->CR1 &= ~TIM_CR1_CEN;		// stop timer
+
 			photo_diode_state = PHOTO_SAMPLING_STOP;
-			// Set laser timer with posting time
-			PHOTO_TIMER->ARR = timer_timing.post_time_ARR - 1;
 
 			// Done finish sampling event trigger
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_sampling_phase_evt);
 
-			// Disable timer2 counter
-			PHOTO_TIMER->CR1 &= ~TIM_CR1_CEN;		// stop timer
 		break;
 		default: break;
 	}

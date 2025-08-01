@@ -23,7 +23,7 @@
 // BEGIN: Total define for experiment, min_shell_command, spi_slave
 // =================================================================
 
-#define EXPERIMENT_CHUNK_SAMPLE_SIZE		16		//kSample
+#define EXPERIMENT_CHUNK_SAMPLE_SIZE		16		//kSample (*1024)
 #define EXPERIMENT_BUFFER_SAMPLE32_SIZE		(EXPERIMENT_CHUNK_SAMPLE_SIZE * 512)
 #define EXPERIMENT_BUFFER_SAMPLE_SIZE		(EXPERIMENT_CHUNK_SAMPLE_SIZE * 1024)
 #define EXPERIMENT_BUFFER_BYTE_SIZE			(EXPERIMENT_BUFFER_SAMPLE_SIZE * 2)
@@ -59,7 +59,7 @@ struct experiment_profile_t{
 	uint16_t pre_time; //time before switching					// mS
 	uint16_t experiment_time;//time when switch the laser on	// mS
 	uint16_t post_time; //time after switching off the laser	// mS
-	uint32_t num_sample;										// kSample
+	uint32_t num_sample_x1024;									// kSample	(x1024 Sample)
 	uint32_t period;											// uS
 };
 
