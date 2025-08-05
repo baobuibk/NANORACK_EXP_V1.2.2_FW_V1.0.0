@@ -48,8 +48,6 @@ void wdg_task_ctor_singleton()
 static void wdg_task_init(wdg_task_t * const me, wdg_task_evt_t * const e)
 {
 	wdg_init();
-
-
 	wdg_start_hdw_wdg(WDG_INIT_TIMEOUT_MS);
 	SST_TimeEvt_arm(&me->wdg_timer, WDG_POLL_TIME, WDG_POLL_TIME);
 }

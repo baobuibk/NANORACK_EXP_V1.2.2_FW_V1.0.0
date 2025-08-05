@@ -103,12 +103,39 @@ typedef enum {
     LWL_EXP_START,                       // ID 33: Start experiment
     LWL_EXP_STOP,                        // ID 34: Stop experiment
 
-    LWL_EXP_SYS_RESET_OTA,               // ID 35: OTA system reset trigger
-	LWL_EXP_SET_RTC,		// ID 36:
+    LWL_EXP_SYS_RESET_OTA,              // ID 35: OTA system reset trigger
+	LWL_EXP_SET_RTC,                    // ID 36:
 
-	LWL_EXP_TRANS_PHOTO_DATA,
-	LWL_EXP_TRANS_CURRENT_DATA,
-	LWL_EXP_TRANS_LOG_DATA,
+	LWL_EXP_TRANS_PHOTO_DATA,           // ID 37:
+	LWL_EXP_TRANS_CURRENT_DATA,         // ID 38:
+	LWL_EXP_TRANS_LOG_DATA,             // ID 39:
+
+    // OBC STM32 block
+    OBC_STM32_________________LOG,      // ID 40
+    OBC_STM32_TEST_LOG,                 // ID 41
+    OBC_STM32_STARTUP,                  // ID 42
+	OBC_STM32_BOOTING,					// ID 43
+	OBC_STM32_LOGTEST,					// ID 44
+
+	OBC_STM32_INIT_STEP,				// ID 45
+	OBC_STM32_MISS_HEARTBEAT,			// ID 46
+
+	OBC_STM32_RELEASE,					// ID 47
+	OBC_STM32_LOCKIN,					// ID 48
+	OBC_STM32_CLEAN,					// ID 49
+
+	OBC_STM32_CM4_SCRIP_NAK,			// ID 50
+	OBC_STM32_WRITE_FATFS_FAIL,			// ID 51
+
+	OBC_STM32_RTC_SCRIPT_SET,			// ID 52
+	OBC_STM32_TIME_POINT_START,			// ID 53
+	OBC_STM32_ROUTINE_INIT_STEP,		// ID 54
+	OBC_STM32_ROUTINE_DLS_STEP,			// ID 55
+	OBC_STM32_ROUTINE_CAM_STEP,			// ID 56
+	OBC_STM32_ROUTINE_RETURN, 			// ID 57
+
+	OBC_STM32_MIN_CALLBACK,				// ID 58
+	OBC_STM32_MODFSP_CALLBACK			// ID 59
 } log_msg_id_t;
 
 

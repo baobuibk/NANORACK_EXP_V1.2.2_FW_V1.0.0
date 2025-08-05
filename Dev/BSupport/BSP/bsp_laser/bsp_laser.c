@@ -132,6 +132,15 @@ void bsp_laser_ext_switch_on(uint32_t channel_idx)
 	MCP4902_Set_DAC(&DAC_device, 1, bsp_laser_ext_current);
 }
 
+void bsp_laser_ext_switch_on_mask(uint32_t mask)
+{
+	bsp_laser_ext_mask = mask;
+	bsp_laser_set_spi_mode(SPI_MODE_1);
+	ADG1414_Chain_SwitchOn(&laser_ext, bsp_laser_ext_mask);
+	bsp_laser_set_spi_mode(SPI_MODE_0);
+	MCP4902_Set_DAC(&DAC_device, 1, bsp_laser_ext_current);
+}
+
 void bsp_laser_ext_switch_off_all(void)
 {
 //	bsp_laser_set_spi_mode(SPI_MODE_1);

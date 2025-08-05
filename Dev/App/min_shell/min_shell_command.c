@@ -534,7 +534,7 @@ static void MIN_Handler_MANUAL_TURN_ON_LASER_CMD(MIN_Context_t *ctx, const uint8
 	uint8_t obj = payload[0];
 	uint8_t laser_idx = payload[1];
 	if (((obj == 0) && ((laser_idx > INTERNAL_CHAIN_CHANNEL_NUM) || (laser_idx < 1)))
-			|| ((obj == 1) && ((laser_idx > EXTERNAL_CHAIN_CHANNEL_NUM) || (laser_idx < 1))))
+			|| ((obj == 1) && (laser_idx < 1)))
 	{
 		buffer[0] = MIN_RESP_FAIL;
 		buffer[1] = MIN_RESP_FAIL;
@@ -545,7 +545,8 @@ static void MIN_Handler_MANUAL_TURN_ON_LASER_CMD(MIN_Context_t *ctx, const uint8
 		if (obj == 0)
 			experiment_task_int_laser_switchon(p_experiment_task, laser_idx);
 		else if (obj == 1)
-			experiment_task_ext_laser_switchon(p_experiment_task, laser_idx);
+//			experiment_task_ext_laser_switchon(p_experiment_task, laser_idx);
+			bsp_laser_ext_switch_on_mask(laser_idx);
 		min_shell_debug_print("_ACK\r\n");
 	}
 

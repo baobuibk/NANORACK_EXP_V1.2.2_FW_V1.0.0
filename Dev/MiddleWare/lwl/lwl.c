@@ -156,6 +156,34 @@ static const struct lwl_msg lwl_msg_table[] = {
 	{"Transmit: Send photo chunk[%1d] data", 1},
 	{"Transmit: Send laser current data", 0},
 	{"Transmit: Send log data", 0},
+
+    // OBC_STM32 --------------------------------------------------------------------------------
+    {"[OBC-STM32] Log Block------------------------", 0}, //OBC_STM32------------LOG,      // ID 40
+    {"[OBC-STM32] Test Log", 0},  // ID 41
+    {"]OBC-STM32] Start Up", 0},  // ID 42
+    {"[OBC-STM32] Booting at %1d/%1d/%2d %1d:%1d:%1d", 7}, // 43
+    {"[OBC-STM32] LogTest at %1d/%1d/%1d %1d:%1d:%1d", 6}, // 44
+
+	{"[OBC-STM32] [Init] Step %1d - return code %1d", 2}, // 45
+
+	{"[OBC-STM32] [Alive] Miss Heart Beat at %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 46
+
+	{"[OBC-STM32] [FileSystem] SD Release at %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 47
+	{"[OBC-STM32] [FileSystem] SD Lockin at %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 48
+	{"[OBC-STM32] [FileSystem] SD Clean at %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 49
+
+	{"[OBC-STM32] [SimpleTransf] CM4 not response at %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 50
+	{"[OBC-STM32] [SimpleTransf] File Write Fail at %1d/%1d/20%1d %1d:%1d:%1d", 6},  // 51
+
+	{"[OBC-STM32] [ScriptManager] RTC is set to %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 52
+	{"[OBC-STM32] [ScriptManager] Time point at %1d/%1d/20%1d %1d:%1d:%1d, Index: %1d", 7},  //53
+	{"[OBC-STM32] [ScriptManager] Execute Routine INIT: %1d, Step: %2d", 3}, 	// 54
+	{"[OBC-STM32] [ScriptManager] Execute Routine DLS: %1d, Step: %2d", 3}, 	// 55
+	{"[OBC-STM32] [ScriptManager] Execute Routine CAM: %1d, Step: %2d", 3}, 	// 56
+	{"[OBC-STM32] [ScriptManager] Execute Routine Return Code: %1d", 1}, 	// 57
+
+	{"[OBC-STM32] [MIN-EXP] Callback of ID: %1d, return size: %1d", 2}, 		// 58
+	{"[OBC-STM32] [MODFSP-CM4] Callback of ID: %1d, return size: %2d", 3}, 		// 59
 };
 
 

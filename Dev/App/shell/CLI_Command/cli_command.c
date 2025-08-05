@@ -928,7 +928,7 @@ static void CMD_Int_Laser_Switch_On(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "argument 1 out of range,(1-36)\r\n");
 		return;
 	}
-	experiment_task_int_laser_switchon(p_experiment_task,  laser_idx);
+	experiment_task_int_laser_switchon(p_experiment_task, laser_idx);
 	cli_printf(cli, "OK\r\n");
 }
 
@@ -951,7 +951,7 @@ static void CMD_Ext_Laser_Switch_On(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "argument 1 out of range,(1-8)\r\n");
 		return;
 	}
-	experiment_task_ext_laser_switchon(p_experiment_task,  laser_idx);
+	experiment_task_ext_laser_switchon(p_experiment_task, laser_idx);
 	cli_printf(cli, "OK\r\n");
 }
 

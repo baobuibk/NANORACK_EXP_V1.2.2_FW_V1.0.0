@@ -156,6 +156,7 @@ void shell_task_init(shell_task_t * const me, shell_evt_t const * const e) {
 
     cli_printf(shell_uart_cli, "\r\n========================================\r\n");
     cli_printf(shell_uart_cli, "          EXPERIMENT BOARD \r\n");
+    cli_printf(shell_uart_cli, "                 V122 \r\n");
     cli_printf(shell_uart_cli, "========================================\r\n");
 }
 
