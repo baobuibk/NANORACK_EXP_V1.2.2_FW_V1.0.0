@@ -321,7 +321,7 @@ def main():
     parser.add_argument('-f', help='C source file to find lwl_msg_table definitions', action='append')
     parser.add_argument('-d', help='Directory containing C source files with lwl_msg_table', action='append')
     parser.add_argument('--log', help='Log level: notset|debug|info|warning|error|critical', default='debug')
-    parser.add_argument('--bin', help='Binary log file to decode (default: log.bin)', default='exp_log_20250805_082000.bin')
+    parser.add_argument('--bin', help='Binary log file to decode (default: log.bin)', default='obc_log_R_20250807_001541.bin')
     parser.add_argument('--output', help='Output file for decoded logs (default: output.txt)', default='output.txt')
     args = parser.parse_args()
     log_map = {

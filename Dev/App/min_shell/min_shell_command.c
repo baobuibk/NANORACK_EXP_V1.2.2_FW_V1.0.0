@@ -294,7 +294,7 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
         min_shell_debug_print("post_time should be larger than 0\r\n");
     }
 
-    uint32_t num_sample_x1024 = (((pre_time + sample_time + post_time) /1000) * sample_rate) /1024;
+    uint32_t num_sample_x1024 = ((pre_time + sample_time + post_time) * sample_rate) /1024000;
     if (num_sample_x1024 > 2048) // larrger than 4MB
     {
         ret++;

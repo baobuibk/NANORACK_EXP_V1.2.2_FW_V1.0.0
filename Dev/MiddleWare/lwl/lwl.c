@@ -102,91 +102,67 @@ static lwl_t lwl = {
 // Log message table (ID is the index)
 static const struct lwl_msg lwl_msg_table[] = {
     {NULL, 0},                                       // ID 0: EXP_INVALID
-
     {"Time: Day %1d, %1d:%1d:%1d", 4},               // ID 1: EXP_TIMESTAMP
-
     {"Temperature: NTC[%1d]: %2d", 3},               // ID 2: EXP_TEMP_SINGLE_NTC
-    {"Temperature: Set temperature profile: Target_temp: %2d, Min_temp: %2d, Max_temp: %2d, NTC_primary: %1d, NTC_secondary: %1d, \
-        	Auto_recover: %1d, TEC_mask: %1d, Heater_mask: %1d, TEC_vol: %2d, Heater_duty: %1d", 14}, // ID 3: EXP_TEMP_PROFILE_SET
-
+    {"Temperature: Set temperature profile: Target_temp: %2d, Min_temp: %2d, Max_temp: %2d, NTC_primary: %1d, NTC_secondary: %1d, Auto_recover: %1d, TEC_mask: %1d, Heater_mask: %1d, TEC_vol: %2d, Heater_duty: %1d", 14}, // ID 3: EXP_TEMP_PROFILE_SET
     {"Temperature: MANUAL mode", 0},                 // ID 4: EXP_TEMP_MANUAL_MODE
     {"Temperature: AUTO mode", 0},                   // ID 5: EXP_TEMP_AUTO_MODE
     {"Temperature: COOLING", 0},                     // ID 6: EXP_TEMP_COOLING
     {"Temperature: HEATING", 0},                     // ID 7: EXP_TEMP_HEATING
     {"Temperature: ERROR, Primary NTC = %1d Secondary NTC = %1d", 2}, // ID 8: EXP_TEMP_ERROR
-
     {"Temperature: Set TEC override profile: Interval: %2d, TEC[%1d]: %2d mV", 5}, // ID 9: EXP_TEMP_TEC_OVERRIDE_PROFILE
     {"Temperature: TEC override ON", 0},     // ID 10: EXP_TEMP_TEC_OVERRIDE_ON
     {"Temperature: TEC override OFF", 0},    // ID 11: EXP_TEMP_TEC_OVERRIDE_OFF
-
     {"TEC: MANUAL mode: TEC[%1d] ON", 1},            // ID 12: EXP_TEC_MANUAL_ON
     {"TEC: MANUAL mode: TEC[%1d] OFF", 1},           // ID 13: EXP_TEC_MANUAL_OFF
     {"TEC: AUTO mode: TEC ON with %2dmV", 2},        // ID 14: EXP_TEC_AUTO_ON
     {"TEC: AUTO mode: TEC OFF", 0},                  // ID 15: EXP_TEC_AUTO_OFF
-
     {"Heater: MANUAL mode: Heater[%1d] ON", 1},      	// ID 16: EXP_HEATER_MANUAL_ON
     {"Heater: MANUAL mode: Heater[%1d] OFF", 1},     	// ID 17: EXP_HEATER_MANUAL_OFF
     {"Heater: AUTO mode: Heater ON with duty %1d", 1}, 	// ID 18: EXP_HEATER_AUTO_ON
     {"Heater: AUTO mode: Heater OFF", 0},            	// ID 19: EXP_HEATER_AUTO_OFF
-
     {"Internal laser: MANUAL mode: Switch ON: Index: %1d, Current: %1d", 2}, // ID 20: EXP_LASER_INT_MANUAL_ON
     {"Internal laser: MANUAL mode: Switch OFF", 0},  // ID 21: EXP_LASER_INT_MANUAL_OFF
     {"Internal laser: SAMPLING mode: Switch ON: Index: %1d, Current: %1d", 2}, // ID 22: EXP_LASER_INT_SAMPLE_ON
     {"Internal laser: SAMPLING mode: Switch OFF", 0}, // ID 23: EXP_LASER_INT_SAMPLE_OFF
-
     {"External laser: MANUAL mode: Switch ON: Index: %1d, Current: %1d", 2}, // ID 24: EXP_LASER_EXT_MANUAL_ON
     {"External laser: MANUAL mode: Switch OFF", 0},  // ID 25: EXP_LASER_EXT_MANUAL_OFF
     {"External laser: SAMPLING mode: Switch ON: Index: %1d, Current: %1d", 2}, // ID 26: EXP_LASER_EXT_SAMPLE_ON
     {"External laser: SAMPLING mode: Switch OFF", 0}, // ID 27: EXP_LASER_EXT_SAMPLE_OFF
-
     {"Photo: SAMPLING mode: Switch ON: Index: %1d", 1}, // ID 28: EXP_PHOTO_SAMPLE_ON
     {"Photo: SAMPLING mode: Switch OFF", 0},         // ID 29: EXP_PHOTO_SAMPLE_OFF
-
-    {"Experiment: Set photo profile: Sample_rate: %4d (sample/s), Pre_duration: %2d (mS), \
-    		Sample_duration: %2d (mS), Post_duration: %2d (mS)", 10}, // ID 30: EXP_SET_PHOTO_PROFILE
+    {"Experiment: Set photo profile: Sample_rate: %4d (sample/s), Pre_duration: %2d (mS), Sample_duration: %2d (mS), Post_duration: %2d (mS)", 10}, // ID 30: EXP_SET_PHOTO_PROFILE
     {"Experiment: Set laser intensity: %1d", 1},      // ID 31: EXP_SET_LASER_INTENSITY
     {"Experiment: Set laser&photo index: %1d", 1},   // ID 32: EXP_SET_LASER_PHOTO_INDEX
     {"Experiment: Start", 0},                        // ID 33: EXP_START
     {"Experiment: Stop", 0},                         // ID 34: EXP_STOP
-
     {"System: Reset OTA", 0},                        // ID 35: EXP_SYS_RESET_OTA
-
 	{"System: Set time: Day: %1d, Hour: %1d, Minute: %1d, Second: %1d", 4},                        // ID 36:
-
 	{"Transmit: Send photo chunk[%1d] data", 1},
 	{"Transmit: Send laser current data", 0},
 	{"Transmit: Send log data", 0},
-
-    // OBC_STM32 --------------------------------------------------------------------------------
     {"[OBC-STM32] Log Block------------------------", 0}, //OBC_STM32------------LOG,      // ID 40
     {"[OBC-STM32] Test Log", 0},  // ID 41
-    {"]OBC-STM32] Start Up", 0},  // ID 42
+    {"[OBC-STM32] Start Up", 0},  // ID 42
     {"[OBC-STM32] Booting at %1d/%1d/%2d %1d:%1d:%1d", 7}, // 43
     {"[OBC-STM32] LogTest at %1d/%1d/%1d %1d:%1d:%1d", 6}, // 44
-
 	{"[OBC-STM32] [Init] Step %1d - return code %1d", 2}, // 45
-
 	{"[OBC-STM32] [Alive] Miss Heart Beat at %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 46
-
 	{"[OBC-STM32] [FileSystem] SD Release at %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 47
 	{"[OBC-STM32] [FileSystem] SD Lockin at %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 48
 	{"[OBC-STM32] [FileSystem] SD Clean at %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 49
-
 	{"[OBC-STM32] [SimpleTransf] CM4 not response at %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 50
 	{"[OBC-STM32] [SimpleTransf] File Write Fail at %1d/%1d/20%1d %1d:%1d:%1d", 6},  // 51
-
 	{"[OBC-STM32] [ScriptManager] RTC is set to %1d/%1d/20%1d %1d:%1d:%1d", 6}, // 52
 	{"[OBC-STM32] [ScriptManager] Time point at %1d/%1d/20%1d %1d:%1d:%1d, Index: %1d", 7},  //53
 	{"[OBC-STM32] [ScriptManager] Execute Routine INIT: %1d, Step: %2d", 3}, 	// 54
 	{"[OBC-STM32] [ScriptManager] Execute Routine DLS: %1d, Step: %2d", 3}, 	// 55
 	{"[OBC-STM32] [ScriptManager] Execute Routine CAM: %1d, Step: %2d", 3}, 	// 56
 	{"[OBC-STM32] [ScriptManager] Execute Routine Return Code: %1d", 1}, 	// 57
-
 	{"[OBC-STM32] [MIN-EXP] Callback of ID: %1d, return size: %1d", 2}, 		// 58
-	{"[OBC-STM32] [MODFSP-CM4] Callback of ID: %1d, return size: %2d", 3}, 		// 59
+	{"[OBC-STM32] [MODFSP-CM4] Callback of ID: %1d, return size: %2d", 3}, 		// ID 59: EXP_SYS_RESET_OTA
+	{"[OBC-STM32] Reset cause: %4d", 4}, 		// 60
 };
-
-
 
 static const uint8_t lwl_msg_table_size = sizeof(lwl_msg_table) / sizeof(lwl_msg_table[0]);
 

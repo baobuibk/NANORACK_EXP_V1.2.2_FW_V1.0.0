@@ -1024,7 +1024,7 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		return;
 	}
 
-    uint32_t num_sample_x1024 = (((pre_time + sample_time + post_time) /1000) * sample_rate) /1024;
+    uint32_t num_sample_x1024 = ((pre_time + sample_time + post_time) * sample_rate) /1024000;
 	if (num_sample_x1024 > 2048)	//larger than 4MB
 	{
 		cli_printf(cli, "total sample must be less than 2048K \r\n");
