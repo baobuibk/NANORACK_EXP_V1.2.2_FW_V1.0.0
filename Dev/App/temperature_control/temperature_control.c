@@ -186,13 +186,13 @@ static state_t temperature_control_default_handler(temperature_control_task_t * 
 	{
 		me->state = temperature_control_state_cooling_handler;
 		temperature_control_auto_mode_set(&temperature_control_task_inst);
-		cli_printf(shell_uart_cli, "Temperature control: Auto mode activated.\r\n");
+//		cli_printf(shell_uart_cli, "Temperature control: Auto mode activated.\r\n");
 	}
 	else
 	{
 		me->state = temperature_control_state_manual_handler;
 		temperature_control_man_mode_set(&temperature_control_task_inst);
-		cli_printf(shell_uart_cli, "Temperature control: Manual mode engaged.\r\n");
+//		cli_printf(shell_uart_cli, "Temperature control: Manual mode engaged.\r\n");
 	}
 	return HANDLED_STATUS;
 }

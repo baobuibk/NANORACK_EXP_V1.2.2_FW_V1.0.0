@@ -211,7 +211,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 	{
 		case SIG_ENTRY:
 		{
-			cli_printf(shell_uart_cli, "Start Sampling...\r\n");
+//			cli_printf(shell_uart_cli, "Start Sampling...\r\n");
 			SST_TimeEvt_arm(&me->timeout_timer, EXPERIMENT_TASK_AQUI_TIMEOUT, 0);
 
 	      	// Switch the photodiode on
@@ -252,7 +252,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 
 		case EVT_EXPERIMENT_FINISH_PRE_SAMPLING:
 		{
-			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
+//			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
 
 			if (me->sub_state == S_PRE_SAMPLING)
 			{
@@ -265,7 +265,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 
 		case EVT_EXPERIMENT_FINISH_SAMPLING:
 		{
-			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_SAMPLING\r\n");
+//			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_SAMPLING\r\n");
 
 			if (me->sub_state == S_DATA_SAMPLING)
 			{
@@ -280,15 +280,15 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 	    	// Add log
 	    	LWL(LWL_EXP_STOP);
 
-			exp_debug_print("EXPERIMENT_FINISH_POST_SAMPLING\r\n");
-			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_POST_SAMPLING\r\n");
+//			cli_printf(shell_uart_cli, "EXPERIMENT_FINISH_POST_SAMPLING\r\n");
+
 			if (me->sub_state == S_POST_SAMPLING)
 			{
 				me->sub_state = NO_SUBSTATE;
 			}
 			else me->sub_state = S_AQUI_ERROR;
-			exp_debug_print("Sampling Done!\r\n");
-			cli_printf(shell_uart_cli, "Sampling Done!\r\n");
+
+//			cli_printf(shell_uart_cli, "Sampling Done!\r\n");
 
 			// Cho phép giao tiếp Min với OBC
 			min_shell_busy_clear(p_min_shell_task);
