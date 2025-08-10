@@ -86,8 +86,8 @@ typedef struct {
 
 
 
-void ISR_SPI_IRQHandler(ADS8327_Device_t *dev);
-void ISR_TIMTrigger_IRQHandler(ADS8327_Device_t *dev);
+//void ISR_SPI_IRQHandler(ADS8327_Device_t *dev);
+//void ISR_TIMTrigger_IRQHandler(ADS8327_Device_t *dev);
 
 void SPI_SetDataLength(SPI_TypeDef *spi, uint32_t DataWidth);
 void SPI_SetPrescaler(SPI_TypeDef *spi, uint32_t Prescaler);

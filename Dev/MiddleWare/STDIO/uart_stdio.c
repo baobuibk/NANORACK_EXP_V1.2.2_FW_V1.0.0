@@ -69,12 +69,13 @@ bool uart_stdio_read(UART_stdio_t* me, uint8_t* buffer, uint32_t* rec_num) {
 uint32_t uart_stdio_write(UART_stdio_t* me, const uint8_t * buffer, uint32_t num_data) {
 	uint8_t data;
     uint32_t count = 0;
-
+    uint32_t ui32Ret = ERROR_OK;
 	if (!me->is_active) {
         return ERROR_NOT_READY;
     }
     // Nếu không có truyền đang diễn ra, kích hoạt truyền
-	 __disable_irq();
+//	 __disable_irq();
+	ENTER_CRITICAL();
     if (!me->tx_busy) {
 
         data = buffer[0];
@@ -86,14 +87,15 @@ uint32_t uart_stdio_write(UART_stdio_t* me, const uint8_t * buffer, uint32_t num
     }
     // Thêm dữ liệu  vào bộ đệm
     while (count < num_data ) {
-        circular_char_buffer_push(me->tx_buffer, buffer[count]);
-//        if (result) {
-//            return ERROR_OUT_OF_MEMORY;
-//        }
+    	ui32Ret = circular_char_buffer_push(me->tx_buffer, buffer[count]);
+        if (ui32Ret) {
+            break;
+        }
         count++;
     }
-    __enable_irq();
-    return ERROR_OK;
+//    __enable_irq();
+    EXIT_CRITICAL();
+    return ui32Ret;
 }
 
 

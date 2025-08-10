@@ -4,8 +4,8 @@
 ../Dev/MiddleWare/lwl/lwl.c:170:6:lwl_init	1
 ../Dev/MiddleWare/lwl/lwl.c:176:6:lwl_start	1
 ../Dev/MiddleWare/lwl/lwl.c:226:6:LWL	7
-../Dev/MiddleWare/lwl/lwl.c:308:13:lwl_buffer_full_notify	1
-../Dev/MiddleWare/lwl/lwl.c:313:13:lwl_clear_notification	1
-../Dev/MiddleWare/lwl/lwl.c:332:6:lwl_reinit_buffer	1
-../Dev/MiddleWare/lwl/lwl.c:338:12:lwl_get_full_buffer_addr	1
-../Dev/MiddleWare/lwl/lwl.c:343:10:lwl_log_send_to_spi	1
+../Dev/MiddleWare/lwl/lwl.c:306:13:lwl_buffer_full_notify	1
+../Dev/MiddleWare/lwl/lwl.c:311:13:lwl_clear_notification	1
+../Dev/MiddleWare/lwl/lwl.c:330:6:lwl_reinit_buffer	1
+../Dev/MiddleWare/lwl/lwl.c:336:12:lwl_get_full_buffer_addr	1
+../Dev/MiddleWare/lwl/lwl.c:341:10:lwl_log_send_to_spi	1

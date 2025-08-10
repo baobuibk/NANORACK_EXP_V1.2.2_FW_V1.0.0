@@ -138,72 +138,10 @@ int main(void)
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
 
-
-//  Ex_Watchdog_Init();
-//  LED_Status_Init();
-//  UART_Driver_Init();
-//  CLI_Command_Init(EXP_UART_CONSOLE_HANDLE);
-//  NTC_DMA_ADC_Init();
-//  Sensor_I2C_Init();
-//  MIN_Process_Init();
-
-//// Laser board
-//  MCP4902_Device_Init(&DAC_device, SPI4, LASER_DAC_CS_GPIO_Port, LASER_DAC_CS_Pin, LASER_DAC_LATCH_GPIO_Port, LASER_DAC_LATCH_Pin);
-//  ADG1414_Chain_Init(&laser_int, SPI4, LASER_INT_SW_CS_GPIO_Port, LASER_INT_SW_CS_Pin, INTERNAL_CHAIN_SWITCH_NUM);
-//  ADG1414_Chain_Init(&laser_ext, SPI4, LASER_EXT_SW_CS_GPIO_Port, LASER_EXT_SW_CS_Pin, EXTERNAL_CHAIN_SWITCH_NUM);
-//
-//  // Photo board
-//  ADG1414_Chain_Init(&photo_sw, SPI2, PHOTO_SW_CS_GPIO_Port, PHOTO_SW_CS_Pin, INTERNAL_CHAIN_SWITCH_NUM);
-//  ADS8327_Device_Init(&photo_adc, SPI2, PHOTO_ADC_CS_GPIO_Port, PHOTO_ADC_CS_Pin, PHOTO_ADC_CONV_GPIO_Port, PHOTO_ADC_CONV_Pin, PHOTO_ADC_EOC_GPIO_Port, PHOTO_ADC_EOC_Pin);
-//
-//  SCH_Initialize();
-//
-//  Ex_Watchdog_CreateTask();
-//  LED_Status_CreateTask();
-//  CLI_Command_CreateTask();
-//  Temperature_GetSet_CreateTask();
-//  MIN_CreateTask();
-//  SCH_StartSchedular();
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-//  bsp_spi_ram_init();
-//
-//  uint16_t read_buffer[2000] = {0};
-//  uint16_t read_buffer2[2000] = {0};
-//  uint16_t write_buffer[2000] = {0};
-//  uint32_t ram_current_address = 0;
-//  uint16_t * const upper_buffer = write_buffer + 10000;
-//
-//  for (uint32_t i=0; i<2000;i++) write_buffer[i] = i+2;
-////  for (uint32_t i=10000; i<20000;i++) write_buffer[i] = 20000-i;
-//
-////  bsp_spi_ram_write_dma(0, 20000*2, (uint8_t *)write_buffer);
-////  while(!bsp_spi_ram_is_transfer_done());
-////  for(int i = 0; i < 2; i++)
-////  {
-//	  bsp_spi_ram_write_dma(0, 4000, (uint8_t *)write_buffer);
-//	  while(!bsp_spi_ram_is_transfer_done());
-//	  ram_current_address += 0;
-//
-////	  bsp_spi_ram_write_dma(ram_current_address, 20000, (uint8_t *)upper_buffer);
-////	  while(!bsp_spi_ram_is_transfer_done());
-////	  ram_current_address += 2000;
-//
-////	  bsp_spi_ram_write_dma(ram_current_address, 512, (uint8_t *)upper_buffer);
-////	  while(!bsp_spi_ram_is_transfer_done());
-////	  ram_current_address += 2000;
-////  }
-//
-//  bsp_spi_ram_read_dma(0, 4000, (uint8_t*)read_buffer);
-//  while(!bsp_spi_ram_is_transfer_done());
-//
-////  bsp_spi_ram_read_dma(20000, 20000, (uint8_t *)read_buffer2);
-////    while(!bsp_spi_ram_is_transfer_done());
-//__NOP();
 
   app_init();
   app_start();
@@ -1519,13 +1457,13 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA2_Stream0_IRQn interrupt configuration */
-  NVIC_SetPriority(DMA2_Stream0_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
+  NVIC_SetPriority(DMA2_Stream0_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),1, 0));
   NVIC_EnableIRQ(DMA2_Stream0_IRQn);
   /* DMA2_Stream2_IRQn interrupt configuration */
   NVIC_SetPriority(DMA2_Stream2_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),10, 0));
   NVIC_EnableIRQ(DMA2_Stream2_IRQn);
   /* DMA2_Stream3_IRQn interrupt configuration */
-  NVIC_SetPriority(DMA2_Stream3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
+  NVIC_SetPriority(DMA2_Stream3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),1, 0));
   NVIC_EnableIRQ(DMA2_Stream3_IRQn);
   /* DMA2_Stream4_IRQn interrupt configuration */
   NVIC_SetPriority(DMA2_Stream4_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),10, 0));

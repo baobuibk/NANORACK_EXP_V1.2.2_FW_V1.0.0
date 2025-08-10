@@ -35,5 +35,5 @@
 ../Dev/BSupport/BSP/bsp_photodiode/bsp_photodiode.c:246:6:bsp_photodiode_start_dma	40	static
 ../Dev/BSupport/BSP/bsp_photodiode/bsp_photodiode.c:279:6:bsp_photodiode_sample_start	16	static
 ../Dev/BSupport/BSP/bsp_photodiode/bsp_photodiode.c:298:6:bsp_photodiode_dma_sampling_irq	8	static
-../Dev/BSupport/BSP/bsp_photodiode/bsp_photodiode.c:367:6:TIM1_UP_TIM10_IRQHandler	4	static
-../Dev/BSupport/BSP/bsp_photodiode/bsp_photodiode.c:407:6:TIM2_IRQHandler	8	static
+../Dev/BSupport/BSP/bsp_photodiode/bsp_photodiode.c:362:6:TIM1_UP_TIM10_IRQHandler	4	static
+../Dev/BSupport/BSP/bsp_photodiode/bsp_photodiode.c:384:6:TIM2_IRQHandler	8	static

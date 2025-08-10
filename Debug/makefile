@@ -10,13 +10,6 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include Drivers/STM32F7xx_HAL_Driver/Src/subdir.mk
--include Dev/Sensor_I2C/LSM6DSOX/subdir.mk
--include Dev/Sensor_I2C/K33/subdir.mk
--include Dev/Sensor_I2C/H3LIS331DL/subdir.mk
--include Dev/Sensor_I2C/H250/subdir.mk
--include Dev/Sensor_I2C/BMP390/subdir.mk
--include Dev/Sensor_I2C/BME280/subdir.mk
--include Dev/Sensor_I2C/subdir.mk
 -include Dev/MiddleWare/sst0_c/src/subdir.mk
 -include Dev/MiddleWare/lwl/subdir.mk
 -include Dev/MiddleWare/container/subdir.mk

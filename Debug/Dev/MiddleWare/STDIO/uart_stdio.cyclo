@@ -15,8 +15,8 @@
 ../Dev/MiddleWare/STDIO/uart_stdio.c:30:6:uart_stdio_deactive	3
 ../Dev/MiddleWare/STDIO/uart_stdio.c:43:6:uart_stdio_is_active	1
 ../Dev/MiddleWare/STDIO/uart_stdio.c:48:6:uart_stdio_read	4
-../Dev/MiddleWare/STDIO/uart_stdio.c:69:10:uart_stdio_write	4
-../Dev/MiddleWare/STDIO/uart_stdio.c:101:10:uart_stdio_write_char	4
-../Dev/MiddleWare/STDIO/uart_stdio.c:127:10:uart_stdio_printf	4
-../Dev/MiddleWare/STDIO/uart_stdio.c:154:6:uart_stdio_rx_callback	4
-../Dev/MiddleWare/STDIO/uart_stdio.c:165:10:uart_stdio_tx_callback	4
+../Dev/MiddleWare/STDIO/uart_stdio.c:69:10:uart_stdio_write	5
+../Dev/MiddleWare/STDIO/uart_stdio.c:103:10:uart_stdio_write_char	4
+../Dev/MiddleWare/STDIO/uart_stdio.c:129:10:uart_stdio_printf	4
+../Dev/MiddleWare/STDIO/uart_stdio.c:156:6:uart_stdio_rx_callback	4
+../Dev/MiddleWare/STDIO/uart_stdio.c:167:10:uart_stdio_tx_callback	4

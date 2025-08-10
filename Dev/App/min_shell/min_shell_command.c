@@ -56,7 +56,9 @@ static void MIN_Handler_PLEASE_RESET_CMD(MIN_Context_t *ctx, const uint8_t *payl
 
 static void MIN_Handler_TEST_CONNECTION_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
+#ifdef MIN_SHELL_DEBUG_PRINTING
 	uint32_t var = (payload[0] << 24) | (payload[1] << 16) | (payload[2] << 8) | payload[3];
+#endif
     MIN_Send(ctx, TEST_CONNECTION_ACK, payload, len);
     min_shell_debug_print("Payload TEST_CONNECTION_CMD (%d bytes): %d\r\n", len, var);
 }
@@ -270,10 +272,10 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
     uint16_t sample_time = (uint16_t)((uint16_t)payload[6] << 8) | payload[7];
     uint16_t post_time = (uint16_t)((uint16_t)payload[8] << 8) | payload[9];
 
-    if ((sample_rate < 1000) || (sample_rate > 850000))
+    if ((sample_rate < 1000) || (sample_rate > 1000000))
     {
         ret++;
-        min_shell_debug_print("sampling rate out of range (1K-800K)\r\n");
+        min_shell_debug_print("sampling rate out of range (1K-1000K)\r\n");
     }
 
     if (pre_time == 0)

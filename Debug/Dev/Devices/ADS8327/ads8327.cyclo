@@ -11,6 +11,4 @@
 ../Dev/Devices/ADS8327/ads8327.c:29:6:ADS8327_Write_CFR	3
 ../Dev/Devices/ADS8327/ads8327.c:46:6:ADS8327_Default_CFR	5
 ../Dev/Devices/ADS8327/ads8327.c:68:10:ADS8327_Read_Data_Polling	7
-../Dev/Devices/ADS8327/ads8327.c:91:6:ISR_TIMTrigger_IRQHandler	1
-../Dev/Devices/ADS8327/ads8327.c:102:6:ISR_SPI_DMA_Rx_IRQHandler	1
 ../Dev/Devices/ADS8327/ads8327.c:110:6:ADS8327_Device_Init	2

@@ -229,6 +229,7 @@ void USART6_IRQHandler(void)
 {
 	CLI_UART_stdio_rx_callback();
 	CLI_UART_stdio_tx_callback(&shell_task_inst);
+	USART6->ICR = 0xFFFFFFFF;
 }
 
 static state_t shell_state_send_long_buffer_handler(shell_task_t * const me, shell_evt_t const * const e) {

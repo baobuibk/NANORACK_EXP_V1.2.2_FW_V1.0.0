@@ -297,8 +297,7 @@ void bsp_photodiode_sample_start()
 // Hàm xử lí DMA ADC
 void bsp_photodiode_dma_sampling_irq(void)
 {
-	TIM1->CR1 &= ~TIM_CR1_CEN;		// Stop timer trigger
-
+//	TIM1->CR1 &= ~TIM_CR1_CEN;		// Stop timer trigger
 //	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin;	// CS_HIGH
 
 	// Half-transfer
@@ -307,7 +306,7 @@ void bsp_photodiode_dma_sampling_irq(void)
 		PHOTO_DMA->LIFCR = DMA_LIFCR_CHTIF0;	// Clear Half-transfer flag
 		bsp_spi_ram_write_dma(photo_diode_adc.ram_current_address, BUFFER_HALF_SIZE_BYTE, (uint8_t *)photo_data_buffer);
 		photo_diode_adc.ram_current_address += BUFFER_HALF_SIZE_BYTE;
-		TIM1->CR1 |= TIM_CR1_CEN;		// Continue start timer trigger
+//		TIM1->CR1 |= TIM_CR1_CEN;		// Continue start timer trigger
 	}
 
 	// Transfer-complete
@@ -318,7 +317,7 @@ void bsp_photodiode_dma_sampling_irq(void)
 		photo_diode_adc.ram_current_address += BUFFER_HALF_SIZE_BYTE;
 		photo_diode_adc.block_count --;
 
-		TIM1->CR1 |= TIM_CR1_CEN;		// Continue start timer trigger
+//		TIM1->CR1 |= TIM_CR1_CEN;		// Continue start timer trigger
 
 		if ((photo_diode_adc.block_count) == 0)
 		{
@@ -352,13 +351,9 @@ void bsp_photodiode_dma_sampling_irq(void)
 	// Clear all unexpected interrupt flag (stream 0)
 	else
 	{
-//		PHOTO_DMA->LIFCR = DMA_LIFCR_CTEIF0;		// Clear Transfer-error flag
-//		PHOTO_DMA->LIFCR = DMA_LIFCR_CDMEIF0;		// Clear Direct-mode-error flag
-//		PHOTO_DMA->LIFCR = DMA_LIFCR_CFEIF0;		// Clear FIFO-error flag
-
 		// Xóa toàn bộ ngắt cho DMA0 stream 0
 		PHOTO_DMA->LIFCR = DMA_LIFCR_CHTIF0 | DMA_LIFCR_CTCIF0 | DMA_LIFCR_CTEIF0 | DMA_LIFCR_CDMEIF0 | DMA_LIFCR_CFEIF0;
-		TIM1->CR1 |= TIM_CR1_CEN;
+//		TIM1->CR1 |= TIM_CR1_CEN;
 	}
 
 }
@@ -366,42 +361,24 @@ void bsp_photodiode_dma_sampling_irq(void)
 // Hàm xử lý ngắt Timer ADC trigger
 void TIM1_UP_TIM10_IRQHandler(void)
 {
-//	TIM1->SR = ~TIM_SR_UIF;			// Clear timer flag
-////	GPIOD->BSRR = GPIO_BSRR_BS_9;  	// CS HIGH
-//	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin;
-//
-////	GPIOD->BSRR = GPIO_BSRR_BR_10; 	// CV LOW
-//	PHOTO_ADC_CONV_GPIO_Port->BSRR = PHOTO_ADC_CONV_Pin << 16;
-//
-////	GPIOD->BSRR = GPIO_BSRR_BS_10; 	// CV HIGH
-//	PHOTO_ADC_CONV_GPIO_Port->BSRR = PHOTO_ADC_CONV_Pin;
-//
-////	GPIOD->BSRR = GPIO_BSRR_BR_9; 	// CS LOW
-//	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin << 16;
-//
-////	SPI2->DR = 0xAAAA;				// Send DUMY to SPI
-//	PHOTO_SPI->DR = 0xAAAA;
-
-	//	GPIOD->BSRR = GPIO_BSRR_BS_9;  	// CS HIGH
+//	GPIOD->BSRR = GPIO_BSRR_BS_9;  	// CS HIGH
 	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin;
-	//	GPIOD->BSRR = GPIO_BSRR_BS_9;  	// CS HIGH
 	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin;
 
 	TIM1->SR = ~TIM_SR_UIF;			// Clear timer flag
 
-	//	GPIOD->BSRR = GPIO_BSRR_BR_10; 	// CV LOW
-		PHOTO_ADC_CONV_GPIO_Port->BSRR = PHOTO_ADC_CONV_Pin << 16;
-	//	GPIOD->BSRR = GPIO_BSRR_BR_10; 	// CV LOW
-		PHOTO_ADC_CONV_GPIO_Port->BSRR = PHOTO_ADC_CONV_Pin << 16;
+//	GPIOD->BSRR = GPIO_BSRR_BR_10; 	// CV LOW
+	PHOTO_ADC_CONV_GPIO_Port->BSRR = PHOTO_ADC_CONV_Pin << 16;
+	PHOTO_ADC_CONV_GPIO_Port->BSRR = PHOTO_ADC_CONV_Pin << 16;
 
-	//	GPIOD->BSRR = GPIO_BSRR_BR_9; 	// CS LOW
-		PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin << 16;
+//	GPIOD->BSRR = GPIO_BSRR_BR_9; 	// CS LOW
+	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin << 16;
 
-	//	GPIOD->BSRR = GPIO_BSRR_BS_10; 	// CV HIGH
-		PHOTO_ADC_CONV_GPIO_Port->BSRR = PHOTO_ADC_CONV_Pin;
+//	SPI2->DR = 0xAAAA;
+	PHOTO_SPI->DR = 0xAAAA;
 
-	//	SPI2->DR = 0xAAAA;
-		PHOTO_SPI->DR = 0xAAAA;
+//	GPIOD->BSRR = GPIO_BSRR_BS_10; 	// CV HIGH
+	PHOTO_ADC_CONV_GPIO_Port->BSRR = PHOTO_ADC_CONV_Pin;
 }
 
 void TIM2_IRQHandler(void)
@@ -416,7 +393,6 @@ void TIM2_IRQHandler(void)
 			photo_diode_state = PHOTO_SAMPLED_SAMPLING;
 			// Set laser timer with sampling time
 			TIM2->ARR = timer_timing.sampling_time_ARR - 1;
-//			bsp_photodiode_timer2_init(timer_timing.sampling_time_ARR - 1);
 
 			// Done finish pre-sampling event trigger
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_pre_phase_evt);
