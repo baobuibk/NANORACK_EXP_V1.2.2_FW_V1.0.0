@@ -1,6 +1,0 @@
-../Dev/Sensor_I2C/H3LIS331DL/h3lis331dl.c:15:6:H3LIS331DL_Write	1
-../Dev/Sensor_I2C/H3LIS331DL/h3lis331dl.c:20:6:H3LIS331DL_Read	1
-../Dev/Sensor_I2C/H3LIS331DL/h3lis331dl.c:25:14:H3LIS331DL_Init	2
-../Dev/Sensor_I2C/H3LIS331DL/h3lis331dl.c:35:14:H3LIS331DL_Read_ID	1
-../Dev/Sensor_I2C/H3LIS331DL/h3lis331dl.c:41:6:H3LIS331DL_Read_RawData	1
-../Dev/Sensor_I2C/H3LIS331DL/h3lis331dl.c:51:14:H3LIS331DL_Get_Accel	2

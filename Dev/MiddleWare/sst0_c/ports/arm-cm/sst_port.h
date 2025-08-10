@@ -55,6 +55,9 @@
 #define SST_PORT_CRIT_ENTRY() SST_ENTER_CRITICAL()
 #define SST_PORT_CRIT_EXIT()  SST_EXIT_CRITICAL()
 
+//#define SST_PORT_INT_DISABLE() SST_ENTER_CRITICAL()
+//#define SST_PORT_INT_ENABLE() SST_EXIT_CRITICAL()
+
 typedef uint32_t SST_ReadySet;
 
 /* special idle callback to handle the "idle condition" in SST0 */

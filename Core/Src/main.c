@@ -74,7 +74,6 @@ static void MX_SPI6_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART6_UART_Init(void);
 static void MX_ADC2_Init(void);
-static void MX_ADC3_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_IWDG_Init(void);
@@ -133,79 +132,16 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART6_UART_Init();
   MX_ADC2_Init();
-  MX_ADC3_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_IWDG_Init();
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
 
-
-//  Ex_Watchdog_Init();
-//  LED_Status_Init();
-//  UART_Driver_Init();
-//  CLI_Command_Init(EXP_UART_CONSOLE_HANDLE);
-//  NTC_DMA_ADC_Init();
-//  Sensor_I2C_Init();
-//  MIN_Process_Init();
-
-//// Laser board
-//  MCP4902_Device_Init(&DAC_device, SPI4, LASER_DAC_CS_GPIO_Port, LASER_DAC_CS_Pin, LASER_DAC_LATCH_GPIO_Port, LASER_DAC_LATCH_Pin);
-//  ADG1414_Chain_Init(&laser_int, SPI4, LASER_INT_SW_CS_GPIO_Port, LASER_INT_SW_CS_Pin, INTERNAL_CHAIN_SWITCH_NUM);
-//  ADG1414_Chain_Init(&laser_ext, SPI4, LASER_EXT_SW_CS_GPIO_Port, LASER_EXT_SW_CS_Pin, EXTERNAL_CHAIN_SWITCH_NUM);
-//
-//  // Photo board
-//  ADG1414_Chain_Init(&photo_sw, SPI2, PHOTO_SW_CS_GPIO_Port, PHOTO_SW_CS_Pin, INTERNAL_CHAIN_SWITCH_NUM);
-//  ADS8327_Device_Init(&photo_adc, SPI2, PHOTO_ADC_CS_GPIO_Port, PHOTO_ADC_CS_Pin, PHOTO_ADC_CONV_GPIO_Port, PHOTO_ADC_CONV_Pin, PHOTO_ADC_EOC_GPIO_Port, PHOTO_ADC_EOC_Pin);
-//
-//  SCH_Initialize();
-//
-//  Ex_Watchdog_CreateTask();
-//  LED_Status_CreateTask();
-//  CLI_Command_CreateTask();
-//  Temperature_GetSet_CreateTask();
-//  MIN_CreateTask();
-//  SCH_StartSchedular();
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-//  bsp_spi_ram_init();
-//
-//  uint16_t read_buffer[2000] = {0};
-//  uint16_t read_buffer2[2000] = {0};
-//  uint16_t write_buffer[2000] = {0};
-//  uint32_t ram_current_address = 0;
-//  uint16_t * const upper_buffer = write_buffer + 10000;
-//
-//  for (uint32_t i=0; i<2000;i++) write_buffer[i] = i+2;
-////  for (uint32_t i=10000; i<20000;i++) write_buffer[i] = 20000-i;
-//
-////  bsp_spi_ram_write_dma(0, 20000*2, (uint8_t *)write_buffer);
-////  while(!bsp_spi_ram_is_transfer_done());
-////  for(int i = 0; i < 2; i++)
-////  {
-//	  bsp_spi_ram_write_dma(0, 4000, (uint8_t *)write_buffer);
-//	  while(!bsp_spi_ram_is_transfer_done());
-//	  ram_current_address += 0;
-//
-////	  bsp_spi_ram_write_dma(ram_current_address, 20000, (uint8_t *)upper_buffer);
-////	  while(!bsp_spi_ram_is_transfer_done());
-////	  ram_current_address += 2000;
-//
-////	  bsp_spi_ram_write_dma(ram_current_address, 512, (uint8_t *)upper_buffer);
-////	  while(!bsp_spi_ram_is_transfer_done());
-////	  ram_current_address += 2000;
-////  }
-//
-//  bsp_spi_ram_read_dma(0, 4000, (uint8_t*)read_buffer);
-//  while(!bsp_spi_ram_is_transfer_done());
-//
-////  bsp_spi_ram_read_dma(20000, 20000, (uint8_t *)read_buffer2);
-////    while(!bsp_spi_ram_is_transfer_done());
-//__NOP();
 
   app_init();
   app_start();
@@ -523,84 +459,6 @@ static void MX_ADC2_Init(void)
 }
 
 /**
-  * @brief ADC3 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_ADC3_Init(void)
-{
-
-  /* USER CODE BEGIN ADC3_Init 0 */
-
-  /* USER CODE END ADC3_Init 0 */
-
-  LL_ADC_InitTypeDef ADC_InitStruct = {0};
-  LL_ADC_REG_InitTypeDef ADC_REG_InitStruct = {0};
-
-  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  /* Peripheral clock enable */
-  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_ADC3);
-
-  LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
-  /**ADC3 GPIO Configuration
-  PA1   ------> ADC3_IN1
-  */
-  GPIO_InitStruct.Pin = ADC_TEC_OUT_Pin;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(ADC_TEC_OUT_GPIO_Port, &GPIO_InitStruct);
-
-  /* ADC3 DMA Init */
-
-  /* ADC3 Init */
-  LL_DMA_SetChannelSelection(DMA2, LL_DMA_STREAM_1, LL_DMA_CHANNEL_2);
-
-  LL_DMA_SetDataTransferDirection(DMA2, LL_DMA_STREAM_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
-
-  LL_DMA_SetStreamPriorityLevel(DMA2, LL_DMA_STREAM_1, LL_DMA_PRIORITY_LOW);
-
-  LL_DMA_SetMode(DMA2, LL_DMA_STREAM_1, LL_DMA_MODE_CIRCULAR);
-
-  LL_DMA_SetPeriphIncMode(DMA2, LL_DMA_STREAM_1, LL_DMA_PERIPH_NOINCREMENT);
-
-  LL_DMA_SetMemoryIncMode(DMA2, LL_DMA_STREAM_1, LL_DMA_MEMORY_INCREMENT);
-
-  LL_DMA_SetPeriphSize(DMA2, LL_DMA_STREAM_1, LL_DMA_PDATAALIGN_HALFWORD);
-
-  LL_DMA_SetMemorySize(DMA2, LL_DMA_STREAM_1, LL_DMA_MDATAALIGN_HALFWORD);
-
-  LL_DMA_DisableFifoMode(DMA2, LL_DMA_STREAM_1);
-
-  /* USER CODE BEGIN ADC3_Init 1 */
-
-  /* USER CODE END ADC3_Init 1 */
-
-  /** Common config
-  */
-  ADC_InitStruct.Resolution = LL_ADC_RESOLUTION_12B;
-  ADC_InitStruct.DataAlignment = LL_ADC_DATA_ALIGN_RIGHT;
-  ADC_InitStruct.SequencersScanMode = LL_ADC_SEQ_SCAN_DISABLE;
-  LL_ADC_Init(ADC3, &ADC_InitStruct);
-  ADC_REG_InitStruct.TriggerSource = LL_ADC_REG_TRIG_SOFTWARE;
-  ADC_REG_InitStruct.SequencerLength = LL_ADC_REG_SEQ_SCAN_DISABLE;
-  ADC_REG_InitStruct.SequencerDiscont = LL_ADC_REG_SEQ_DISCONT_DISABLE;
-  ADC_REG_InitStruct.ContinuousMode = LL_ADC_REG_CONV_SINGLE;
-  ADC_REG_InitStruct.DMATransfer = LL_ADC_REG_DMA_TRANSFER_UNLIMITED;
-  LL_ADC_REG_Init(ADC3, &ADC_REG_InitStruct);
-  LL_ADC_REG_SetFlagEndOfConversion(ADC3, LL_ADC_REG_FLAG_EOC_UNITARY_CONV);
-
-  /** Configure Regular Channel
-  */
-  LL_ADC_REG_SetSequencerRanks(ADC3, LL_ADC_REG_RANK_1, LL_ADC_CHANNEL_1);
-  LL_ADC_SetChannelSamplingTime(ADC3, LL_ADC_CHANNEL_1, LL_ADC_SAMPLINGTIME_15CYCLES);
-  /* USER CODE BEGIN ADC3_Init 2 */
-
-  /* USER CODE END ADC3_Init 2 */
-
-}
-
-/**
   * @brief CRC Initialization Function
   * @param None
   * @retval None
@@ -814,10 +672,6 @@ static void MX_SPI1_Init(void)
   LL_DMA_SetMemorySize(DMA2, LL_DMA_STREAM_3, LL_DMA_MDATAALIGN_BYTE);
 
   LL_DMA_DisableFifoMode(DMA2, LL_DMA_STREAM_3);
-
-  /* SPI1 interrupt Init */
-  NVIC_SetPriority(SPI1_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
-  NVIC_EnableIRQ(SPI1_IRQn);
 
   /* USER CODE BEGIN SPI1_Init 1 */
 
@@ -1603,16 +1457,13 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA2_Stream0_IRQn interrupt configuration */
-  NVIC_SetPriority(DMA2_Stream0_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
+  NVIC_SetPriority(DMA2_Stream0_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),1, 0));
   NVIC_EnableIRQ(DMA2_Stream0_IRQn);
-  /* DMA2_Stream1_IRQn interrupt configuration */
-  NVIC_SetPriority(DMA2_Stream1_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
-  NVIC_EnableIRQ(DMA2_Stream1_IRQn);
   /* DMA2_Stream2_IRQn interrupt configuration */
   NVIC_SetPriority(DMA2_Stream2_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),10, 0));
   NVIC_EnableIRQ(DMA2_Stream2_IRQn);
   /* DMA2_Stream3_IRQn interrupt configuration */
-  NVIC_SetPriority(DMA2_Stream3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
+  NVIC_SetPriority(DMA2_Stream3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),1, 0));
   NVIC_EnableIRQ(DMA2_Stream3_IRQn);
   /* DMA2_Stream4_IRQn interrupt configuration */
   NVIC_SetPriority(DMA2_Stream4_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),10, 0));
@@ -1621,7 +1472,7 @@ static void MX_DMA_Init(void)
   NVIC_SetPriority(DMA2_Stream5_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),9, 0));
   NVIC_EnableIRQ(DMA2_Stream5_IRQn);
   /* DMA2_Stream6_IRQn interrupt configuration */
-  NVIC_SetPriority(DMA2_Stream6_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),1, 0));
+  NVIC_SetPriority(DMA2_Stream6_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),9, 0));
   NVIC_EnableIRQ(DMA2_Stream6_IRQn);
 
 }
@@ -1807,6 +1658,12 @@ static void MX_GPIO_Init(void)
   LL_GPIO_Init(TEC_4_EN_GPIO_Port, &GPIO_InitStruct);
 
   /**/
+  GPIO_InitStruct.Pin = ADC_TEC_OUT_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(ADC_TEC_OUT_GPIO_Port, &GPIO_InitStruct);
+
+  /**/
   GPIO_InitStruct.Pin = LASER_DAC_CS_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
@@ -1825,7 +1682,7 @@ static void MX_GPIO_Init(void)
   /**/
   GPIO_InitStruct.Pin = PHOTO_ADC_CS_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(PHOTO_ADC_CS_GPIO_Port, &GPIO_InitStruct);

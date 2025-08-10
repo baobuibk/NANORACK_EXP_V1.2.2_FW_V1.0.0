@@ -66,12 +66,5 @@ Dev/MiddleWare/Utils \
 Dev/MiddleWare/container \
 Dev/MiddleWare/lwl \
 Dev/MiddleWare/sst0_c/src \
-Dev/Sensor_I2C/BME280 \
-Dev/Sensor_I2C/BMP390 \
-Dev/Sensor_I2C/H250 \
-Dev/Sensor_I2C/H3LIS331DL \
-Dev/Sensor_I2C/K33 \
-Dev/Sensor_I2C/LSM6DSOX \
-Dev/Sensor_I2C \
 Drivers/STM32F7xx_HAL_Driver/Src \
 

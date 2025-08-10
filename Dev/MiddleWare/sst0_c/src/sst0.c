@@ -42,16 +42,18 @@ void SST_init(void) {
 int SST_Task_run(void) {
     SST_onStart(); /* configure and start the interrupts */
 
-    SST_PORT_INT_DISABLE();
+ //   SST_PORT_INT_DISABLE();
+   	SST_PORT_CRIT_ENTRY();
     for (;;) { /* event loop of the SST0 kernel */
 
         if (task_readySet != 0U) { /* any SST tasks ready to run? */
             uint_fast8_t const p = SST_LOG2(task_readySet);
             SST_Task * const task = task_registry[p];
-            SST_PORT_INT_ENABLE();
+//            SST_PORT_INT_ENABLE();
+           SST_PORT_CRIT_EXIT();
 
             /* the task must have some events in the queue */
-            DBC_ASSERT(100, task->nUsed > 0U);
+ //           DBC_ASSERT(100, task->nUsed > 0U);
 
             /* get the event out of the queue */
             /* NOTE: no critical section because task->tail is accessed only
@@ -65,17 +67,20 @@ int SST_Task_run(void) {
             //     --task->tail;
             // }
             circular_buffer_pop(task->evt_queue, (void *)task->current_evt);
-            SST_PORT_INT_DISABLE();
+//            SST_PORT_INT_DISABLE();
+//            SST_PORT_CRIT_ENTRY();
             //if ((--task->nUsed) == 0U) { /* no more events in the queue? */
             if (circular_buffer_is_empty(task->evt_queue)) { /* no more events? */
                 task_readySet &= ~(1U << (p - 1U));
             }
-            SST_PORT_INT_ENABLE();
+//            SST_PORT_INT_ENABLE();
+ //           SST_PORT_CRIT_EXIT();
 
             /* dispatch the received event to the task */
             (*task->dispatch)(task, task->current_evt); /* NOTE: virtual call */
             /* TBD: implement event recycling */
         }
+
         else { /* no SST tasks are ready to run --> idle */
 
             /* SST_onIdleCond() must be called with interrupts DISABLED
@@ -87,9 +92,10 @@ int SST_Task_run(void) {
             * ideally at the same time as putting the CPU into a power-
             * saving mode.
             */
-            SST_onIdleCond();
+           SST_onIdleCond();
 
-            SST_PORT_INT_DISABLE(); /* disable before looping back */
+ //           SST_PORT_INT_DISABLE(); /* disable before looping back */
+            SST_PORT_CRIT_ENTRY();
         }
     }
 #ifdef __GNUC__ /* GNU compiler? */
@@ -156,9 +162,9 @@ void SST_Task_post(SST_Task * const me, SST_Evt const * const e) {
     // }
     circular_buffer_push(me->evt_queue, e); /* insert event into the queue */
     //++me->nUsed;
-    SST_PORT_CRIT_ENTRY();
+//    SST_PORT_CRIT_ENTRY();
     task_readySet |= (1U << (me->prio - 1U));
-    SST_PORT_CRIT_EXIT();
+//    SST_PORT_CRIT_EXIT();
 }
 
 /*--------------------------------------------------------------------------*/

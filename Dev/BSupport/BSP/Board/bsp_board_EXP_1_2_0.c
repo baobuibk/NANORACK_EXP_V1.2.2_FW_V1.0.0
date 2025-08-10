@@ -28,5 +28,7 @@ void SST_onIdleCond(void) { /* NOTE: called with interrupts DISABLED */
     */
     __WFI(); /* Wait-For-Interrupt */
 #endif
-    SST_PORT_INT_ENABLE(); /* NOTE: enable interrupts for SS0 */
+    SST_PORT_CRIT_EXIT(); /* NOTE: enable interrupts for SS0 */
+
+    __WFI();
 }

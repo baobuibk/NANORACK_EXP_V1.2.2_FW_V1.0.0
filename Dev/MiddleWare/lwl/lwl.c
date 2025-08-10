@@ -228,7 +228,7 @@ void LWL(uint8_t id, ...)
 	// CLI_debug
 	cli_debug(id);
 
-    CRIT_STATE_VAR;
+
     va_list ap;
     uint32_t put_idx;
 
@@ -243,7 +243,7 @@ void LWL(uint8_t id, ...)
     uint8_t length = 1 + 1 + msg->num_arg_bytes + 1; // length + id + args + CRC
 
     va_start(ap, id);
-    CRIT_BEGIN_NEST();
+
 
     put_idx = lwl_data_buf->put_idx % LWL_BUF_SIZE;
     lwl_data_buf->put_idx = (put_idx + length + 1) % LWL_BUF_SIZE; // +1 for START_BYTE
@@ -293,8 +293,6 @@ void LWL(uint8_t id, ...)
 
     	lwl_buffer_full_notify();
     }
-
-    CRIT_END_NEST();
     va_end(ap);
 }
 

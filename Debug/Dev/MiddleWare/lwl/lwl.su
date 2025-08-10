@@ -3,9 +3,9 @@
 ../Dev/MiddleWare/lwl/lwl.c:58:16:calculate_crc8	24	static
 ../Dev/MiddleWare/lwl/lwl.c:170:6:lwl_init	16	static
 ../Dev/MiddleWare/lwl/lwl.c:176:6:lwl_start	8	static
-../Dev/MiddleWare/lwl/lwl.c:226:6:LWL	80	dynamic,ignoring_inline_asm
-../Dev/MiddleWare/lwl/lwl.c:308:13:lwl_buffer_full_notify	8	static
-../Dev/MiddleWare/lwl/lwl.c:313:13:lwl_clear_notification	8	static
-../Dev/MiddleWare/lwl/lwl.c:332:6:lwl_reinit_buffer	16	static
-../Dev/MiddleWare/lwl/lwl.c:338:12:lwl_get_full_buffer_addr	4	static
-../Dev/MiddleWare/lwl/lwl.c:343:10:lwl_log_send_to_spi	8	static
+../Dev/MiddleWare/lwl/lwl.c:226:6:LWL	64	dynamic
+../Dev/MiddleWare/lwl/lwl.c:306:13:lwl_buffer_full_notify	8	static
+../Dev/MiddleWare/lwl/lwl.c:311:13:lwl_clear_notification	8	static
+../Dev/MiddleWare/lwl/lwl.c:330:6:lwl_reinit_buffer	16	static
+../Dev/MiddleWare/lwl/lwl.c:336:12:lwl_get_full_buffer_addr	4	static
+../Dev/MiddleWare/lwl/lwl.c:341:10:lwl_log_send_to_spi	8	static

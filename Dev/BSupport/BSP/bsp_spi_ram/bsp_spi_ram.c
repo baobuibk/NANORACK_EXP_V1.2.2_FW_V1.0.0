@@ -77,7 +77,7 @@ uint8_t bsp_spi_ram_is_transfer_done(void)
 // Hàm xử lý ngắt DMA RX (SPI6_RX)
 void DMA2_Stream6_IRQHandler(void)
 {
-	DMA2->HIFCR = DMA_HIFCR_CTCIF6 | DMA_HIFCR_CTCIF5;
+	DMA2->HIFCR = DMA_HIFCR_CTCIF5 | DMA_HIFCR_CTCIF6;
 	IS66WV.cs_port->BSRR = IS66WV.cs_pin;				// CS_HIGH
 
 	// Kiểm tra và truyền khối tiếp theo
@@ -98,5 +98,6 @@ void DMA2_Stream6_IRQHandler(void)
 			experiment_task_done_read_ram_evt(p_experiment_task_inst);
 		}
 	}
-
+	DMA2->HIFCR = DMA_HIFCR_CHTIF5 | DMA_HIFCR_CTEIF5 | DMA_HIFCR_CDMEIF5 | DMA_HIFCR_CFEIF5
+				| DMA_HIFCR_CHTIF6 | DMA_HIFCR_CTEIF6 | DMA_HIFCR_CDMEIF6 | DMA_HIFCR_CFEIF6;
 }
